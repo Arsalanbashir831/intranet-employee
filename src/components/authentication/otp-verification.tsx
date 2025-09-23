@@ -16,7 +16,8 @@ export function OTPVerification() {
 
   return (
     <div className="min-h-screen bg-white flex p-8">
-    
+   
+ 
         {/* Centered Form */}
         <div className="flex-1 flex items-center justify-center px-8">
           <div className="w-full max-w-sm space-y-6">
