@@ -8,7 +8,7 @@ import Link from "next/link";
 export function ForgotPassword() {
   return (
     <div className="flex-1 flex items-center justify-center px-8">
-      <div className="w-[400px] h-[428px] max-w-sm space-y-6">
+      <div className="w-[450px] h-[428px] max-w-md space-y-6">
         {/* Title */}
         <div>
           <h1 className="text-5xl font-semibold text-gray-900 mb-2">
