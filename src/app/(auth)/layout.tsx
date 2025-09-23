@@ -18,12 +18,6 @@ export default function AuthLayout({
         </div>
         <div className="flex-1 flex items-center justify-center">
           {children}
-          <Image
-            src="/logo.svg"
-            alt="Company Logo"
-            width={231}
-            height={85}
-          />
         </div>
       </div>
 
