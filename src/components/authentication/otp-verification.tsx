@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Lock } from "lucide-react";
 import {
   InputOTP,
   InputOTPGroup,
@@ -28,7 +27,7 @@ export function OTPVerification() {
             OTP Verification
           </h1>
           <p className="text-lg text-gray-600 mb-1">
-            We've sent a 4-digit code to{" "}
+            We&lsquo;ve sent a 4-digit code to{" "}
             <span className="font-medium">hello@cartwright.com</span>
           </p>
           <p className="text-lg text-gray-600">
