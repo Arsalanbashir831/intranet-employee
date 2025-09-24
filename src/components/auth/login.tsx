@@ -66,9 +66,11 @@ export function Login() {
           </Link>
         </div>
 
-        <Button className="w-full h-12 bg-[#D64575] hover:bg-pink-400 text-white rounded-full font-medium text-base">
-          Sign In
-        </Button>
+        <Link href="/home">
+          <Button className="w-full h-12 bg-[#D64575] hover:bg-pink-400 text-white rounded-full font-medium text-base">
+            Sign In
+          </Button>
+        </Link>
       </div>
     </div>
   );

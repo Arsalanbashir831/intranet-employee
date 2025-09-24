@@ -1,15 +1,13 @@
-import { PageHeader } from "@/components/common/page-header";
-import { EmployeeProfileCard } from "@/components/profile/profile-card";
-import { OrgChartForm } from "@/components/profile/profile-form";
-import { ROUTES } from "@/constants/routes";
+import DocumentCard from "@/components/documents/document-card";
 
 export default function Home() {
   return (
     <div>
       {/* <h1>Home</h1> */}
-      <PageHeader title="Profile" crumbs={[{ label: "Pages" }, { label: "Profile", href: ROUTES.DASHBOARD.PROFILE }]} />
+      {/* <PageHeader title="Profile" crumbs={[{ label: "Pages" }, { label: "Profile", href: ROUTES.DASHBOARD.PROFILE }]} />
       <EmployeeProfileCard/>
-      <OrgChartForm />
+      <OrgChartForm /> */}
+      <DocumentCard/>
     </div>
   );
 }
