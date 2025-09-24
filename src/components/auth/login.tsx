@@ -11,14 +11,14 @@ export function Login() {
   const [showPassword, setShowPassword] = useState(false);
 
   return (
-    <div className="flex-1 flex items-center justify-center px-8">
-      <div className="w-[400px] h-[428px] max-w-sm">
-        <h1 className="text-5xl font-semibold text-center text-gray-900 mb-8">
+    <div className="flex-1 flex items-center justify-center px-6 sm:px-8">
+      <div className="w-full max-w-md lg:w-[400px] lg:h-[428px]">
+        <h1 className="text-4xl sm:text-5xl font-semibold text-center text-gray-900 mb-8">
           Login
         </h1>
 
         <div className="space-y-2">
-          <Label htmlFor="email" className="text-sm text-gray-600 mb-4">
+          <Label htmlFor="email" className="text-sm text-gray-600 mb-2">
             Company Email *
           </Label>
           <Input
@@ -30,7 +30,7 @@ export function Login() {
         </div>
 
         <div className="mt-5 space-y-2">
-          <Label htmlFor="password" className="text-sm text-gray-600 mb-4">
+          <Label htmlFor="password" className="text-sm text-gray-600 mb-2">
             Password
           </Label>
           <div className="relative">
