@@ -9,14 +9,11 @@ import {
   createSelectableItems,
 } from "@/components/common/selectable-tags";
 import { RichTextEditor } from "@/components/common/rich-text-editor";
-import { useRouter } from "next/navigation";
-import { ROUTES } from "@/constants/routes";
 import { toast } from "sonner";
 import { Card } from "../ui/card";
 
 export type OrgChartInitialValues = {
-  first_name?: string;
-  last_name?: string;
+  name?: string;
   address?: string;
   city?: string;
   phone?: string;
@@ -25,9 +22,7 @@ export type OrgChartInitialValues = {
   branch?: string;
   profileImageUrl?: string;
   qualificationAndEducation?: string;
-  job_title?: string;
   emp_role?: string;
-  join_date?: string;
 };
 
 const departments = [
@@ -45,8 +40,6 @@ const locations = [
 export function OrgChartForm({
   initialValues,
   onRegisterSubmit,
-  isEdit = false,
-  employeeId,
 }: {
   initialValues?: OrgChartInitialValues;
   onRegisterSubmit?: (submit: () => void) => void;
@@ -63,7 +56,6 @@ export function OrgChartForm({
     string | undefined
   >(initialValues?.qualificationAndEducation);
 
-  const router = useRouter();
   const formRef = React.useRef<HTMLFormElement | null>(null);
 
   React.useEffect(() => {
@@ -98,7 +90,7 @@ export function OrgChartForm({
           <div className="col-span-12 md:col-span-10">
             <Input
               name="name"
-              defaultValue={initialValues?.first_name}
+              defaultValue={initialValues?.name}
               placeholder="Name"
               className="border-[#E2E8F0]"
             />

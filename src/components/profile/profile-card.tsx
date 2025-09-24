@@ -54,7 +54,7 @@ const data = {
     },
 };
 
-export function EmployeeProfileCard({ employee, employeeId }: EmployeeProfileCardProps) {
+export function EmployeeProfileCard({ employee}: EmployeeProfileCardProps) {
     // const { data } = useEmployee(employeeId ?? "");
     const e: unknown = data ?? employee;
     const resolved: Employee | null = e ? {
