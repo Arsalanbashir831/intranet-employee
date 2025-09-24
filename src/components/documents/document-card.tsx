@@ -13,8 +13,8 @@ export default function DocumentCard() {
         <Image
           src="/icons/document.svg" // replace with your actual path
           alt="Document Icon"
-          width={100}
-          height={100}
+          width={120}
+          height={120}
           className="object-contain"
         />
       </div>
@@ -22,13 +22,13 @@ export default function DocumentCard() {
       {/* Bottom Section - Fixed 280px */}
       <div className="h-[280px] w-full bg-white px-5 pb-4 space-y-4 flex flex-col justify-between">
         <div className="space-y-4">
-          <h3 className="text-2xl text-[#D64575]">Document - 1</h3>
+          <h1 className="text-2xl font-semibold text-[#D64575]">Document - 1</h1>
 
           {/* Author + Date */}
           <div className="flex items-center gap-3">
             {/* Avatar */}
               <Image
-                src="/icons/profile-icon.svg"
+                src="/images/logo-circle.png"
                 alt="Profile"
                 width={30}
                 height={30}
@@ -47,7 +47,7 @@ export default function DocumentCard() {
           </div>
 
           {/* Description */}
-          <p className="text-lg text-gray-600">
+          <p className="text-md text-gray-600">
             Delightful remarkably mr on announcing themselves entreaties
             favourable.
           </p>
