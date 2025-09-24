@@ -4,11 +4,7 @@ import { Card } from "@/components/ui/card";
 import Image from "next/image";
 import Link from "next/link";
 
-type BadgeItem =
-  | string
-  | number
-  | { front: string | number; back?: string | number };
-// 👆 allows either a simple line or "front/back" stacked together
+type BadgeItem = string | number | { front: string | number; back?: string | number };
 
 interface PolicyCardProps {
   image?: string;
@@ -20,7 +16,7 @@ interface PolicyCardProps {
   badgeLines?: BadgeItem[];
 }
 
-export default function PolicyCard({
+export default function FeatureCard({
   image,
   title,
   description,
@@ -29,9 +25,21 @@ export default function PolicyCard({
   height = 450,
   badgeLines,
 }: PolicyCardProps) {
-  // split heights proportionally (default 247 / 203)
   const topHeight = Math.floor((247 / 450) * Number(height));
   const bottomHeight = Number(height) - topHeight;
+
+  // helper: safely render a BadgeItem
+  const renderBadgeItem = (item: BadgeItem) => {
+    if (typeof item === "string" || typeof item === "number") {
+      return item;
+    }
+    return (
+      <>
+        {item.front}
+        {item.back && <small className="ml-1">{item.back}</small>}
+      </>
+    );
+  };
 
   return (
     <Card
@@ -43,77 +51,26 @@ export default function PolicyCard({
         gridTemplateRows: `${topHeight}px ${bottomHeight}px`,
       }}
     >
-      {/* Badge (multi-line w/ front/back support) */}
-      {badgeLines && badgeLines.length > 0 && (
+      {/* Badge (date / month / year layout) */}
+      {badgeLines && badgeLines.length === 3 && (
         <div
-          className="absolute top-2 left-2 bg-white/60 backdrop-blur-sm rounded-xl shadow-md flex flex-col items-center justify-center"
-          style={{ width: 52, height: 102 }}
+          className="absolute top-2 left-2 bg-white/60 backdrop-blur-sm rounded-sm shadow-md flex flex-col items-center justify-center px-2"
+          style={{ width: 60, height: 80 }}
         >
-            {badgeLines?.map((line, idx) => {
-              if (typeof line === "object") {
-                if (line.front === "V" && line.back === "202") {
-                  // Special case: V centered on zero
-                  return (
-                    <div
-                      key={idx}
-                      className="relative flex items-center justify-center"
-                      style={{
-                        width: 26,
-                        height: 88,
-                        fontSize: 22,
-                        lineHeight: "100%",
-                        letterSpacing: "-0.03em",
-                      }}
-                    >
-                      <span className="text-gray-500">{line.back}</span>
-                      <span
-                        className="absolute font-bold"
-                        style={{ left: "50%", transform: "translateX(-50%)" }}
-                      >
-                        {line.front}
-                      </span>
-                    </div>
-                  );
-                }
+          {/* Date */}
+          <span className="text-xl font-bold leading-tight">
+            {renderBadgeItem(badgeLines[0])}
+          </span>
 
-                // General case (front overlays back)
-                return (
-                  <div
-                    key={idx}
-                    className="relative flex items-center justify-center"
-                    style={{
-                      width: 26,
-                      height: 88,
-                      fontSize: 22,
-                      lineHeight: "100%",
-                      letterSpacing: "-0.03em",
-                    }}
-                  >
-                    <span className="absolute inset-0 flex items-center justify-center text-gray-500">
-                      {line.back}
-                    </span>
-                    <span className="relative z-10 font-bold">{line.front}</span>
-                  </div>
-                );
-              }
+          {/* Month */}
+          <span className="text-md font-bold leading-tight">
+            {renderBadgeItem(badgeLines[1])}
+          </span>
 
-              // Pure string case
-              return (
-                <span
-                  key={idx}
-                  style={{
-                    width: 26,
-                    height: 88,
-                    fontSize: 22,
-                    lineHeight: "100%",
-                    letterSpacing: "-0.03em",
-                  }}
-                  className="flex items-center justify-center font-bold"
-                >
-                  {line}
-                </span>
-              );
-            })}
+          {/* Year */}
+          <span className="text-md font-bold leading-tight">
+            {renderBadgeItem(badgeLines[2])}
+          </span>
         </div>
       )}
 
