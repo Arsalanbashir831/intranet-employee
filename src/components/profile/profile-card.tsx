@@ -10,6 +10,7 @@ import { Button } from "../ui/button"; // ✅ Shadcn button
 import { Pencil } from "lucide-react";
 import Image from "next/image";
 import { ProfilePictureDialog } from "./ProfilePictureDialog";
+import { RichTextEditor } from "../common/rich-text-editor";
 
 interface Employee {
   id: string;
@@ -46,10 +47,10 @@ const data = {
   city: "New York",
   branch: "New York",
   status: "Active Employee",
-  bio: "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+  bio: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.",
   profileImage: "https://via.placeholder.com/150",
   qualification_details:
-    "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+    "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.",
   profile_picture_url: "https://via.placeholder.com/150",
   profile_picture: "https://via.placeholder.com/150",
   active: true,
@@ -120,6 +121,7 @@ export function EmployeeProfileCard({ employee }: EmployeeProfileCardProps) {
       }
     : null;
 
+  const [isEditingBio, setIsEditingBio] = useState(false);
   const [bio, setBio] = useState(resolved?.bio || "");
 
   if (!resolved) {
@@ -165,8 +167,10 @@ export function EmployeeProfileCard({ employee }: EmployeeProfileCardProps) {
               </AvatarFallback>
             </Avatar>
             {/* Edit button bottom-right */}
-            <ProfilePictureDialog image={resolved.profileImage} name={resolved.name} />
-
+            <ProfilePictureDialog
+              image={resolved.profileImage}
+              name={resolved.name}
+            />
 
             {/* <Button
               size="icon"
@@ -197,25 +201,60 @@ export function EmployeeProfileCard({ employee }: EmployeeProfileCardProps) {
 
             {/* Right Side: Bio + Edit */}
             <div className="flex-1 max-w-3xl flex items-end gap-1">
-              <Textarea
-                value={bio}
-                onChange={(e) => setBio(e.target.value)}
-                placeholder="Write something about the employee..."
-                className="min-h-[120px] resize-none border-[#E2E8F0]"
-              />
+              {isEditingBio ? (
+                <div className="w-full">
+                  {/* Rich Text Editor in edit mode */}
+                  <RichTextEditor
+                    content={bio} // ✅ Use content instead of value
+                    onChange={setBio}
+                    className="min-h-[120px] border border-gray-200 rounded-md"
+                  />
 
-              <Button
-                size="icon"
-                variant="secondary"
-                className="rounded-full bg-white shadow-md"
-              >
-                <Image
-                  src="/icons/edit.svg"
-                  width={24}
-                  height={24}
-                  alt="edit"
-                />
-              </Button>
+                  {/* Action Buttons */}
+                  <div className="flex justify-end gap-2 mt-2">
+                    <Button
+                      variant="outline"
+                      onClick={() => setIsEditingBio(false)}
+                    >
+                      Cancel
+                    </Button>
+                    <Button
+                      className="bg-pink-600 hover:bg-pink-700 text-white"
+                      onClick={() => {
+                        // 🔥 Save bio logic here (API call)
+                        console.log("Updated bio:", bio);
+                        setIsEditingBio(false);
+                      }}
+                    >
+                      Save
+                    </Button>
+                  </div>
+                </div>
+              ) : (
+                <>
+                  {/* Readonly Bio View */}
+                  <Textarea
+                    value={bio}
+                    readOnly
+                    className="min-h-[120px] resize-none border-[#E2E8F0] bg-gray-50"
+                  />
+
+                  {/* Edit Button */}
+                  <Button
+                    size="icon"
+                    variant="secondary"
+                    className="rounded-full bg-white shadow-md"
+                    onClick={() => setIsEditingBio(true)}
+                  >
+                    <Image
+                      src="/icons/edit.svg"
+                      width={24}
+                      height={24}
+                      alt="edit"
+                    />
+                  </Button>
+                </>
+              )}
             </div>
           </div>
         </div>
