@@ -7,7 +7,6 @@ import { Badge } from "../ui/badge";
 import { Separator } from "../ui/separator";
 import { Textarea } from "../ui/textarea"; // ✅ Shadcn textarea
 import { Button } from "../ui/button"; // ✅ Shadcn button
-import { Pencil } from "lucide-react";
 import Image from "next/image";
 import { ProfilePictureDialog } from "./ProfilePictureDialog";
 import { RichTextEditor } from "../common/rich-text-editor";

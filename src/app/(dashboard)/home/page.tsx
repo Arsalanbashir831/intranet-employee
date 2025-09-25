@@ -1,7 +1,3 @@
-import DocumentCard from "@/components/documents/document-card";
-import TeamsCard from "@/components/teams/teams-card";
-import FeatureCard from "@/components/common/feature-card";
-import BannerSection from "@/components/common/banner-section";
 import Checklist from "@/components/common/checklist";
 import { EmployeeProfileCard } from "@/components/profile/profile-card";
 

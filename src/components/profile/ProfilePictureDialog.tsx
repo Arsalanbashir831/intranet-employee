@@ -20,7 +20,7 @@ export function ProfilePictureDialog({
     image: string;
     name: string;
 }) {
-    const [preview, setPreview] = useState(image);
+    const [preview] = useState(image);
 
     return (
         <Dialog>

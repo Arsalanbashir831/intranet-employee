@@ -2,7 +2,6 @@ import { Card, CardHeader, CardContent } from "@/components/ui/card";
 import { ArrowRight } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
-import ChecklistDialog from "./checklist-dropdown";
 
 interface ChecklistProps {
   title: string;
@@ -70,10 +69,12 @@ export default function Checklist({
               >
                 <div className="flex items-center flex-1 min-w-0">
                   <div className="flex-shrink-0 w-6 h-6 bg-white rounded-full flex items-center justify-center mr-1">
-                    <img
+                    <Image
                       src="/icons/small-document.svg"
+                      width={16}
+                      height={16}
                       alt="Document"
-                      className="w-4 h-4"
+                      className="object-contain"
                     />
                   </div>
                   <span
