@@ -1,17 +1,19 @@
 import DocumentCard from "@/components/documents/document-card";
 import TeamsCard from "@/components/teams/teams-card";
 import FeatureCard from "@/components/common/feature-card";
+import BannerSection from "@/components/common/banner-section";
+import Checklist from "@/components/common/checklist";
 
 export default function Home() {
   return (
-    <div className="bg-gray-100">
+    <div className="bg-gray-100 min-h-screen">
       {/* <h1>Home</h1> */}
       {/* <PageHeader title="Profile" crumbs={[{ label: "Pages" }, { label: "Profile", href: ROUTES.DASHBOARD.PROFILE }]} />
       <EmployeeProfileCard/>
+      <OrgChartForm /> 
       */}
-
-      {/* <OrgChartForm />  */}
-      <div className="flex flex-row">
+      <BannerSection />
+      {/* <div className="flex flex-row">
         <DocumentCard />
 
         <FeatureCard
@@ -33,13 +35,23 @@ export default function Home() {
           designation="Manager"
           description="There are many variations of passages of Lorem Ipsum available."
         />
-      </div>
-        <TeamsCard
-          image="/images/team-member-2.png"
-          name="Martin Donin"
-          designation="Lead"
-          description="There are many variations of passages of Lorem Ipsum available."
-        />
+      </div> */}
+      <Checklist
+        title="Task Checklist"
+        viewMoreLink="/tasks"
+        tasks={[
+          "Follow the instructions and report everything properly",
+          "Complete all assigned tasks on time",
+          "Attend the scheduled team meeting promptly",
+          "Update the documentation as per guidelines",
+          "Submit the weekly report before Friday",
+        ]}
+      />
+      <Checklist
+        title="Training Checklist"
+        viewMoreLink="/tasks"
+        tasks={[]}
+      />
     </div>
   );
 }

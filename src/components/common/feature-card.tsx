@@ -108,7 +108,7 @@ export default function FeatureCard({
         {link && (
           <Link
             href={link}
-            className="pt-5 text-sm font-medium text-pink-600 hover:underline"
+            className="pt-5 text-sm font-medium text-pink-600 underline hover:text-pink-300"
           >
             Read More
           </Link>
