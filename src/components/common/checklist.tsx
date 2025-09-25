@@ -10,7 +10,11 @@ interface ChecklistProps {
   tasks: string[];
 }
 
-export default function Checklist({ title, viewMoreLink, tasks }: ChecklistProps) {
+export default function Checklist({
+  title,
+  viewMoreLink,
+  tasks,
+}: ChecklistProps) {
   const hasTasks = tasks && tasks.length > 0;
 
   // Dynamic empty state messages based on title
@@ -32,7 +36,7 @@ export default function Checklist({ title, viewMoreLink, tasks }: ChecklistProps
 
   return (
     <Card
-      className="bg-white m-5 border-gray-200 shadow-sm"
+      className="bg-white m-5 border-gray-200 shadow-sm gap-4"
       style={{
         width: "390px",
         height: "281px",
@@ -85,7 +89,10 @@ export default function Checklist({ title, viewMoreLink, tasks }: ChecklistProps
                     {task.split(" ").slice(0, 5).join(" ")}...
                   </span>
                 </div>
-<ChecklistDialog  />
+                <span className="flex  items-center text-[10px] font-medium text-white hover:underline cursor-pointer">
+                  See Details
+                  <ArrowRight className="w-3 h-3 ml-1" />
+                </span>
               </div>
             ))}
           </div>
@@ -96,7 +103,7 @@ export default function Checklist({ title, viewMoreLink, tasks }: ChecklistProps
               alt="No tasks"
               width={240}
               height={240}
-              className="mb-6"
+              className="mb-6 border-red-600"
             />
             <p className="text-xl text-center font-semibold text-gray-800">
               {emptyMessage.heading}

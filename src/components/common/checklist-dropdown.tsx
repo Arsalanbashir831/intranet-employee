@@ -14,10 +14,7 @@ export default function ChecklistDialog() {
     <Dialog>
       {/* Trigger */}
       <DialogTrigger asChild>
-        <span className="flex  items-center text-[10px] font-medium text-white hover:underline cursor-pointer">
-          See Details
-          <ArrowRight className="w-3 h-3 ml-1" />
-        </span>
+        
       </DialogTrigger>
 
       {/* Right side drawer */}

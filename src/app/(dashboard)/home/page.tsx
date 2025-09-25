@@ -3,16 +3,17 @@ import TeamsCard from "@/components/teams/teams-card";
 import FeatureCard from "@/components/common/feature-card";
 import BannerSection from "@/components/common/banner-section";
 import Checklist from "@/components/common/checklist";
+import { EmployeeProfileCard } from "@/components/profile/profile-card";
 
 export default function Home() {
   return (
     <div className="bg-gray-100 min-h-screen">
       {/* <h1>Home</h1> */}
       {/* <PageHeader title="Profile" crumbs={[{ label: "Pages" }, { label: "Profile", href: ROUTES.DASHBOARD.PROFILE }]} />
-      <EmployeeProfileCard/>
       <OrgChartForm /> 
       */}
-      <BannerSection />
+      <EmployeeProfileCard/>
+      {/* <BannerSection /> */}
       {/* <div className="flex flex-row">
         <DocumentCard />
 
