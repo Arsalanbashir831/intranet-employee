@@ -1,7 +1,7 @@
 import { Card, CardHeader, CardContent } from "@/components/ui/card";
-import { ArrowRight } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
+import ChecklistDrawer from "./checklist-drawer";
 
 interface ChecklistProps {
   title: string;
@@ -90,10 +90,17 @@ export default function Checklist({
                     {task.split(" ").slice(0, 5).join(" ")}...
                   </span>
                 </div>
-                <span className="flex  items-center text-[10px] font-medium text-white hover:underline cursor-pointer">
+                <ChecklistDrawer
+                  title="Design new UI presentation"
+                  subtitle="Dribbble marketing"
+                  description="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. co laboris nisi ut aliquip ex ea commodo consequat."
+                  date="25 Aug 2022"
+                />
+
+                {/* <span className="flex  items-center text-[10px] font-medium text-white hover:underline cursor-pointer">
                   See Details
                   <ArrowRight className="w-3 h-3 ml-1" />
-                </span>
+                </span> */}
               </div>
             ))}
           </div>
