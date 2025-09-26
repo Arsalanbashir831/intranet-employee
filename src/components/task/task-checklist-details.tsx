@@ -11,8 +11,7 @@ import {
   type KanbanItemProps,
 } from "../ui/kibo-ui/kanban";
 import Image from "next/image";
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
-import { Button } from "@/components/ui/button";
+import { Sheet} from "@/components/ui/sheet";
 import ChecklistDrawerContent from "../common/checklist-drawer-content";
 
 interface Task extends KanbanItemProps {

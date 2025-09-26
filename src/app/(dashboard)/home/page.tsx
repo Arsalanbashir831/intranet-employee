@@ -1,5 +1,4 @@
 import Checklist from "@/components/common/checklist";
-import { EmployeeProfileCard } from "@/components/profile/profile-card";
 
 export default function Home() {
   return (
