@@ -3,12 +3,11 @@ import { EmployeeProfileCard } from "@/components/profile/profile-card";
 
 export default function Home() {
   return (
-    <div className="bg-gray-100 min-h-screen">
-      {/* <h1>Home</h1> */}
+    <div className=" min-h-screen">
       {/* <PageHeader title="Profile" crumbs={[{ label: "Pages" }, { label: "Profile", href: ROUTES.DASHBOARD.PROFILE }]} />
       <OrgChartForm /> 
-      */}
       <EmployeeProfileCard/>
+      */}
       {/* <BannerSection /> */}
       {/* <div className="flex flex-row">
         <DocumentCard />
@@ -33,7 +32,7 @@ export default function Home() {
           description="There are many variations of passages of Lorem Ipsum available."
         />
       </div> */}
-      <Checklist
+       <Checklist
         title="Task Checklist"
         viewMoreLink="/tasks"
         tasks={[
@@ -48,7 +47,7 @@ export default function Home() {
         title="Training Checklist"
         viewMoreLink="/tasks"
         tasks={[]}
-      />
+      /> 
     </div>
   );
 }

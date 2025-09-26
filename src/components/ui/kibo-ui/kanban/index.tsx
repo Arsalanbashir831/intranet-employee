@@ -37,13 +37,14 @@ const t = tunnel();
 
 export type { DragEndEvent } from "@dnd-kit/core";
 
-type KanbanItemProps = {
+/** ✅ Exported so Task can extend it */
+export type KanbanItemProps = {
   id: string;
   name: string;
   column: string;
 } & Record<string, unknown>;
 
-type KanbanColumnProps = {
+export type KanbanColumnProps = {
   id: string;
   name: string;
 } & Record<string, unknown>;
@@ -70,9 +71,7 @@ export type KanbanBoardProps = {
 };
 
 export const KanbanBoard = ({ id, children, className }: KanbanBoardProps) => {
-  const { isOver, setNodeRef } = useDroppable({
-    id,
-  });
+  const { isOver, setNodeRef } = useDroppable({ id });
 
   return (
     <div
@@ -91,13 +90,14 @@ export const KanbanBoard = ({ id, children, className }: KanbanBoardProps) => {
 export type KanbanCardProps<T extends KanbanItemProps = KanbanItemProps> = T & {
   children?: ReactNode;
   className?: string;
-};
+} & HTMLAttributes<HTMLDivElement>;
 
 export const KanbanCard = <T extends KanbanItemProps = KanbanItemProps>({
   id,
   name,
   children,
   className,
+  ...props
 }: KanbanCardProps<T>) => {
   const {
     attributes,
@@ -106,9 +106,7 @@ export const KanbanCard = <T extends KanbanItemProps = KanbanItemProps>({
     transition,
     transform,
     isDragging,
-  } = useSortable({
-    id,
-  });
+  } = useSortable({ id });
   const { activeCardId } = useContext(KanbanContext) as KanbanContextProps;
 
   const style = {
@@ -120,6 +118,7 @@ export const KanbanCard = <T extends KanbanItemProps = KanbanItemProps>({
     <>
       <div style={style} {...listeners} {...attributes} ref={setNodeRef}>
         <Card
+          {...props}
           className={cn(
             "cursor-grab gap-4 rounded-md p-3 shadow-sm",
             isDragging && "pointer-events-none cursor-grabbing opacity-30",
@@ -228,17 +227,11 @@ export const KanbanProvider = <
 
   const handleDragOver = (event: DragOverEvent) => {
     const { active, over } = event;
-
-    if (!over) {
-      return;
-    }
+    if (!over) return;
 
     const activeItem = data.find((item) => item.id === active.id);
     const overItem = data.find((item) => item.id === over.id);
-
-    if (!activeItem) {
-      return;
-    }
+    if (!activeItem) return;
 
     const activeColumn = activeItem.column;
     const overColumn =
@@ -262,47 +255,37 @@ export const KanbanProvider = <
 
   const handleDragEnd = (event: DragEndEvent) => {
     setActiveCardId(null);
-
     onDragEnd?.(event);
 
     const { active, over } = event;
-
-    if (!over || active.id === over.id) {
-      return;
-    }
+    if (!over || active.id === over.id) return;
 
     let newData = [...data];
-
     const oldIndex = newData.findIndex((item) => item.id === active.id);
     const newIndex = newData.findIndex((item) => item.id === over.id);
 
     newData = arrayMove(newData, oldIndex, newIndex);
-
     onDataChange?.(newData);
   };
 
   const announcements: Announcements = {
     onDragStart({ active }) {
       const { name, column } = data.find((item) => item.id === active.id) ?? {};
-
-      return `Picked up the card "${name}" from the "${column}" column`;
+      return `Picked up "${name}" from "${column}" column`;
     },
     onDragOver({ active, over }) {
       const { name } = data.find((item) => item.id === active.id) ?? {};
-      const newColumn = columns.find((column) => column.id === over?.id)?.name;
-
-      return `Dragged the card "${name}" over the "${newColumn}" column`;
+      const newColumn = columns.find((c) => c.id === over?.id)?.name;
+      return `Dragged "${name}" over "${newColumn}" column`;
     },
     onDragEnd({ active, over }) {
       const { name } = data.find((item) => item.id === active.id) ?? {};
-      const newColumn = columns.find((column) => column.id === over?.id)?.name;
-
-      return `Dropped the card "${name}" into the "${newColumn}" column`;
+      const newColumn = columns.find((c) => c.id === over?.id)?.name;
+      return `Dropped "${name}" into "${newColumn}" column`;
     },
     onDragCancel({ active }) {
       const { name } = data.find((item) => item.id === active.id) ?? {};
-
-      return `Cancelled dragging the card "${name}"`;
+      return `Cancelled dragging "${name}"`;
     },
   };
 
