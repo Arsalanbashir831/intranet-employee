@@ -11,9 +11,9 @@ export function ResetPassword() {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   return (
-    <div className="flex-1 flex items-center justify-center px-8">
-      <div className="w-[400px] h-[428px] max-w-sm space-y-6">
-        <h1 className="text-5xl font-semibold text-gray-900 mb-6">
+    <div className="flex-1 flex items-center justify-center px-4 sm:px-8">
+      <div className="w-full max-w-md space-y-6 py-8 md:py-0">
+        <h1 className="text-3xl md:text-5xl font-semibold text-gray-900 mb-6 text-center md:text-left">
           Reset Password
         </h1>
 

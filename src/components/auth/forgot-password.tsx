@@ -7,14 +7,14 @@ import Link from "next/link";
 
 export function ForgotPassword() {
   return (
-    <div className="flex-1 flex items-center justify-center px-8">
-      <div className="w-[450px] h-[428px] max-w-md space-y-6">
+    <div className="flex-1 flex items-center justify-center px-6 sm:px-8">
+      <div className="w-full max-w-md lg:w-[450px] lg:h-[428px] md:py-0 space-y-6">
         {/* Title */}
         <div>
-          <h1 className="text-5xl font-semibold text-gray-900 mb-2">
+          <h1 className="text-4xl sm:text-5xl font-semibold text-gray-900 mb-2 text-center md:text-left">
             Forgot Password
           </h1>
-          <p className="text-lg text-gray-600">
+          <p className="text-base sm:text-lg text-gray-600 text-center md:text-left">
             Please enter your details below
           </p>
         </div>
