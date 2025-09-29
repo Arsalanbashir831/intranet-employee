@@ -28,6 +28,7 @@ export default function Home() {
 					{ label: "Pages" },
 					{ label: "Home", href: ROUTES.DASHBOARD.HOME },
 				]}
+        className=""
 			/>
 
 			{/* ===== Latest Announcements ===== */}
