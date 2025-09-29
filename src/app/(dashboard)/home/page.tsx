@@ -1,3 +1,5 @@
+"use client";
+
 import BannerSection from "@/components/common/banner-section";
 import { PageHeader } from "@/components/common/page-header";
 import { ROUTES } from "@/constants/routes";
@@ -12,106 +14,90 @@ import Link from "next/link";
 
 export default function Home() {
 	return (
-		<div
-			className="mx-auto bg-gray-200"
-			style={{
-				width: "1440px",
-				height: "1539px",
-			}}>
-			{/* Banner */}
-			<BannerSection />
+		<div className="bg-gray-200 min-h-screen flex justify-center">
+			{/* Outer container */}
+			<div className="w-full max-w-[1440px] h-[1539px] flex flex-col gap-8">
+				{/* Top Section */}
+				<div>
+					<BannerSection />
 
-			{/* Page Header */}
-			<PageHeader
-				title="Home"
-				crumbs={[
-					{ label: "Pages" },
-					{ label: "Home", href: ROUTES.DASHBOARD.HOME },
-				]}
-        className=""
-			/>
+					<PageHeader
+						title="Home"
+						crumbs={[
+							{ label: "Pages" },
+							{ label: "Home", href: ROUTES.DASHBOARD.HOME },
+						]}
+					/>
 
-			{/* ===== Latest Announcements ===== */}
-			<div
-				className="bg-white mx-auto rounded-2xl"
-				style={{
-					width: "1374px",
-					height: "488px",
-					padding: "20px",
-				}}>
-				<div className="flex items-center justify-between mb-6">
-					<h2 className="text-2xl font-semibold">Latest Announcements</h2>
-					<div className="flex flex-row items-center gap-1">
-						<Link
-							href="/announcements"
-							className="flex items-center text-sm text-red-500 font-medium underline">
-							View More
-							<ArrowRight className="w-4 h-4 ml-1" />
-						</Link>
+					<div className="w-full max-w-[1374px] h-[488px] mx-auto bg-white rounded-2xl p-6 flex flex-col gap-6">
+						{/* Latest Announcements */}
+						<div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-2 md:gap-0">
+							<h2 className="text-2xl font-semibold">Latest Announcements</h2>
+							<Link
+								href="/announcements"
+								className="flex items-center text-base text-red-500 font-medium underline">
+								View More
+								<ArrowRight className="w-5 h-5 ml-1" />
+							</Link>
+						</div>
+
+						<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
+							<FeatureCard
+								image="/images/office-work.png"
+								title="New technology awareness."
+								description="Delightful remarkably mr on announcing themselves entreaties favourable."
+								badgeLines={["30", "Nov", "2021"]}
+							/>
+							<FeatureCard
+								image="/images/meeting.png"
+								title="Client meeting discussion."
+								description="About to in so terms voice at. Equal an would is found seems of."
+								badgeLines={["04", "Dec", "2021"]}
+							/>
+							<FeatureCard
+								image="/images/business-growth.png"
+								title="Fast growth for business"
+								description="It more shed went up is roof if loud case. Delay music livel noise an."
+								badgeLines={["04", "Dec", "2021"]}
+							/>
+						</div>
 					</div>
 				</div>
 
-				<div className="flex overflow-x-auto gap-9 scrollbar-hide">
-					<FeatureCard
-						image="/images/office-work.png"
-						title="New technology awarness."
-						description="Delightful remarkably mr on announcing themselves entreaties favourable."
-						badgeLines={["30", "Nov", "2021"]}
-					/>
-					<FeatureCard
-						image="/images/meeting.png"
-						title="Client meeting discussion."
-						description="About to in so terms voice at. Equal an would is found seems of."
-						badgeLines={["04", "Dec", "2021"]}
-					/>
-					<FeatureCard
-						image="/images/business-growth.png"
-						title="Fast growth for business"
-						description="It more shed went up is roof if loud case. Delay music livel noise an."
-						badgeLines={["04", "Dec", "2021"]}
-					/>
-				</div>
-			</div>
+				{/* Bottom Section */}
+				<div className="w-full max-w-[1364px] h-[706px] mx-auto grid grid-cols-1 md:grid-cols-[31%_65%] xl:grid-cols-[31%_75%]">
+					{/* Left Column */}
+					<div className="flex flex-col gap-3">
+						<Checklist
+							title="Task Checklist"
+							viewMoreLink="/tasks"
+							tasks={[
+								"Follow the instructions and report everything properly",
+								"Complete all assigned tasks on time",
+								"Attend the scheduled team meeting promptly",
+								"Update the documentation as per guidelines",
+								"Submit the weekly report before Friday",
+							]}
+						/>
+						<Checklist
+							title="Training Checklist"
+							viewMoreLink="/tasks"
+							tasks={[]}
+						/>
+						<ContactSection />
+					</div>
 
-			{/* ===== Bottom Section (2 Columns fixed sizes) ===== */}
-			<div
-				className="grid mx-auto"
-				style={{
-					width: "1401px",
-					height: "706px",
-					gridTemplateColumns: "390px 950px",
-					columnGap: "24px",
-					padding: "20px",
-				}}>
-				{/* Left Column */}
-				<div className="flex flex-col gap-3 w-[390px] h-[706px]">
-					<Checklist
-						title="Task Checklist"
-						viewMoreLink="/tasks"
-						tasks={[
-							"Follow the instructions and report everything properly",
-							"Complete all assigned tasks on time",
-							"Attend the scheduled team meeting promptly",
-							"Update the documentation as per guidelines",
-							"Submit the weekly report before Friday",
-						]}
-					/>
-					<Checklist
-						title="Training Checklist"
-						viewMoreLink="/tasks"
-						tasks={[]}
-					/>
-					<ContactSection />
-				</div>
-
-				{/* Right Column */}
-				<div className="flex flex-col gap-5 w-[950px] h-[706px]">
-					<QuickAccess />
-
-					{/* Row: Team + Recent Policies */}
-					<div className="grid grid-cols-2 gap-15">
-						<TeamSection />
-						<RecentPolicies />
+					{/* Right Column */}
+					<div className="flex flex-col gap-5">
+						<QuickAccess />
+						<div className="w-[999px] h-[269px] grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-4">
+							<div className="w-full overflow-hidden">
+								<TeamSection />
+							</div>
+							<div className="w-full overflow-hidden">
+								<RecentPolicies />
+							</div>
+						</div>
 					</div>
 				</div>
 			</div>
