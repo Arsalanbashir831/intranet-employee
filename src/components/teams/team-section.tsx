@@ -4,8 +4,6 @@ import { Card } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import Link from "next/link";
-import { ROUTES } from "@/constants/routes";
-
 interface TeamMember {
 	id: number;
 	name: string;

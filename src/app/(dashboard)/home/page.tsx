@@ -2,7 +2,7 @@
 
 import BannerSection from "@/components/common/banner-section";
 import { PageHeader } from "@/components/common/page-header";
-import { ROUTES } from "@/constants/routes";
+import { ROUTES } from "@/hooks/constants/routes";
 import FeatureCard from "@/components/common/feature-card";
 import Checklist from "@/components/common/checklist";
 import QuickAccess from "@/components/common/quick-access";
@@ -14,7 +14,7 @@ import Link from "next/link";
 
 export default function Home() {
 	return (
-		<div className="bg-gray-200 min-h-screen flex justify-center">
+		<div className="min-h-screen flex justify-center">
 			{/* Outer container */}
 			<div className="w-full max-w-[1440px] h-[1539px] flex flex-col gap-8">
 				{/* Top Section */}
