@@ -13,7 +13,6 @@ import {
 	SelectValue,
 } from "@/components/ui/select";
 import { TableSearch } from "@/components/card-table/table-search";
-import { CardTablePagination } from "@/components/card-table/card-table-pagination";
 
 const teamData = [
 	{
