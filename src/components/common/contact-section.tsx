@@ -13,7 +13,7 @@ export default function ContactSection() {
 	];
 
 	return (
-		<Card className="w-[390px] h-[130px] m-5  gap-0 rounded-[9px] shadow-sm bg-[#F9FEFF] ">
+		<Card className="w-[390px] h-[130px] gap-0 rounded-[9px] shadow-sm bg-[#F9FEFF] ">
 			<CardContent className="flex flex-col items-center justify-center h-full gap-5 p-0">
 				{/* Heading */}
 				<h2 className="text-lg font-semibold text-gray-800">Connect With Us</h2>

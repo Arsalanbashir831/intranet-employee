@@ -32,7 +32,7 @@ const policies: Policy[] = [
 
 export default function RecentPolicies() {
 	return (
-		<Card className="w-[448px] m-5 h-[268px] bg-[#F9FEFF] rounded-lg p-4 flex flex-col gap-0">
+		<Card className="w-[448px] h-[268px] bg-[#F9FEFF] rounded-lg p-4 flex flex-col gap-0">
 			{/* Header */}
 			<div className="flex items-center justify-between mb-4">
 				<h2 className="text-2xl font-semibold text-gray-900">

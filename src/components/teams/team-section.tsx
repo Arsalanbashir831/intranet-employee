@@ -35,7 +35,7 @@ const teamMembers: TeamMember[] = [
 
 export default function TeamSection() {
 	return (
-		<Card className="w-[494px] m-5 h-[269px] bg-[#F9FFFF] rounded-lg p-4 flex flex-col gap-0">
+		<Card className="w-[494px] h-[269px] bg-[#F9FFFF] rounded-lg p-4 flex flex-col gap-0">
 			{/* Header */}
 			<div className="flex items-center justify-between mb-4">
 				<h2 className="text-2xl font-semibold text-gray-900">My Team</h2>

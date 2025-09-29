@@ -14,11 +14,9 @@ const quickAccessItems = [
 
 export default function QuickAccess() {
 	return (
-		<Card className="w-[950px] h-[150 px] gap-5 bg-[#F9FEFF] rounded-lg px-[19px] pt-[15px] pb-[10px]">
+		<Card className="w-[950px] h-[150 px] gap-0 bg-[#F9FEFF] rounded-lg px-[19px] pt-[15px] pb-[10px]">
 			{/* Header */}
-			<h2 className="text-base font-semibold text-gray-900 mb-4">
-				Quick Access
-			</h2>
+			<h2 className="text-base font-semibold text-gray-900">Quick Access</h2>
 
 			{/* Logo Row */}
 			<div className="w-[899px] h-[91px] flex items-center gap-10">
