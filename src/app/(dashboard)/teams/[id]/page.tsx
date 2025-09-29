@@ -1,4 +1,6 @@
+import { PageHeader } from "@/components/common/page-header";
 import { TeamsDetailsCard } from "@/components/teams/teams-details";
+import { ROUTES } from "@/hooks/constants/routes";
 
 interface Params {
 	params: {
@@ -32,10 +34,21 @@ const teamData = [
 	// Add more members
 ];
 
-export default function TeamById({ params }: Params) {
+export default function TeamSlug({ params }: Params) {
 	const member = teamData.find((m) => m.id === params.id);
 
 	if (!member) return <p>Team member not found.</p>;
 
-	return <TeamsDetailsCard employee={member} />;
+	return (
+		<div>
+			<PageHeader
+				title="Teams"
+				crumbs={[
+					{ label: "Pages" },
+					{ label: "Teams", href: ROUTES.DASHBOARD.TEAMS },
+				]}
+			/>
+			<TeamsDetailsCard employee={member} />
+		</div>
+	);
 }
