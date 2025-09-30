@@ -89,12 +89,12 @@ export function PageHeader({
 					{/* ✅ Tabs (dynamic) */}
 					{tabs.length > 0 && (
 						<Tabs value={activeTab} onValueChange={onTabChange}>
-							<TabsList className="border-gray-500">
+							<TabsList className="border border-gray-300 rounded-lg p-1 inline-flex">
 								{tabs.map((t) => (
 									<TabsTrigger
 										key={t.key}
 										value={t.key}
-										className="px-4 py-2 rounded-md text-gray-300 data-[state=active]:bg-[#E5004E] data-[state=active]:text-[#FFFF]">
+										className="p-3 rounded-md text-gray-300 data-[state=active]:bg-[#E5004E] data-[state=active]:text-[#FFFF]">
 										{t.label}
 									</TabsTrigger>
 								))}

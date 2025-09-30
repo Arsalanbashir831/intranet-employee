@@ -20,7 +20,13 @@ interface Task extends KanbanItemProps {
 	progress?: number;
 }
 
-export default function TaskChecklistDetails() {
+interface TaskChecklistDetailsProps {
+	heading?: string; // optional prop
+}
+
+export default function TaskChecklistDetails({
+	heading = "Task Checklist",
+}: TaskChecklistDetailsProps) {
 	const [tasks, setTasks] = useState<Task[]>([
 		{
 			id: "1",
@@ -128,14 +134,14 @@ export default function TaskChecklistDetails() {
 		console.log("Card clicked:", task.name); // Debug log
 		setSelectedTask(task);
 		setOpen(true); // Explicitly open the sheet
-		console.log("Open state set to:", true); // Debug log
+		console.log("Open state set to:", true);
 	};
 
 	return (
 		<div className="flex items-center p-5 justify-center min-h-screen bg-gray-100">
 			<div className="bg-white rounded-2xl shadow-md p-8 w-fit">
 				<h1 className="text-2xl font-bold text-gray-900 mb-6 text-left">
-					Task Checklist
+					{heading}
 				</h1>
 
 				<KanbanProvider<Task>
