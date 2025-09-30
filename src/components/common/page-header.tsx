@@ -1,6 +1,7 @@
 "use client";
 
 import * as React from "react";
+import { useRouter, useSearchParams, usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 import {
 	Breadcrumb,
@@ -12,15 +13,8 @@ import {
 } from "@/components/ui/breadcrumb";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
-type Crumb = {
-	label: string;
-	href?: string;
-};
-
-type Tab = {
-	key: string;
-	label: string;
-};
+type Crumb = { label: string; href?: string };
+type Tab = { key: string; label: string };
 
 type PageHeaderProps = {
 	title: string;
@@ -28,10 +22,20 @@ type PageHeaderProps = {
 	action?: React.ReactNode;
 	className?: string;
 
-	// ✅ Tabs props
+	// Tabs
 	tabs?: Tab[];
+	/** Controlled tab value (if you want to control it from the page) */
 	activeTab?: string;
+	/** Callback when tab changes (fires in both controlled & uncontrolled) */
 	onTabChange?: (val: string) => void;
+
+	/** Uncontrolled default tab key (fallback when URL has no ?tab=...) */
+	defaultTab?: string;
+
+	/** Sync tab to query string like ?tab=policies (default: false) */
+	syncTabWithQuery?: boolean;
+	/** Query key to use (default: "tab") */
+	queryKey?: string;
 };
 
 export function PageHeader({
@@ -39,23 +43,64 @@ export function PageHeader({
 	crumbs,
 	action,
 	className,
+
 	tabs = [],
-	activeTab,
-	onTabChange,
+	activeTab, // controlled value (optional)
+	onTabChange, // callback (optional)
+	defaultTab = tabs[0]?.key || "announcements",
+	syncTabWithQuery = false,
+	queryKey = "tab",
 }: PageHeaderProps) {
+	const router = useRouter();
+	const search = useSearchParams();
+	const pathname = usePathname();
+
+	// derive initial from URL if syncing is enabled
+	const tabFromUrl = syncTabWithQuery
+		? (search.get(queryKey) as string) || defaultTab
+		: defaultTab;
+
+	// uncontrolled state (used when activeTab is not provided)
+	const [internalTab, setInternalTab] = React.useState(tabFromUrl);
+
+	// keep internal state in sync if URL changes (e.g., back/forward)
+	React.useEffect(() => {
+		if (!syncTabWithQuery) return;
+		setInternalTab(tabFromUrl);
+	}, [syncTabWithQuery, tabFromUrl]);
+
+	const currentValue = activeTab ?? internalTab;
+
+	const handleChange = (value: string) => {
+		// update internal only when uncontrolled
+		if (activeTab === undefined) {
+			setInternalTab(value);
+		}
+		// always notify parent if provided
+		onTabChange?.(value);
+
+		// optionally sync to URL but keep current path
+		if (syncTabWithQuery) {
+			const qs = new URLSearchParams(search.toString());
+			qs.set(queryKey, value);
+			router.replace(`${pathname}?${qs.toString()}`, { scroll: false });
+		}
+	};
+
 	return (
 		<div
 			className={cn(
-				"px-5 md:px-12 pt-4 pb-2 border-b border-[#E4E4E4] bg-[#FFFF]",
+				"px-5 md:px-12 pt-4 pb-2 border-b border-[#E4E4E4] bg-white",
 				className
 			)}>
 			<div className="flex flex-col md:flex-row md:items-center justify-between gap-3">
-				{/* Left side */}
+				{/* Left */}
 				<div className="flex items-center gap-3 min-w-0">
 					<div>
 						<h1 className="text-2xl font-semibold tracking-tight truncate">
 							{title}
 						</h1>
+
 						<div className="mt-1">
 							<Breadcrumb>
 								<BreadcrumbList>
@@ -86,15 +131,16 @@ export function PageHeader({
 							</Breadcrumb>
 						</div>
 					</div>
-					{/* ✅ Tabs (dynamic) */}
+
+					{/* Tabs */}
 					{tabs.length > 0 && (
-						<Tabs value={activeTab} onValueChange={onTabChange}>
-							<TabsList className="border border-gray-300 rounded-lg p-1 inline-flex">
+						<Tabs value={currentValue} onValueChange={handleChange}>
+							<TabsList className="border border-gray-300 rounded-lg p-1 inline-flex ml-3">
 								{tabs.map((t) => (
 									<TabsTrigger
 										key={t.key}
 										value={t.key}
-										className="p-3 rounded-md text-gray-300 data-[state=active]:bg-[#E5004E] data-[state=active]:text-[#FFFF]">
+										className="p-3 rounded-md text-gray-600 data-[state=active]:bg-[#E5004E] data-[state=active]:text-white">
 										{t.label}
 									</TabsTrigger>
 								))}
@@ -103,7 +149,7 @@ export function PageHeader({
 					)}
 				</div>
 
-				{/* Right side action optional */}
+				{/* Right action */}
 				{action ? <div className="shrink-0 self-end">{action}</div> : null}
 			</div>
 		</div>

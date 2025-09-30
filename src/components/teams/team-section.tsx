@@ -38,7 +38,9 @@ export default function TeamSection() {
 			{/* Header */}
 			<div className="flex items-center justify-between mb-4">
 				<h2 className="text-2xl font-semibold text-gray-900">My Team</h2>
-				<Link href="#" className="text-md font-medium text-[#E5004E] underline">
+				<Link
+					href="/teams"
+					className="text-md font-medium text-[#E5004E] underline">
 					View More
 				</Link>
 			</div>

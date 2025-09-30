@@ -37,7 +37,9 @@ export default function RecentPolicies() {
 				<h2 className="text-2xl font-semibold text-gray-900">
 					Recent Policies
 				</h2>
-				<Link href="#" className="text-md font-medium text-[#E5004E] underline">
+				<Link
+					href="/company-hub?tab=policies"
+					className="text-md font-medium text-[#E5004E] underline">
 					View More
 				</Link>
 			</div>

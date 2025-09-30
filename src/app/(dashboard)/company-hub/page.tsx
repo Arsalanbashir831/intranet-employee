@@ -4,7 +4,7 @@ import { PageHeader } from "@/components/common/page-header";
 import FeatureCard from "@/components/common/feature-card";
 import { ROUTES } from "@/hooks/constants/routes";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import {
 	createColumnHelper,
 	getCoreRowModel,
@@ -12,7 +12,7 @@ import {
 } from "@tanstack/react-table";
 import { CardTableToolbar } from "@/components/card-table/card-table-toolbar";
 import { CardTablePagination } from "@/components/card-table/card-table-pagination";
-
+import { useSearchParams, useRouter, usePathname } from "next/navigation";
 // ---- Types ----
 interface CompanyHubItem {
 	id: string;
@@ -145,19 +145,31 @@ const columns = [
 ];
 
 export default function CompanyHub() {
-	const [query, setQuery] = useState("");
-	const [page, setPage] = useState(1);
+	const search = useSearchParams();
+	const router = useRouter();
+	const pathname = usePathname();
+
+	// ✅ initialize from URL or default
+	const urlTab =
+		(search.get("tab") as "announcements" | "policies") ?? "announcements";
 	const [activeTab, setActiveTab] = useState<"announcements" | "policies">(
-		"announcements"
+		urlTab
 	);
 
+	// ✅ sync if URL changes (back/forward)
+	useEffect(() => {
+		const next =
+			(search.get("tab") as "announcements" | "policies") ?? "announcements";
+		if (next !== activeTab) setActiveTab(next);
+	}, [search]);
+
+	const [query, setQuery] = useState("");
+	const [page, setPage] = useState(1);
 	const pageSize = 8;
 
-	// pick dataset based on toggle
 	const dataSource: CompanyHubItem[] =
 		activeTab === "announcements" ? ALL_ANNOUNCEMENTS : ALL_POLICIES;
 
-	// search filter
 	const filtered = useMemo(() => {
 		const q = query.trim().toLowerCase();
 		return q
@@ -165,11 +177,9 @@ export default function CompanyHub() {
 			: dataSource;
 	}, [query, dataSource]);
 
-	// pagination
 	const pageCount = Math.max(1, Math.ceil(filtered.length / pageSize));
 	const pageItems = filtered.slice((page - 1) * pageSize, page * pageSize);
 
-	// react-table (only relevant for announcements, but keeps pagination working)
 	const table = useReactTable<CompanyHubItem>({
 		data: filtered,
 		columns,
@@ -183,8 +193,19 @@ export default function CompanyHub() {
 	};
 
 	const handleSortChange = (value: string) => {
-		// sorting logic here if needed
 		setPage(1);
+	};
+
+	const handleTabChange = (tabKey: string) => {
+		const t = tabKey as "announcements" | "policies";
+		setActiveTab(t);
+		setPage(1);
+		setQuery("");
+
+		// ✅ update query param
+		const qs = new URLSearchParams(search.toString());
+		qs.set("tab", t);
+		router.replace(`${pathname}?${qs.toString()}`, { scroll: false });
 	};
 
 	return (
@@ -199,8 +220,8 @@ export default function CompanyHub() {
 					{ key: "announcements", label: "Announcements" },
 					{ key: "policies", label: "Policies" },
 				]}
-				activeTab={activeTab}
-				onTabChange={(val) => setActiveTab(val as "announcements" | "policies")}
+				activeTab={activeTab} // controlled
+				onTabChange={handleTabChange} // update state + URL
 			/>
 
 			<div className="mx-auto md:max-w-[420px] lg:max-w-[786px] xl:max-w-[1400px] p-4 md:p-6">
@@ -221,7 +242,7 @@ export default function CompanyHub() {
 					<section className="mt-6">
 						<div className="grid gap-5 grid-cols-1 sm:grid-cols-1 lg:grid-cols-2 xl:grid-cols-4">
 							{pageItems.map((item) =>
-								 activeTab === "announcements" ? (
+								activeTab === "announcements" ? (
 									<FeatureCard
 										key={item.id}
 										image={(item as Announcement).image}
@@ -239,12 +260,10 @@ export default function CompanyHub() {
 										description={item.description}
 										link={`/company-hub/${item.id}`}
 										width={320}
-										height={450} // smaller since no image
+										height={450}
 									/>
 								)
 							)}
-
-							{/* layout spacers */}
 							{Array.from({
 								length: Math.max(0, pageSize - pageItems.length),
 							}).map((_, i) => (

@@ -35,7 +35,7 @@ export default function Home() {
 						<div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-2 md:gap-0">
 							<h2 className="text-2xl font-semibold">Latest Announcements</h2>
 							<Link
-								href="/announcements"
+								href="/company-hub"
 								className="flex items-center text-base text-red-500 font-medium underline">
 								View More
 								<ArrowRight className="w-5 h-5 ml-1" />
@@ -71,7 +71,7 @@ export default function Home() {
 					<div className="flex flex-col gap-3">
 						<Checklist
 							title="Task Checklist"
-							viewMoreLink="/tasks"
+							viewMoreLink="/task-checklist"
 							tasks={[
 								"Follow the instructions and report everything properly",
 								"Complete all assigned tasks on time",
@@ -82,7 +82,7 @@ export default function Home() {
 						/>
 						<Checklist
 							title="Training Checklist"
-							viewMoreLink="/tasks"
+							viewMoreLink="/training-checklist"
 							tasks={[]}
 						/>
 						<ContactSection />
@@ -102,8 +102,8 @@ export default function Home() {
 						<KnowledgeBaseTable
 							showToolbar={false}
 							limit={4}
-							viewMoreHref="/dashboard/knowledge-base"
-							baseHref="/dashboard/knowledge-base"
+							viewMoreHref="/knowledge-base"
+							baseHref="/knowledge-base"
 							className="bg-[#F9FFFF]"
 						/>
 					</div>
