@@ -11,6 +11,7 @@ import RecentPolicies from "@/components/common/recent-policies";
 import ContactSection from "@/components/common/contact-section";
 import { ArrowRight } from "lucide-react";
 import Link from "next/link";
+import KnowledgeBaseTable from "@/components/knowledge-base/knowledge-base-table";
 
 export default function Home() {
 	return (
@@ -49,13 +50,13 @@ export default function Home() {
 								badgeLines={["30", "Nov", "2021"]}
 							/>
 							<FeatureCard
-								image="/images/meeting.png"
+								image="/images/office-work.png"
 								title="Client meeting discussion."
 								description="About to in so terms voice at. Equal an would is found seems of."
 								badgeLines={["04", "Dec", "2021"]}
 							/>
 							<FeatureCard
-								image="/images/business-growth.png"
+								image="/images/office-work.png"
 								title="Fast growth for business"
 								description="It more shed went up is roof if loud case. Delay music livel noise an."
 								badgeLines={["04", "Dec", "2021"]}
@@ -98,6 +99,13 @@ export default function Home() {
 								<RecentPolicies />
 							</div>
 						</div>
+						<KnowledgeBaseTable
+							showToolbar={false}
+							limit={4}
+							viewMoreHref="/dashboard/knowledge-base"
+							baseHref="/dashboard/knowledge-base"
+							className="bg-[#F9FFFF]"
+						/>
 					</div>
 				</div>
 			</div>
