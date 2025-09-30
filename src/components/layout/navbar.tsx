@@ -64,7 +64,7 @@ export function Navbar() {
 	const pathname = usePathname();
 
 	return (
-		<header className="sticky top-0 z-50 w-full border-b bg-primary text-white">
+		<header className="sticky top-0 z-50 w-full border-b bg-secondary text-white">
 			<div className="mx-auto flex max-w-screen-2xl items-center gap-16 px-4 h-24 sm:px-6 lg:px-8">
 				<div className="flex items-center gap-3">
 					<Link

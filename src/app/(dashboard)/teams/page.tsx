@@ -4,6 +4,11 @@ import { PageHeader } from "@/components/common/page-header";
 import TeamsCard from "@/components/teams/teams-card";
 import { ROUTES } from "@/hooks/constants/routes";
 import Link from "next/link";
+import {
+	createColumnHelper,
+	getCoreRowModel,
+	useReactTable,
+} from "@tanstack/react-table";
 
 import {
 	Select,
@@ -13,6 +18,8 @@ import {
 	SelectValue,
 } from "@/components/ui/select";
 import { TableSearch } from "@/components/card-table/table-search";
+import { CardTablePagination } from "@/components/card-table/card-table-pagination";
+import { useMemo, useState } from "react";
 
 const teamData = [
 	{
@@ -45,9 +52,66 @@ const teamData = [
 		designation: "Software Engineer",
 		image: "/images/team-member-5.png",
 	},
+	// add more if needed for pagination testing
+];
+
+const columnHelper = createColumnHelper<any>();
+
+const columns = [
+	columnHelper.accessor("id", {
+		cell: (info) => info.getValue(),
+		header: () => <span>ID</span>,
+	}),
+	columnHelper.accessor("name", {
+		cell: (info) => info.getValue(),
+		header: () => <span>Name</span>,
+	}),
+	columnHelper.accessor("designation", {
+		cell: (info) => info.getValue(),
+		header: () => <span>Designation</span>,
+	}),
 ];
 
 export default function Teams() {
+	const [query, setQuery] = useState("");
+	const [page, setPage] = useState(1);
+	const pageSize = 8;
+
+	// 🔎 Search filter
+	const filtered = useMemo(() => {
+		const q = query.trim().toLowerCase();
+		return q
+			? teamData.filter((a) => a.name.toLowerCase().includes(q))
+			: teamData;
+	}, [query]);
+
+	// 📄 Pagination math
+	const pageCount = Math.max(1, Math.ceil(filtered.length / pageSize));
+	const pageItems = filtered.slice((page - 1) * pageSize, page * pageSize);
+
+	// ⚡ Table setup with manual pagination
+	const table = useReactTable({
+		data: filtered,
+		columns,
+		getCoreRowModel: getCoreRowModel(),
+		pageCount,
+		manualPagination: true,
+		state: {
+			pagination: {
+				pageIndex: page - 1,
+				pageSize,
+			},
+		},
+		onPaginationChange: (updater) => {
+			if (typeof updater === "function") {
+				const newState = updater({ pageIndex: page - 1, pageSize });
+				setPage(newState.pageIndex + 1);
+			} else {
+				setPage(updater.pageIndex + 1);
+			}
+		},
+	});
+
 	return (
 		<div>
 			{/* Page Header */}
@@ -65,7 +129,7 @@ export default function Teams() {
 					<h1 className="text-3xl font-bold mb-6">My Team</h1>
 
 					{/* Search + Filters */}
-					<div className="flex flex-col md:flex-row md:items-center mb-6">
+					<div className="flex flex-col md:flex-row md:items-center mb-6 gap-4">
 						{/* Search */}
 						<div className="flex-1 max-w-sm">
 							<TableSearch placeholder="Search by Name" />
@@ -110,7 +174,7 @@ export default function Teams() {
 
 					{/* Cards Grid */}
 					<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-						{teamData.map((member) => (
+						{pageItems.map((member) => (
 							<Link key={member.id} href={`/teams/${member.id}`}>
 								<TeamsCard
 									image={member.image}
@@ -123,8 +187,8 @@ export default function Teams() {
 					</div>
 
 					{/* Pagination */}
-					<div className="mt-6 flex justify-end">
-						{/* <CardTablePagination /> */}
+					<div className="flex items-center justify-end mt-6">
+						<CardTablePagination table={table} />
 					</div>
 				</div>
 			</div>

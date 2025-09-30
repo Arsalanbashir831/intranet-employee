@@ -12,7 +12,7 @@ const ANNOUNCEMENTS = [
 		title: "A DEEP DIVE INTO THE INFLUENCE OF CULTURAL MOVEMENTS",
 		date: "Monday, September 9, 2024",
 		tag: "#Announcement 1",
-		image: "/images/office-work.png",
+		image: "/images/office-work.svg",
 		content: `
       Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
 
@@ -23,10 +23,10 @@ const ANNOUNCEMENTS = [
 	},
 	{
 		id: "2",
-		title: "NEW OFFICE OPENING IN LAHORE",
+		title: "A DEEP DIVE INTO THE INFLUENCE OF CULTURAL MOVEMENTS",
 		date: "Thursday, August 1, 2024",
 		tag: "#Announcement 2",
-		image: "/images/office-work.png",
+		image: "/images/office-work.svg",
 		content: `
       Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
 
@@ -37,10 +37,10 @@ const ANNOUNCEMENTS = [
 	},
 	{
 		id: "3",
-		title: "Q3 TEAM AWARDS CEREMONY",
+		title: "A DEEP DIVE INTO THE INFLUENCE OF CULTURAL MOVEMENTS",
 		date: "Monday, July 15, 2024",
 		tag: "#Announcement 3",
-		image: "/images/office-work.png",
+		image: "/images/office-work.svg",
 		content: `
       Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
 
