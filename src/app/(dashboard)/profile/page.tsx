@@ -49,7 +49,6 @@ export default function Profile() {
 				open={open}
 				onOpenChange={setOpen}
 				onSubmit={handleChangePassword}
-				loading={saving}
 			/>
 			<div className="p-4 sm:p-8 lg:p-6">
 				<EmployeeProfileCard />

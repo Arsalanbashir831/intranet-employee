@@ -25,7 +25,7 @@ interface Announcement extends CompanyHubItem {
 	badgeLines: [string, string, string];
 }
 
-interface Policy extends CompanyHubItem {}
+type Policy = CompanyHubItem;
 
 // ---- Mock data ----
 const ALL_ANNOUNCEMENTS: Announcement[] = [
@@ -161,7 +161,7 @@ export default function CompanyHub() {
 		const next =
 			(search.get("tab") as "announcements" | "policies") ?? "announcements";
 		if (next !== activeTab) setActiveTab(next);
-	}, [search]);
+	}, [search, activeTab]);
 
 	const [query, setQuery] = useState("");
 	const [page, setPage] = useState(1);
@@ -192,7 +192,7 @@ export default function CompanyHub() {
 		setPage(1);
 	};
 
-	const handleSortChange = (value: string) => {
+	const handleSortChange = () => {
 		setPage(1);
 	};
 

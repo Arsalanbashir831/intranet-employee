@@ -5,7 +5,7 @@ import { KnowledgeBaseTable } from "@/components/knowledge-base/knowledge-base-t
 import { PageHeader } from "@/components/common/page-header";
 import { ROUTES } from "@/hooks/constants/routes";
 import { KnowledgeBaseRow } from "@/components/knowledge-base/knowledge-base-table";
-import { FolderIcon } from "lucide-react";
+
 
 // Simulated data fetcher (replace with real API later)
 const fetchFolderContents = async (

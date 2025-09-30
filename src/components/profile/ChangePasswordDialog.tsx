@@ -6,13 +6,10 @@ import {
 	DialogContent,
 	DialogHeader,
 	DialogTitle,
-	DialogFooter,
-	DialogClose,
 } from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Eye, EyeOff, Lock } from "lucide-react";
+import { Eye, EyeOff } from "lucide-react";
 import Image from "next/image";
 
 type Values = { current: string; next: string; confirm: string };
@@ -21,12 +18,10 @@ export function ChangePasswordDialog({
 	open,
 	onOpenChange,
 	onSubmit,
-	loading = false,
 }: {
 	open: boolean;
 	onOpenChange: (v: boolean) => void;
 	onSubmit: (values: Values) => Promise<void> | void;
-	loading?: boolean;
 }) {
 	const [show, setShow] = React.useState<{ [k: string]: boolean }>({});
 	const [values, setValues] = React.useState<Values>({

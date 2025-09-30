@@ -21,7 +21,14 @@ import { TableSearch } from "@/components/card-table/table-search";
 import { CardTablePagination } from "@/components/card-table/card-table-pagination";
 import { useMemo, useState } from "react";
 
-const teamData = [
+interface TeamMember {
+	id: string;
+	name: string;
+	designation: string;
+	image: string;
+}
+
+const teamData: TeamMember[] = [
 	{
 		id: "1",
 		name: "Jocelyn Schleifer",
@@ -55,7 +62,7 @@ const teamData = [
 	// add more if needed for pagination testing
 ];
 
-const columnHelper = createColumnHelper<any>();
+const columnHelper = createColumnHelper<TeamMember>();
 
 const columns = [
 	columnHelper.accessor("id", {
@@ -73,7 +80,7 @@ const columns = [
 ];
 
 export default function Teams() {
-	const [query, setQuery] = useState("");
+	const [query] = useState("");
 	const [page, setPage] = useState(1);
 	const pageSize = 8;
 
