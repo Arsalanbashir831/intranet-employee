@@ -9,7 +9,6 @@ import {
 	getCoreRowModel,
 	useReactTable,
 } from "@tanstack/react-table";
-
 import {
 	Select,
 	SelectContent,
@@ -21,6 +20,7 @@ import { TableSearch } from "@/components/card-table/table-search";
 import { CardTablePagination } from "@/components/card-table/card-table-pagination";
 import { useMemo, useState } from "react";
 
+/* ---------------- Types & Data ---------------- */
 interface TeamMember {
 	id: string;
 	name: string;
@@ -59,23 +59,39 @@ const teamData: TeamMember[] = [
 		designation: "Software Engineer",
 		image: "/images/team-member-5.png",
 	},
-	// add more if needed for pagination testing
+	{
+		id: "6",
+		name: "Lindsey Dokidis",
+		designation: "Software Engineer",
+		image: "/images/team-member-6.png",
+	},
+	{
+		id: "7",
+		name: "Hanna Dias",
+		designation: "Software Engineer",
+		image: "/images/team-member-7.png",
+	},
+	{
+		id: "8",
+		name: "Ryan Gouse",
+		designation: "Software Engineer",
+		image: "/images/team-member-8.png",
+	},
 ];
 
 const columnHelper = createColumnHelper<TeamMember>();
-
 const columns = [
 	columnHelper.accessor("id", {
-		cell: (info) => info.getValue(),
 		header: () => <span>ID</span>,
+		cell: (i) => i.getValue(),
 	}),
 	columnHelper.accessor("name", {
-		cell: (info) => info.getValue(),
 		header: () => <span>Name</span>,
+		cell: (i) => i.getValue(),
 	}),
 	columnHelper.accessor("designation", {
-		cell: (info) => info.getValue(),
 		header: () => <span>Designation</span>,
+		cell: (i) => i.getValue(),
 	}),
 ];
 
@@ -84,35 +100,27 @@ export default function Teams() {
 	const [page, setPage] = useState(1);
 	const pageSize = 8;
 
-	// 🔎 Search filter
 	const filtered = useMemo(() => {
 		const q = query.trim().toLowerCase();
 		return q
-			? teamData.filter((a) => a.name.toLowerCase().includes(q))
+			? teamData.filter((m) => m.name.toLowerCase().includes(q))
 			: teamData;
 	}, [query]);
 
-	// 📄 Pagination math
 	const pageCount = Math.max(1, Math.ceil(filtered.length / pageSize));
 	const pageItems = filtered.slice((page - 1) * pageSize, page * pageSize);
 
-	// ⚡ Table setup with manual pagination
 	const table = useReactTable({
 		data: filtered,
 		columns,
 		getCoreRowModel: getCoreRowModel(),
 		pageCount,
 		manualPagination: true,
-		state: {
-			pagination: {
-				pageIndex: page - 1,
-				pageSize,
-			},
-		},
+		state: { pagination: { pageIndex: page - 1, pageSize } },
 		onPaginationChange: (updater) => {
 			if (typeof updater === "function") {
-				const newState = updater({ pageIndex: page - 1, pageSize });
-				setPage(newState.pageIndex + 1);
+				const next = updater({ pageIndex: page - 1, pageSize });
+				setPage(next.pageIndex + 1);
 			} else {
 				setPage(updater.pageIndex + 1);
 			}
@@ -120,8 +128,7 @@ export default function Teams() {
 	});
 
 	return (
-		<div>
-			{/* Page Header */}
+		<div className="min-h-screen bg-[#F8F8F8]">
 			<PageHeader
 				title="Teams"
 				crumbs={[
@@ -130,19 +137,32 @@ export default function Teams() {
 				]}
 			/>
 
-			<div className="p-6">
-				{/* Main Content Card */}
-				<div className="bg-white rounded-2xl shadow-sm p-6">
-					<h1 className="text-3xl font-bold mb-6">My Team</h1>
+			{/* Page rails and breathing room (matches figma spacing at all widths) */}
+			<main
+				className="
+    mx-auto w-full
+ 
+    px-4 sm:px-6 md:px-8 lg:px-10
+    min-[1440px]:px-12 min-[1920px]:px-16 min-[2560px]:px-24
+  
+    py-6 sm:py-8 lg:py-10
+    min-[1440px]:py-12 min-[1920px]:py-14 min-[2560px]:py-16
+    max-w-[1180px] sm:max-w-[1240px] md:max-w-[1320px] lg:max-w-[1360px]
+    min-[1440px]:max-w-[1400px]
+    min-[1920px]:max-w-[1680px]
+    min-[2560px]:max-w-[1920px]
+  ">
+				<section className="bg-white rounded-2xl shadow-sm p-6 sm:p-6 lg:p-8">
+					<h1 className="text-[22px] sm:text-2xl md:text-3xl font-semibold text-[#1F2937]">
+						My Team
+					</h1>
 
-					{/* Search + Filters */}
-					<div className="flex flex-col md:flex-row md:items-center mb-6 gap-4">
-						{/* Search */}
+					{/* Controls row */}
+					<div className="mt-4 flex flex-col gap-3 md:flex-row md:items-center">
 						<div className="flex-1 max-w-sm">
 							<TableSearch placeholder="Search by Name" />
 						</div>
 
-						{/* Filters */}
 						<div className="flex flex-wrap gap-3">
 							<Select>
 								<SelectTrigger className="w-40">
@@ -179,26 +199,34 @@ export default function Teams() {
 						</div>
 					</div>
 
-					{/* Cards Grid */}
-					<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-						{pageItems.map((member) => (
-							<Link key={member.id} href={`/teams/${member.id}`}>
+					{/* Cards grid: 1 / 2 / 3 / 4 columns. At xl, cards lock to 320×500 like Figma. */}
+					<div
+						className="
+    mt-6 grid
+    grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4
+    gap-6
+    justify-items-center
+  ">
+						{pageItems.map((m) => (
+							<Link key={m.id} href={`/teams/${m.id}`}>
 								<TeamsCard
-									image={member.image}
-									name={member.name}
-									designation={member.designation}
+									image={m.image}
+									name={m.name}
+									designation={m.designation}
 									description="There are many variations of passages of Lorem Ipsum available."
+									className="xl:w-[320px] xl:h-[370px]"
+									topClassName="aspect-[4/3] sm:aspect-[16/10] xl:aspect-auto xl:h-[230px]"
 								/>
 							</Link>
 						))}
 					</div>
 
-					{/* Pagination */}
-					<div className="flex items-center justify-end mt-6">
+					{/* Pagination aligned to the right */}
+					<div className="mt-6 flex items-center justify-end">
 						<CardTablePagination table={table} />
 					</div>
-				</div>
-			</div>
+				</section>
+			</main>
 		</div>
 	);
 }

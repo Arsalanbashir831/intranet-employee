@@ -20,6 +20,7 @@ interface PolicyCardProps {
 	badgeLines?: BadgeItem[];
 	className?: string; // ✅ now used
 	imgClassName?: string; // ✅ now used
+	topClassName?: string;
 }
 
 export default function FeatureCard({
@@ -32,6 +33,7 @@ export default function FeatureCard({
 	badgeLines,
 	className,
 	imgClassName,
+	topClassName,
 }: PolicyCardProps) {
 	// Approximate original proportion: 247 / 450 ≈ 0.55
 	const topRatio = 0.55;
@@ -85,7 +87,7 @@ export default function FeatureCard({
 			)}
 
 			{/* Top (Image area) */}
-			<div className="relative w-full h-full">
+			<div className="relative w-full aspect-[4/3] sm:aspect-auto [430px]:h-[180px] lg:aspect-auto">
 				{image ? (
 					<Image
 						src={image}

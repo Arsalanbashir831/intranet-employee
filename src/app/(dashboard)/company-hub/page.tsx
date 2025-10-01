@@ -13,21 +13,20 @@ import {
 import { CardTableToolbar } from "@/components/card-table/card-table-toolbar";
 import { CardTablePagination } from "@/components/card-table/card-table-pagination";
 import { useSearchParams, useRouter, usePathname } from "next/navigation";
-// ---- Types ----
+
+/* ---------------- Types ---------------- */
 interface CompanyHubItem {
 	id: string;
 	title: string;
 	description: string;
 }
-
 interface Announcement extends CompanyHubItem {
 	image: string;
 	badgeLines: [string, string, string];
 }
-
 type Policy = CompanyHubItem;
 
-// ---- Mock data ----
+/* ---------------- Mock Data ---------------- */
 const ALL_ANNOUNCEMENTS: Announcement[] = [
 	{
 		id: "1",
@@ -87,47 +86,46 @@ const ALL_ANNOUNCEMENTS: Announcement[] = [
 	},
 ];
 
-// Example policies dataset
 const ALL_POLICIES: Policy[] = [
 	{
 		id: "p1",
-		title: "Policy 1 ",
+		title: "Policy 1",
 		description:
-			"Delightful remarkably mr on announcing themselves entreaties favourable. ",
+			"Delightful remarkably mr on announcing themselves entreaties favourable.",
 	},
 	{
 		id: "p2",
-		title: "Policy 1 ",
+		title: "Policy 1",
 		description:
-			"Delightful remarkably mr on announcing themselves entreaties favourable. ",
+			"Delightful remarkably mr on announcing themselves entreaties favourable.",
 	},
 	{
 		id: "p3",
-		title: "Policy 1 ",
+		title: "Policy 1",
 		description:
-			"Delightful remarkably mr on announcing themselves entreaties favourable. ",
+			"Delightful remarkably mr on announcing themselves entreaties favourable.",
 	},
 	{
 		id: "p4",
-		title: "Policy 1 ",
+		title: "Policy 1",
 		description:
-			"Delightful remarkably mr on announcing themselves entreaties favourable. ",
+			"Delightful remarkably mr on announcing themselves entreaties favourable.",
 	},
 	{
 		id: "p5",
-		title: "Policy 1 ",
+		title: "Policy 1",
 		description:
-			"Delightful remarkably mr on announcing themselves entreaties favourable. ",
+			"Delightful remarkably mr on announcing themselves entreaties favourable.",
 	},
 	{
 		id: "p6",
-		title: "Policy 1 ",
+		title: "Policy 1",
 		description:
-			"Delightful remarkably mr on announcing themselves entreaties favourable. ",
+			"Delightful remarkably mr on announcing themselves entreaties favourable.",
 	},
 ];
 
-// ---- Table setup (shared for both) ----
+/* ---------------- Table scaffold (for pagination UI) ---------------- */
 const columnHelper = createColumnHelper<CompanyHubItem>();
 const columns = [
 	columnHelper.accessor("id", {
@@ -144,19 +142,18 @@ const columns = [
 	}),
 ];
 
+/* ---------------- Page ---------------- */
 export default function CompanyHub() {
 	const search = useSearchParams();
 	const router = useRouter();
 	const pathname = usePathname();
 
-	// ✅ initialize from URL or default
 	const urlTab =
 		(search.get("tab") as "announcements" | "policies") ?? "announcements";
 	const [activeTab, setActiveTab] = useState<"announcements" | "policies">(
 		urlTab
 	);
 
-	// ✅ sync if URL changes (back/forward)
 	useEffect(() => {
 		const next =
 			(search.get("tab") as "announcements" | "policies") ?? "announcements";
@@ -165,6 +162,8 @@ export default function CompanyHub() {
 
 	const [query, setQuery] = useState("");
 	const [page, setPage] = useState(1);
+
+	// Figma-like: 4 across on xl; 2 across on lg; 1 on small → page size 8 (2 rows of 4)
 	const pageSize = 8;
 
 	const dataSource: CompanyHubItem[] =
@@ -191,25 +190,20 @@ export default function CompanyHub() {
 		setQuery(value);
 		setPage(1);
 	};
-
-	const handleSortChange = () => {
-		setPage(1);
-	};
+	const handleSortChange = () => setPage(1);
 
 	const handleTabChange = (tabKey: string) => {
 		const t = tabKey as "announcements" | "policies";
 		setActiveTab(t);
 		setPage(1);
 		setQuery("");
-
-		// ✅ update query param
 		const qs = new URLSearchParams(search.toString());
 		qs.set("tab", t);
 		router.replace(`${pathname}?${qs.toString()}`, { scroll: false });
 	};
 
 	return (
-		<div>
+		<div className="min-h-screen bg-[#F8F8F8]">
 			<PageHeader
 				title="Company Hub"
 				crumbs={[
@@ -220,27 +214,40 @@ export default function CompanyHub() {
 					{ key: "announcements", label: "Announcements" },
 					{ key: "policies", label: "Policies" },
 				]}
-				activeTab={activeTab} // controlled
-				onTabChange={handleTabChange} // update state + URL
+				activeTab={activeTab}
+				onTabChange={handleTabChange}
 			/>
 
-			<div className="mx-auto md:max-w-[420px] lg:max-w-[786px] xl:max-w-[1400px] p-4 md:p-6">
-				<div className="bg-white rounded-lg shadow-sm p-6">
-					<CardTableToolbar
-						title={activeTab === "announcements" ? "Announcements" : "Policies"}
-						placeholder="Search"
-						onSearchChange={handleSearchChange}
-						onSortChange={handleSortChange}
-						sortOptions={[
-							{ label: "Title", value: "title" },
-							{ label: "Date", value: "date" },
-						]}
-						activeSort="title"
-						className="flex sm:flex-col sm:items-start"
-					/>
+			{/* Page rails + top/bottom breathing room */}
+			<main
+				className="
+      mx-auto w-full
+      px-4 sm:px-6 md:px-8 lg:px-10 xl:px-12 2xl:px-16
+      py-6 sm:py-8 lg:py-10
+      max-w-[1400px]
+    ">
+				{/* White panel with equal padding on every side */}
+				<section className="bg-white rounded-2xl shadow-sm p-6 sm:p-6 lg:p-8">
+					{/* Keep internal vertical rhythm consistent */}
+					<div className="space-y-6">
+						{/* Toolbar (no margins here) */}
+						<CardTableToolbar
+							title={
+								activeTab === "announcements" ? "Announcements" : "Policies"
+							}
+							placeholder="Search"
+							onSearchChange={handleSearchChange}
+							onSortChange={handleSortChange}
+							sortOptions={[
+								{ label: "Title", value: "title" },
+								{ label: "Date", value: "date" },
+							]}
+							activeSort="title"
+							className="flex sm:flex-col sm:items-start"
+						/>
 
-					<section className="mt-6">
-						<div className="grid gap-5 grid-cols-1 sm:grid-cols-1 lg:grid-cols-2 xl:grid-cols-4">
+						{/* Grid with equal gutters */}
+						<div className="grid auto-rows-fr min-w-0 grid-cols-1 sm:grid-cols lg:grid-cols-3 xl:grid-cols-4 gap-6 justify-items-stretch xl:justify-items-center">
 							{pageItems.map((item) =>
 								activeTab === "announcements" ? (
 									<FeatureCard
@@ -249,34 +256,37 @@ export default function CompanyHub() {
 										title={item.title}
 										description={item.description}
 										badgeLines={(item as Announcement).badgeLines}
-										link={`/company-hub/${item.id}`}
-										width={320}
-										height={500}
+										className="w-full xl:max-w-[320px] xl:h-[500px]"
+										topClassName="aspect-[4/3] sm:aspect-[16/10] xl:aspect-auto xl:h-[180px]"
+										imgClassName="object-cover"
 									/>
 								) : (
 									<FeatureCard
 										key={item.id}
 										title={item.title}
 										description={item.description}
-										link={`/company-hub/${item.id}`}
-										width={320}
-										height={450}
+										className="w-full xl:max-w-[320px] xl:h-[500px]"
+										topClassName="aspect-[4/3] sm:aspect-[16/10] xl:aspect-auto xl:h-[180px]"
+										imgClassName="object-cover"
 									/>
 								)
 							)}
+
+							{/* keep full rows on last page (optional) */}
 							{Array.from({
 								length: Math.max(0, pageSize - pageItems.length),
 							}).map((_, i) => (
-								<div key={`spacer-${i}`} className="hidden lg:block" />
+								<div key={`spacer-${i}`} className="hidden xl:block" />
 							))}
 						</div>
-					</section>
 
-					<div className="flex items-center justify-end mt-6">
-						<CardTablePagination table={table} />
+						{/* Pagination aligned right with the same vertical spacing as above */}
+						<div className="flex items-center justify-end">
+							<CardTablePagination table={table} />
+						</div>
 					</div>
-				</div>
-			</div>
+				</section>
+			</main>
 		</div>
 	);
 }
