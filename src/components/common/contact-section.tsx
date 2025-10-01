@@ -13,26 +13,38 @@ export default function ContactSection() {
 	];
 
 	return (
-		<Card className="w-[390px] h-[130px] gap-0 rounded-[9px] shadow-sm bg-[#F9FEFF] ">
-			<CardContent className="flex flex-col items-center justify-center h-full gap-5 p-0">
+		<Card className="w-full max-w-[390px] rounded-lg shadow-sm bg-[#F9FEFF] gap-0 p-3 sm:p-4">
+			<CardContent className="p-0 flex flex-col items-center gap-3 sm:gap-4">
 				{/* Heading */}
-				<h2 className="text-lg font-semibold text-gray-800">Connect With Us</h2>
+				<h2 className="font-semibold text-gray-800 text-base sm:text-lg md:text-xl">
+					Connect With Us
+				</h2>
 
-				{/* Social Icons */}
-				<div className="flex items-center justify-center gap-5">
+				{/* Social Icons in one row */}
+				<div
+					className="
+            flex items-center justify-center
+            gap-2 sm:gap-3 md:gap-4   /* reduced gaps */
+            overflow-x-auto
+          ">
 					{socialLinks.map((link) => (
 						<a
 							key={link.id}
 							href={link.href}
 							target="_blank"
 							rel="noopener noreferrer"
-							className="flex items-center justify-center w-10 h-10 rounded-full hover:opacity-80 transition">
+							className="
+                flex items-center justify-center
+                w-8 h-8 sm:w-9 sm:h-9 md:w-10 md:h-10
+                rounded-full hover:opacity-80 transition
+                shrink-0
+              ">
 							<Image
 								src={link.icon}
 								alt={`${link.name} icon`}
-								width={43}
-								height={42}
-								className="object-contain"
+								width={28}
+								height={28}
+								className="object-contain w-4 h-4 sm:w-6 sm:h-6 md:w-10 md:h-10"
 							/>
 						</a>
 					))}

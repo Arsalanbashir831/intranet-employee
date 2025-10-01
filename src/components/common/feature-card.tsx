@@ -3,6 +3,7 @@
 import { Card } from "@/components/ui/card";
 import Image from "next/image";
 import Link from "next/link";
+import React from "react";
 
 type BadgeItem =
 	| string
@@ -14,9 +15,11 @@ interface PolicyCardProps {
 	title: string;
 	description: string;
 	link?: string;
-	width?: number | string;
-	height?: number | string;
+	width?: number | string; // optional: still supported
+	height?: number | string; // optional: still supported
 	badgeLines?: BadgeItem[];
+	className?: string; // ✅ now used
+	imgClassName?: string; // ✅ now used
 }
 
 export default function FeatureCard({
@@ -24,17 +27,21 @@ export default function FeatureCard({
 	title,
 	description,
 	link = "#",
-	width = 370,
-	height = 392,
+	width = "100%",
+	height, // if omitted, we’ll use responsive heights via classes
 	badgeLines,
+	className,
+	imgClassName,
 }: PolicyCardProps) {
-	const topHeight = Math.floor((247 / 450) * Number(height)); // keep proportional split
-	const bottomHeight = Number(height) - topHeight;
+	// Approximate original proportion: 247 / 450 ≈ 0.55
+	const topRatio = 0.55;
+
+	// If explicit height provided, keep your old grid split (but use fr so it scales)
+	// Otherwise, use responsive height classes below.
+	const useInlineGridRows = Boolean(height);
 
 	const renderBadgeItem = (item: BadgeItem) => {
-		if (typeof item === "string" || typeof item === "number") {
-			return item;
-		}
+		if (typeof item === "string" || typeof item === "number") return item;
 		return (
 			<>
 				{item.front}
@@ -45,60 +52,78 @@ export default function FeatureCard({
 
 	return (
 		<Card
-			className="overflow-hidden relative"
+			className={[
+				"overflow-hidden relative grid",
+				!height &&
+					"h-[392px] sm:h-[420px]md:h-[460px] gap-0 lg:h-[500px] min-[1920px]:h-[560px] min-[2560px]:h-[640px]",
+				"grid-rows-[55%_45%]",
+				className || "",
+			]
+				.filter(Boolean)
+				.join(" ")}
 			style={{
+				// Keep supporting explicit width/height if supplied
 				width,
-				height,
-				display: "grid",
-				gridTemplateRows: `${topHeight}px ${bottomHeight}px`,
+				...(height ? { height } : {}),
+				...(useInlineGridRows
+					? { gridTemplateRows: `${topRatio}fr ${1 - topRatio}fr` }
+					: {}),
 			}}>
 			{/* Badge */}
 			{badgeLines && badgeLines.length === 3 && (
-				<div
-					className="absolute top-2 left-2 bg-white/60 backdrop-blur-sm rounded-sm shadow-md flex flex-col items-center justify-center px-2"
-					style={{ width: 60, height: 80 }}>
-					<span className="text-xl font-bold leading-tight">
+				<div className="absolute top-2 left-2 bg-white/60 backdrop-blur-sm rounded-sm shadow-md flex flex-col items-center justify-center px-2w-[60px] h-[80px] min-[1920px]:w-[68px] min-[1920px]:h-[90px] min-[2560px]:w-[76px] min-[2560px]:h-[100px]">
+					<span className="text-xl min-[1920px]:text-2xl font-bold leading-tight">
 						{renderBadgeItem(badgeLines[0])}
 					</span>
-					<span className="text-md font-bold leading-tight">
+					<span className="text-md min-[1920px]:text-lg font-bold leading-tight">
 						{renderBadgeItem(badgeLines[1])}
 					</span>
-					<span className="text-md font-bold leading-tight">
+					<span className="text-md min-[1920px]:text-lg font-bold leading-tight">
 						{renderBadgeItem(badgeLines[2])}
 					</span>
 				</div>
 			)}
 
-			{/* Top */}
-			{image ? (
-				<Image
-					src={image}
-					alt={title}
-					width={Number(width)}
-					height={topHeight}
-					className="object-cover w-full h-full"
-				/>
-			) : (
-				<div
-					className="flex items-center justify-center flex-shrink-0 bg-pink-50"
-					style={{ height: topHeight }}>
+			{/* Top (Image area) */}
+			<div className="relative w-full h-full">
+				{image ? (
 					<Image
-						src="/icons/document.svg"
-						alt="Default Icon"
-						width={120}
-						height={120}
-						className="object-contain"
+						src={image}
+						alt={title}
+						fill
+						sizes="(min-width:2560px) 20vw, (min-width:1920px) 25vw, (min-width:1024px) 30vw, 100vw"
+						className={["object-cover", imgClassName || ""]
+							.filter(Boolean)
+							.join(" ")}
+						priority={false}
 					/>
-				</div>
-			)}
+				) : (
+					<div className="flex items-center justify-center w-full h-full bg-pink-50">
+						<Image
+							src="/icons/document.svg"
+							alt="Default Icon"
+							width={120}
+							height={120}
+							className={["object-contain", imgClassName || ""]
+								.filter(Boolean)
+								.join(" ")}
+						/>
+					</div>
+				)}
+			</div>
 
-			{/* Bottom */}
-			<div
-				className="flex flex-col px-5 flex-shrink-0"
-				style={{ height: bottomHeight }}>
+			{/* Bottom (Content) */}
+			<div className="flex flex-col px-5 py-4 overflow-hidden">
 				<div className="space-y-3 overflow-hidden">
-					<h1 className="text-2xl font-semibold line-clamp-2">{title}</h1>
-					<p className="text-md text-gray-600 leading-snug line-clamp-3">
+					<h1
+						className="font-bold line-clamp-2 text-[clamp(1rem,1vw+0.75rem,2rem)] 
+            ">
+						{title}
+					</h1>
+
+					<p
+						className="text-gray-600 leading-snug line-clamp-3 text-[clamp(0.9rem,0.7vw+0.6rem,1.3rem)]
+            ">
 						{description}
 					</p>
 				</div>
@@ -106,7 +131,7 @@ export default function FeatureCard({
 				{link && (
 					<Link
 						href={link}
-						className="pt-5 text-sm font-medium text-pink-600 underline hover:text-pink-300">
+						className="mt-auto underline font-medium text-[#E5004E] hover:text-pink-300 text-[clamp(0.9rem,0.6vw+0.6rem,1rem)] min-[1920px]:text-[1.1rem]">
 						Read More
 					</Link>
 				)}
