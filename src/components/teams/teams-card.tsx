@@ -33,7 +33,7 @@ export default function TeamsCard({
 		<Wrapper {...(wrapperProps as any)}>
 			<Card
 				className={[
-					"overflow-hidden bg-white rounded-xl border border-gray-200 shadow-sm hover:shadow-md transition",
+					"overflow-hidden gap-0 !rounded-none bg-white border",
 					"flex flex-col w-full",
 					className || "",
 				].join(" ")}>

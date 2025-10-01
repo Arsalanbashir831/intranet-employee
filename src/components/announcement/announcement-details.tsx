@@ -19,14 +19,26 @@ export default function AnnouncementDetailCard({
 	announcement,
 }: AnnouncementDetailCardProps) {
 	return (
-		<div className="container mx-auto px-4 py-4 max-w-7xl">
-			{/* Page Header */}
+		<div className="container mx-auto px-4 py-6 max-w-7xl lg:px-8">
+			{/* Card with White Background */}
+			<div className="bg-white rounded-lg shadow-sm p-4 sm:p-6 lg:p-10">
+				{/* Section Header */}
+				<h1
+					className="
+            font-bold text-gray-800 pb-3
+            text-xl sm:text-2xl md:text-3xl lg:text-4xl
+            min-[1920px]:text-5xl min-[2560px]:text-6xl
+          ">
+					Announcement
+				</h1>
 
-			{/* Card with White Background and Rounded Corners */}
-			<div className="bg-white p-5 shadow-sm">
-				<h1 className="text-2xl font-bold text-gray-800 pb-2">Announcement</h1>
 				{/* Hero Image */}
-				<div className="w-full h-[300px] relative overflow-hidden mb-8">
+				<div
+					className="
+            w-full relative overflow-hidden rounded-md mb-6
+            h-[200px] sm:h-[300px] md:h-[400px] lg:h-[500px]
+            min-[1920px]:h-[600px] min-[2560px]:h-[700px] min-[3840px]:h-[800px]
+          ">
 					<Image
 						src={announcement.image}
 						alt={announcement.title}
@@ -35,27 +47,38 @@ export default function AnnouncementDetailCard({
 					/>
 				</div>
 
-				{/* Meta Row: Logo + Name + Date with Badge Below */}
+				{/* Meta Row */}
 				<div className="border-t border-b">
-					<div className="flex items-center py-2">
-						{/* Logo Circle */}
-						<div className="w-8 h-8 flex items-center justify-center">
+					<div className="flex items-center py-3 gap-3">
+						{/* Logo */}
+						<div className="w-10 h-10 sm:w-12 sm:h-12 flex items-center justify-center">
 							<Image
 								src="/images/logo-circle.png"
 								alt="Company Logo"
-								width={32}
-								height={32}
+								width={48}
+								height={48}
 								className="rounded-full"
 							/>
 						</div>
 
-						<div className="ml-2">
-							<h2 className="font-extrabold">CARTWRIGHT KING</h2>
-							<div className="flex items-center gap-1 text-sm text-gray-500">
+						<div>
+							<h2
+								className="
+                  font-extrabold
+                  text-sm sm:text-base md:text-lg lg:text-xl
+                  min-[1920px]:text-2xl
+                ">
+								CARTWRIGHT KING
+							</h2>
+							<div
+								className="
+                  flex items-center gap-1
+                  text-xs sm:text-sm md:text-base text-gray-500
+                ">
 								<Image
 									src="/icons/date-calendar.svg"
-									width={24}
-									height={24}
+									width={20}
+									height={20}
 									alt="Date"
 								/>
 								<span>{announcement.date}</span>
@@ -64,29 +87,41 @@ export default function AnnouncementDetailCard({
 					</div>
 				</div>
 
-				{/* Badge Below Logo Circle */}
-				<div className="border-b py-2">
-					<Badge className="bg-neutral font-extralight text-md text-gray-500">
+				{/* Badge */}
+				<div className="border-b py-3">
+					<Badge
+						className="
+              bg-neutral font-light text-gray-600
+              text-xs sm:text-sm md:text-base lg:text-lg
+            ">
 						{announcement.tag}
 					</Badge>
 				</div>
 
 				{/* Title */}
-				<div className="border-b py-5 mb-8">
-					<h1 className="text-3xl font-bold text-gray-900">
+				<div className="border-b py-6 mb-6">
+					<h1
+						className="
+              font-bold text-gray-900
+              text-2xl sm:text-3xl md:text-4xl lg:text-5xl
+              min-[1920px]:text-6xl min-[2560px]:text-7xl
+            ">
 						{announcement.title}
 					</h1>
 				</div>
 
 				{/* Content */}
-				<div className="text-gray-700 leading-relaxed space-y-6">
+				<div
+					className="
+            text-gray-700 leading-relaxed space-y-5
+            text-sm sm:text-base md:text-lg lg:text-xl
+            min-[1920px]:text-2xl min-[2560px]:text-[26px]
+          ">
 					{announcement.content
 						.split("\n\n")
 						.filter((p) => p.trim())
 						.map((paragraph, i) => (
-							<p key={i} className="text-base">
-								{paragraph.trim()}
-							</p>
+							<p key={i}>{paragraph.trim()}</p>
 						))}
 				</div>
 			</div>

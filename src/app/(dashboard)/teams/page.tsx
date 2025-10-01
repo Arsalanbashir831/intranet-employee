@@ -138,20 +138,7 @@ export default function Teams() {
 			/>
 
 			{/* Page rails and breathing room (matches figma spacing at all widths) */}
-			<main
-				className="
-    mx-auto w-full
- 
-    px-4 sm:px-6 md:px-8 lg:px-10
-    min-[1440px]:px-12 min-[1920px]:px-16 min-[2560px]:px-24
-  
-    py-6 sm:py-8 lg:py-10
-    min-[1440px]:py-12 min-[1920px]:py-14 min-[2560px]:py-16
-    max-w-[1180px] sm:max-w-[1240px] md:max-w-[1320px] lg:max-w-[1360px]
-    min-[1440px]:max-w-[1400px]
-    min-[1920px]:max-w-[1680px]
-    min-[2560px]:max-w-[1920px]
-  ">
+			<main className="mx-auto w-full px-4 sm:px-6 md:px-8 lg:px-10 min-[1440px]:px-12 min-[1920px]:px-16 min-[2560px]:px-24 py-6 sm:py-8 lg:py-10 min-[1440px]:py-12 min-[1920px]:py-14 min-[2560px]:py-16 max-w-[1180px] sm:max-w-[1240px] md:max-w-[1320px] lg:max-w-[1360px] min-[1440px]:max-w-[1400px] min-[1920px]:max-w-[1680px] min-[2560px]:max-w-[1920px]">
 				<section className="bg-white rounded-2xl shadow-sm p-6 sm:p-6 lg:p-8">
 					<h1 className="text-[22px] sm:text-2xl md:text-3xl font-semibold text-[#1F2937]">
 						My Team
@@ -200,24 +187,22 @@ export default function Teams() {
 					</div>
 
 					{/* Cards grid: 1 / 2 / 3 / 4 columns. At xl, cards lock to 320×500 like Figma. */}
-					<div
-						className="
-    mt-6 grid
-    grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4
-    gap-6
-    justify-items-center
-  ">
+					{/* Cards grid */}
+					<div className="mt-6 grid min-w-0 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 lg:gap-8 content-start">
 						{pageItems.map((m) => (
-							<Link key={m.id} href={`/teams/${m.id}`}>
-								<TeamsCard
-									image={m.image}
-									name={m.name}
-									designation={m.designation}
-									description="There are many variations of passages of Lorem Ipsum available."
-									className="xl:w-[320px] xl:h-[370px]"
-									topClassName="aspect-[4/3] sm:aspect-[16/10] xl:aspect-auto xl:h-[230px]"
-								/>
-							</Link>
+							<div key={m.id} className="w-full">
+								<Link href={`/teams/${m.id}`} className="block">
+									<TeamsCard
+										image={m.image}
+										name={m.name}
+										designation={m.designation}
+										description="There are many variations of passages of Lorem Ipsum available."
+										className="w-full mx-auto xl:max-w-[320px] xl:h-[370px]"
+										topClassName="relative w-full aspect-[4/3] sm:aspect-[16/10] xl:aspect-auto xl:h-[230px]"
+										imgClassName="object-cover"
+									/>
+								</Link>
+							</div>
 						))}
 					</div>
 

@@ -252,6 +252,7 @@ export default function CompanyHub() {
 								activeTab === "announcements" ? (
 									<FeatureCard
 										key={item.id}
+										link={`/company-hub/${item.id}`} // 👈 Add this
 										image={(item as Announcement).image}
 										title={item.title}
 										description={item.description}
@@ -263,6 +264,7 @@ export default function CompanyHub() {
 								) : (
 									<FeatureCard
 										key={item.id}
+										link={`/company-hub/${item.id}`} // 👈 Add this
 										title={item.title}
 										description={item.description}
 										className="w-full xl:max-w-[320px] xl:h-[500px]"
@@ -271,7 +273,6 @@ export default function CompanyHub() {
 									/>
 								)
 							)}
-
 							{/* keep full rows on last page (optional) */}
 							{Array.from({
 								length: Math.max(0, pageSize - pageItems.length),

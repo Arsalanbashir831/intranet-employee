@@ -1,12 +1,10 @@
+// app/(dashboard)/teams/[id]/page.tsx
+import { notFound } from "next/navigation";
 import { PageHeader } from "@/components/common/page-header";
 import { TeamsDetailsCard } from "@/components/teams/teams-details";
 import { ROUTES } from "@/hooks/constants/routes";
 
-interface Params {
-	params: {
-		id: string;
-	};
-}
+type PageProps = { params: Promise<{ id: string }> }; // 👈 params is a Promise
 
 const teamData = [
 	{
@@ -17,7 +15,7 @@ const teamData = [
 		city: "Lahore",
 		branch: "Lahore",
 		status: "ACTIVE",
-		bio: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident,sunt in culpa qui officia deserunt mollit anim id est laborum.",
+		bio: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua...",
 		profileImage: "/images/team-member-1.png",
 	},
 	{
@@ -28,16 +26,16 @@ const teamData = [
 		city: "Karachi",
 		branch: "Karachi",
 		status: "ACTIVE",
-		bio: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident,sunt in culpa qui officia deserunt mollit anim id est laborum.",
+		bio: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua...",
 		profileImage: "/images/team-member-2.png",
 	},
-	// Add more members
 ];
 
-export default function TeamSlug({ params }: Params) {
-	const member = teamData.find((m) => m.id === params.id);
+export default async function TeamSlug({ params }: PageProps) {
+	const { id } = await params; // 👈 Await params
+	const member = teamData.find((m) => String(m.id) === String(id));
 
-	if (!member) return <p>Team member not found.</p>;
+	if (!member) return notFound();
 
 	return (
 		<div>
