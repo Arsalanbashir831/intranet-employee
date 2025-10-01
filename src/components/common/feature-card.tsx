@@ -57,7 +57,7 @@ export default function FeatureCard({
 			className={[
 				"overflow-hidden relative grid",
 				!height &&
-					"h-[392px] sm:h-[420px]md:h-[460px] gap-0 lg:h-[500px] min-[1920px]:h-[560px] min-[2560px]:h-[640px]",
+					"h-[392px] sm:h-[420px] md:h-[400px] gap-0 ",
 				"grid-rows-[55%_45%]",
 				className || "",
 			]
@@ -73,7 +73,7 @@ export default function FeatureCard({
 			}}>
 			{/* Badge */}
 			{badgeLines && badgeLines.length === 3 && (
-				<div className="absolute top-2 left-2 bg-white/60 backdrop-blur-sm rounded-sm shadow-md flex flex-col items-center justify-center px-2w-[60px] h-[80px] min-[1920px]:w-[68px] min-[1920px]:h-[90px] min-[2560px]:w-[76px] min-[2560px]:h-[100px]">
+				<div className="absolute top-2 left-2 bg-white/60 backdrop-blur-sm rounded-sm shadow-md flex flex-col items-center justify-center px-2 w-[60px] h-[80px] min-[1920px]:w-[68px] min-[1920px]:h-[90px] min-[2560px]:w-[76px] min-[2560px]:h-[100px]">
 					<span className="text-xl min-[1920px]:text-2xl font-bold leading-tight">
 						{renderBadgeItem(badgeLines[0])}
 					</span>
@@ -118,13 +118,13 @@ export default function FeatureCard({
 			<div className="flex flex-col px-5 py-4 overflow-hidden">
 				<div className="space-y-3 overflow-hidden">
 					<h1
-						className="font-bold line-clamp-2 text-[clamp(1rem,1vw+0.75rem,2rem)] 
+						className=" text-gray-900  font-semibold text-base sm:text-lg md:text-xl line-clamp-2 text-[clamp(1rem,1vw+0.75rem,2rem)] 
             ">
 						{title}
 					</h1>
 
 					<p
-						className="text-gray-600 leading-snug line-clamp-3 text-[clamp(0.9rem,0.7vw+0.6rem,1.3rem)]
+						className="text-gray-600 text-md sm:text-sm md:text-md leading-snug line-clamp-3 text-[clamp(0.9rem,0.7vw+0.6rem,1.3rem)]
             ">
 						{description}
 					</p>

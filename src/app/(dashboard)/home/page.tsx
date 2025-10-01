@@ -66,14 +66,14 @@ export default function Home() {
 				{/* ANNOUNCEMENTS — consistent inner padding */}
 				<section className="bg-white rounded-2xl shadow-sm p-6 sm:p-8 lg:p-10">
 					<div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
-						<h2 className="font-semibold leading-tight text-2xl sm:text-3xl md:text-4xl">
+						<h2 className="font-semibold leading-tight text-2xl sm:text-xl md:text-2xl">
 							Latest Announcements
 						</h2>
 						<Link
 							href="/company-hub"
-							className="flex items-center underline font-medium text-[#E5004E] text-sm sm:text-base md:text-lg">
+							className="flex items-center underline font-medium text-[#E5004E] text-sm sm:text-base md:text-md">
 							View More
-							<ArrowRight className="ml-1 w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6" />
+							<ArrowRight className="ml-1 w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-5" />
 						</Link>
 					</div>
 
@@ -98,7 +98,7 @@ export default function Home() {
 							{/* pull to edges, then push inner padding so first/last card align */}
 							<div className="-mx-6 sm:-mx-8 lg:-mx-10">
 								<div className="overflow-x-auto px-6 sm:px-8 lg:px-10">
-									<div className="flex gap-8">
+									<div className="flex gap-8 py-2">
 										{cards.map((c, i) => (
 											<div
 												key={`d-${i}`}

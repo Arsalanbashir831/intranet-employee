@@ -20,10 +20,10 @@ export default function BannerSection({
 	if (!isVisible) return null;
 
 	return (
-		<div className="w-full bg-teal-500 text-white px-4 py-3 sm:py-4 md:py-5 lg:py-6">
+		<div className="w-full bg-teal-500 text-white px-4 py-2">
 			{/* Full-width, always responsive container */}
 			<div className="w-full flex items-center justify-center relative">
-				<span className="text-sm sm:text-base md:text-lg lg:text-xl font-medium text-center">
+				<span className="text-sm  font-medium text-center">
 					{message}
 				</span>
 				<button
