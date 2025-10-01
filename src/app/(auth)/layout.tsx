@@ -1,35 +1,29 @@
+// app/(auth)/layout.tsx  (or wherever your AuthLayout lives)
 "use client";
+
+import RightAuthAside from "@/components/auth/RightAuthAside";
 import Image from "next/image";
 import * as React from "react";
 
 export default function AuthLayout({
-  children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
-  return (
-    <div className="min-h-screen bg-white flex flex-col lg:flex-row p-6 lg:p-8">
-      {/* Left side with logo and form */}
-      <div className="w-full lg:w-1/2 flex flex-col">
-        <div className="mb-8 lg:mb-0">
-          <Image src="/logo.svg" alt="Company Logo" width={231} height={85} />
-        </div>
-        <div className="flex-1 flex items-center justify-center">
-          {children}
-        </div>
-      </div>
+	children,
+}: Readonly<{ children: React.ReactNode }>) {
+	return (
+		<div className="min-h-screen bg-white grid grid-cols-1 lg:grid-cols-2">
+			{/* LEFT: logo + form */}
+			<section className="flex flex-col px-6 sm:px-8 lg:px-12 py-6 lg:py-8">
+				<div className="mb-8">
+					<Image src="/logo.svg" alt="Company Logo" width={231} height={85} />
+				</div>
+				<div className="flex-1 flex items-center justify-center">
+					{children}
+				</div>
+			</section>
 
-      {/* Right side with image (only visible on lg and above) */}
-      <div className="hidden lg:flex w-1/2 items-center justify-center">
-        <div className="relative w-full h-full rounded-[24px] overflow-hidden">
-          <Image
-            src="/images/office-background.svg"
-            alt="Office background"
-            fill
-            className="object-cover"
-          />
-        </div>
-      </div>
-    </div>
-  );
+			{/* RIGHT: gradient panel (visible on lg+) */}
+			<section className="hidden lg:block">
+				<RightAuthAside />
+			</section>
+		</div>
+	);
 }
