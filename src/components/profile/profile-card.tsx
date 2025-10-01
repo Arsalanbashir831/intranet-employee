@@ -7,7 +7,6 @@ import { Badge } from "../ui/badge";
 import { Separator } from "../ui/separator";
 import { Textarea } from "../ui/textarea";
 import { Button } from "../ui/button";
-import Image from "next/image";
 import { ProfilePictureDialog } from "./ProfilePictureDialog";
 import { RichTextEditor } from "../common/rich-text-editor";
 
@@ -28,6 +27,28 @@ interface Employee {
 	bio: string;
 	profileImage: string;
 }
+
+type EmployeeInput = Partial<Employee> & {
+	full_name?: string;
+	emp_role?: string;
+	job_title?: string;
+	user_email?: string;
+	phone_number?: string;
+	join_date?: string | Date;
+	department_name?: string;
+	supervisor_name?: string;
+	user_city?: string;
+	branch_name?: string;
+	active?: boolean;
+	qualification_details?: string;
+	profile_picture_url?: string;
+	profile_picture?: string;
+	branch_detail?: {
+		department_detail?: {
+			name?: string;
+		};
+	};
+};
 interface EmployeeProfileCardProps {
 	employee?: Employee;
 	employeeId?: number | string;
@@ -54,7 +75,7 @@ const data = {
 };
 
 export function EmployeeProfileCard({ employee }: EmployeeProfileCardProps) {
-	const e: any = employee ?? data;
+	const e = (employee ?? data) as EmployeeInput;
 
 	const resolved: Employee = {
 		id: String(e.id ?? ""),

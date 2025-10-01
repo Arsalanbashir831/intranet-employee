@@ -1,4 +1,3 @@
-// app/(auth)/layout.tsx  (or wherever your AuthLayout lives)
 "use client";
 
 import RightAuthAside from "@/components/auth/RightAuthAside";

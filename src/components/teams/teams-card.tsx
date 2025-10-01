@@ -26,42 +26,38 @@ export default function TeamsCard({
 	topClassName,
 	imgClassName,
 }: Props) {
-	const Wrapper = href ? Link : React.Fragment;
-	const wrapperProps = href ? { href } : {};
-
-	return (
-		<Wrapper {...(wrapperProps as any)}>
-			<Card
+	const card = (
+		<Card
+			className={[
+				"overflow-hidden gap-0 !rounded-none bg-white border",
+				"flex flex-col w-full",
+				className || "",
+			].join(" ")}>
+			{/* Top image band */}
+			<div
 				className={[
-					"overflow-hidden gap-0 !rounded-none bg-white border",
-					"flex flex-col w-full",
-					className || "",
+					"relative w-full bg-gray-100",
+					topClassName || "aspect-[4/3] sm:aspect-[16/10] xl:h-[230px]",
 				].join(" ")}>
-				{/* Top image band */}
-				<div
-					className={[
-						"relative w-full bg-gray-100",
-						topClassName || "aspect-[4/3] sm:aspect-[16/10] xl:h-[230px]",
-					].join(" ")}>
-					<Image
-						src={image}
-						alt={name}
-						fill
-						className={["object-cover", imgClassName || ""].join(" ")}
-						sizes="(min-width:1280px) 310px, (min-width:1024px) 33vw, (min-width:640px) 50vw, 100vw"
-					/>
-				</div>
+				<Image
+					src={image}
+					alt={name}
+					fill
+					className={["object-cover", imgClassName || ""].join(" ")}
+					sizes="(min-width:1280px) 310px, (min-width:1024px) 33vw, (min-width:640px) 50vw, 100vw"
+				/>
+			</div>
 
-				{/* Body */}
-				<div className="p-4 flex-1 flex flex-col">
-					<h3 className="text-pink-600 text-lg font-semibold">{name}</h3>
-					<p className="text-teal-600 text-sm">{designation}</p>
+			{/* Body */}
+			<div className="p-4 flex-1 flex flex-col">
+				<h3 className="text-pink-600 text-lg font-semibold">{name}</h3>
+				<p className="text-teal-600 text-sm">{designation}</p>
 
-					<p className="text-gray-600 text-sm mt-2 line-clamp-3">
-						{description}
-					</p>
-				</div>
-			</Card>
-		</Wrapper>
+				<p className="text-gray-600 text-sm mt-2 line-clamp-3">{description}</p>
+			</div>
+		</Card>
 	);
+
+	// Instead of `Wrapper` with `any`, just conditionally wrap
+	return href ? <Link href={href}>{card}</Link> : card;
 }
