@@ -20,7 +20,13 @@ interface Task extends KanbanItemProps {
 	progress?: number;
 }
 
-export default function TaskChecklistDetails() {
+interface TaskChecklistDetailsProps {
+	heading?: string;
+}
+
+export default function TaskChecklistDetails({
+	heading = "Task Checklist",
+}: TaskChecklistDetailsProps) {
 	const [tasks, setTasks] = useState<Task[]>([
 		{
 			id: "1",
@@ -125,140 +131,152 @@ export default function TaskChecklistDetails() {
 	];
 
 	const handleCardClick = (task: Task) => {
-		console.log("Card clicked:", task.name); // Debug log
 		setSelectedTask(task);
-		setOpen(true); // Explicitly open the sheet
-		console.log("Open state set to:", true); // Debug log
+		setOpen(true);
 	};
 
 	return (
-		<div className="flex items-center p-5 justify-center min-h-screen bg-gray-100">
-			<div className="bg-white rounded-2xl shadow-md p-8 w-fit">
-				<h1 className="text-2xl font-bold text-gray-900 mb-6 text-left">
-					Task Checklist
-				</h1>
+		<div className="min-h-screen bg-gray-100">
+			{/* page rails */}
+			<div className="mx-auto w-full max-w-[1400px] px-4 sm:px-6 md:px-8 lg:px-10 py-5 sm:py-6">
+				<div className="bg-white rounded-2xl shadow-md p-4 sm:p-6 lg:p-8">
+					<h1 className="text-xl sm:text-2xl font-bold text-gray-900 mb-4 sm:mb-6">
+						{heading}
+					</h1>
 
-				<KanbanProvider<Task>
-					columns={columns}
-					data={tasks}
-					onDataChange={(newData) => setTasks(newData as Task[])}
-					className="flex gap-6 justify-center">
-					{(column) => (
-						<KanbanBoard
-							key={column.id}
-							id={column.id}
-							className={cn(
-								"flex flex-col px-1 py-3 rounded-lg min-h-[826px] w-[352px]",
-								column.id === "todo" &&
-									"border-2 border-dashed border-[#E5004E] bg-[#E5004E]/10",
-								column.id === "inprogress" &&
-									"border-2 border-dashed border-[#888DA7]/20 bg-white",
-								column.id === "done" &&
-									"border-2 border-dashed border-[#888DA7]/20 bg-white"
-							)}>
-							<KanbanHeader className="text-base font-semibold text-[#1C1D22]/50 mb-4 text-left border-none">
-								{column.name}
-							</KanbanHeader>
+					{/* ✅ Responsive grid: 1 column on mobile, 3 on md+ */}
+					<div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-5 lg:gap-6">
+						<KanbanProvider<Task>
+							columns={columns}
+							data={tasks}
+							onDataChange={(d) => setTasks(d as Task[])}
+							className="contents">
+							{(column) => (
+								<KanbanBoard
+									key={column.id}
+									id={column.id}
+									className={cn(
+										"rounded-xl px-2 py-3 min-h-[480px] sm:min-h-[600px] lg:min-h-[780px]",
+										column.id === "todo" &&
+											"border-2 border-dashed border-[#E5004E] bg-[#E5004E]/10",
+										column.id === "inprogress" &&
+											"border-2 border-dashed border-[#888DA7]/20 bg-white",
+										column.id === "done" &&
+											"border-2 border-dashed border-[#888DA7]/20 bg-white"
+									)}>
+									<KanbanHeader className="text-sm sm:text-base font-semibold text-[#1C1D22]/60 mb-3 sm:mb-4 border-none">
+										{column.name}
+									</KanbanHeader>
 
-							<KanbanCards id={column.id} className="flex flex-col gap-4">
-								{(task: KanbanItemProps) => (
-									<div key={task.id}>
-										<KanbanCard
-											key={task.id}
-											id={task.id}
-											name={task.name}
-											column={task.column}
-											onPointerUp={() => handleCardClick(task as Task)}>
-											{/* Card UI */}
-											<div>
-												<div className="flex flex-row items-center gap-2">
-													<div className="p-2 bg-white border rounded-[7px]">
-														<Image
-															src="icons/clipboard-primary.svg"
-															alt="clipboard"
-															width={26}
-															height={26}
-														/>
-													</div>
-													<div>
-														<h3 className="font-bold text-[15px] text-gray-900">
-															{(task as Task).name}
-														</h3>
-														<p className="text-xs text-gray-500">
-															{(task as Task).description}
-														</p>
-													</div>
-												</div>
-												<div className="flex items-center pt-5 text-gray-400">
-													<Image
-														src="/icons/todo.svg"
-														alt="todo"
-														width={12}
-														height={12}
-													/>
-													<span className="ml-1 text-xs font-medium">
-														{task.column === "todo" ? "To do" : "Progress"}
-													</span>
-												</div>
-												<div>
-													<div className="w-full bg-gray-200 rounded-full h-1.5 my-3">
+									<KanbanCards
+										id={column.id}
+										className="flex flex-col gap-3 sm:gap-4">
+										{(task: KanbanItemProps) => (
+											<div key={task.id}>
+												<KanbanCard
+													id={task.id}
+													name={task.name}
+													column={task.column}
+													onPointerUp={() => handleCardClick(task as Task)}
+													className="rounded-lg bg-white p-3 sm:p-4 cursor-pointer">
+													{/* Card UI */}
+													<div className="space-y-3">
+														<div className="flex items-center gap-2">
+															<div className="p-2 border bg-white rounded-md">
+																<Image
+																	src="/icons/clipboard-primary.svg"
+																	alt="clipboard"
+																	width={22}
+																	height={22}
+																/>
+															</div>
+															<div className="min-w-0">
+																<h3 className="font-semibold text-[14px] sm:text-[15px] text-gray-900 truncate">
+																	{(task as Task).name}
+																</h3>
+																<p className="text-xs text-gray-500 truncate">
+																	{(task as Task).description}
+																</p>
+															</div>
+														</div>
+
+														<div className="flex items-center text-gray-400">
+															<Image
+																src="/icons/todo.svg"
+																alt="todo"
+																width={12}
+																height={12}
+															/>
+															<span className="ml-1 text-xs font-medium">
+																{task.column === "todo"
+																	? "To do"
+																	: task.column === "inprogress"
+																	? "Progress"
+																	: "Done"}
+															</span>
+														</div>
+
+														{/* progress */}
+														<div className="w-full bg-gray-200 rounded-full h-1.5">
+															<div
+																className={cn(
+																	"h-1.5 rounded-full transition-[width]",
+																	task.column === "todo" && "bg-transparent",
+																	task.column === "inprogress" &&
+																		"bg-[#FFA048]",
+																	task.column === "done" && "bg-[#78D700]"
+																)}
+																style={{
+																	width:
+																		task.column === "done"
+																			? "100%"
+																			: task.column === "inprogress"
+																			? "60%"
+																			: "0%",
+																}}
+															/>
+														</div>
+
 														<div
 															className={cn(
-																"h-1.5 rounded-full",
-																task.column === "todo" && "bg-transparent",
-																task.column === "inprogress" && "bg-[#FFA048]",
-																task.column === "done" && "bg-[#78D700]"
-															)}
-															style={{
-																width:
-																	task.column === "done"
-																		? "100%"
-																		: task.column === "inprogress"
-																		? "60%"
-																		: "0%",
-															}}
-														/>
+																"w-[108px] h-[28px] flex items-center justify-center text-[11px] sm:text-xs font-medium rounded-full",
+																task.column === "todo" &&
+																	"text-[#FF7979]  bg-[#FF7979]/10",
+																task.column === "inprogress" &&
+																	"text-[#FFA048] bg-[#FFA048]/10",
+																task.column === "done" &&
+																	"text-[#888DA7] bg-[#888DA7]/10"
+															)}>
+															{(task as Task).date}
+														</div>
 													</div>
-												</div>
-												<div
-													className={cn(
-														"w-[108px] h-[30px] flex items-center justify-center text-xs font-medium rounded-full",
-														task.column === "todo" &&
-															" text-[#FF7979] bg-[#FF7979]/10",
-														task.column === "inprogress" &&
-															"text-[#FFA048] bg-[#FF7979]/10",
-														task.column === "done" &&
-															"text-[#888DA7] bg-[#888DA7]/10"
-													)}>
-													{(task as Task).date}
-												</div>
+												</KanbanCard>
 											</div>
-										</KanbanCard>
-									</div>
-								)}
-							</KanbanCards>
+										)}
+									</KanbanCards>
 
-							{column.id === "done" && (
-								<div className="flex flex-1 items-center justify-center">
-									<div className="w-[320px] h-[178px] flex items-center justify-center border-2 border-dashed border-[#888DA7]/50 text-[#888DA7] text-sm rounded-lg">
-										Drag your task here...
-									</div>
-								</div>
+									{column.id === "done" && (
+										<div className="mt-3 sm:mt-4 flex-1 flex items-center justify-center">
+											<div className="w-full h-[120px] sm:h-[150px] flex items-center justify-center border-2 border-dashed border-[#888DA7]/50 text-[#888DA7] text-xs sm:text-sm rounded-lg">
+												Drag your task here...
+											</div>
+										</div>
+									)}
+								</KanbanBoard>
 							)}
-						</KanbanBoard>
-					)}
-				</KanbanProvider>
+						</KanbanProvider>
+					</div>
+				</div>
 			</div>
 
+			{/* Drawer */}
 			<Sheet open={open} onOpenChange={setOpen}>
-				{/* Controlled sheet: show selectedTask data when open */}
-
 				{selectedTask && (
 					<ChecklistDrawerContent
-						title="Design new UI presentation"
-						subtitle="Dribbble marketing"
-						description="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. co laboris nisi ut aliquip ex ea commodo consequat."
-						date="25 Aug 2022"
+						title={selectedTask.name}
+						subtitle={selectedTask.description}
+						description="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt..."
+						date={selectedTask.date}
 					/>
 				)}
 			</Sheet>

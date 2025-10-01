@@ -5,329 +5,281 @@ import { Card } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { Badge } from "../ui/badge";
 import { Separator } from "../ui/separator";
-import { Textarea } from "../ui/textarea"; // ✅ Shadcn textarea
-import { Button } from "../ui/button"; // ✅ Shadcn button
-import Image from "next/image";
+import { Textarea } from "../ui/textarea";
+import { Button } from "../ui/button";
 import { ProfilePictureDialog } from "./ProfilePictureDialog";
 import { RichTextEditor } from "../common/rich-text-editor";
 
+/* ---------- Types ---------- */
 interface Employee {
-  id: string;
-  name: string;
-  role: string;
-  email: string;
-  phone: string;
-  joinDate: string;
-  department: string;
-  reportingTo: string;
-  address: string;
-  city: string;
-  branch: string;
-  status: string;
-  bio: string;
-  profileImage: string;
+	id: string;
+	name: string;
+	role: string;
+	email: string;
+	phone: string;
+	joinDate: string;
+	department: string;
+	reportingTo: string;
+	address: string;
+	city: string;
+	branch: string;
+	status: string;
+	bio: string;
+	profileImage: string;
 }
 
+type EmployeeInput = Partial<Employee> & {
+	full_name?: string;
+	emp_role?: string;
+	job_title?: string;
+	user_email?: string;
+	phone_number?: string;
+	join_date?: string | Date;
+	department_name?: string;
+	supervisor_name?: string;
+	user_city?: string;
+	branch_name?: string;
+	active?: boolean;
+	qualification_details?: string;
+	profile_picture_url?: string;
+	profile_picture?: string;
+	branch_detail?: {
+		department_detail?: {
+			name?: string;
+		};
+	};
+};
 interface EmployeeProfileCardProps {
-  employee?: Employee;
-  employeeId?: number | string;
+	employee?: Employee;
+	employeeId?: number | string;
 }
 
+/* ---------- Demo fallback ---------- */
 const data = {
-  id: 1,
-  name: "Brian F.",
-  role: "Designer",
-  email: "john.doe@example.com",
-  phone: "1234567890",
-  joinDate: "2021-01-01",
-  department: "Engineering",
-  reportingTo: "Brian F.",
-  address: "123 Main St",
-  city: "New York",
-  branch: "New York",
-  status: "Active Employee",
-  bio: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.",
-  profileImage: "https://via.placeholder.com/150",
-  qualification_details:
-    "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.",
-  profile_picture_url: "https://via.placeholder.com/150",
-  profile_picture: "https://via.placeholder.com/150",
-  active: true,
-  branch_detail: {
-    department_detail: {
-      name: "Engineering",
-    },
-  },
+	id: 1,
+	name: "Brian F.",
+	role: "Design",
+	email: "lindablair@mail.com",
+	phone: "050 414 8778",
+	joinDate: "2022-12-12",
+	department: "HR",
+	reportingTo: "Flores",
+	address: "3890 Poplar Dr.",
+	city: "Lahore",
+	branch: "Lahore",
+	status: "Active Employee",
+	bio: `Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.`,
+	profileImage: "https://via.placeholder.com/280",
+	active: true,
+	branch_detail: { department_detail: { name: "HR" } },
 };
 
 export function EmployeeProfileCard({ employee }: EmployeeProfileCardProps) {
-  const e: unknown = data ?? employee;
-  const resolved: Employee | null = e
-    ? {
-        id: String((e as { id?: number | string }).id ?? ""),
-        name:
-          (e as { full_name?: string; name?: string }).full_name ??
-          (e as { full_name?: string; name?: string }).name ??
-          "",
-        role:
-          (e as { emp_role?: string; job_title?: string }).emp_role ??
-          (e as { emp_role?: string; job_title?: string }).job_title ??
-          "",
-        email:
-          (e as { email?: string; user_email?: string }).email ??
-          (e as { email?: string; user_email?: string }).user_email ??
-          "",
-        phone:
-          (e as { phone?: string; phone_number?: string }).phone ??
-          (e as { phone?: string; phone_number?: string }).phone_number ??
-          "",
-        joinDate: (e as { join_date?: string }).join_date
-          ? new Date(
-              (e as { join_date?: string }).join_date!
-            ).toLocaleDateString()
-          : "",
-        department:
-          (e as { branch_detail?: { department_detail?: { name?: string } } })
-            .branch_detail?.department_detail?.name ??
-          (e as { department_name?: string; department?: string })
-            .department_name ??
-          (e as { department_name?: string; department?: string }).department ??
-          "",
-        reportingTo:
-          (e as { supervisor_name?: string; reportingTo?: string })
-            .supervisor_name ??
-          (e as { supervisor_name?: string; reportingTo?: string })
-            .reportingTo ??
-          "--",
-        address: (e as { address?: string }).address ?? "",
-        city:
-          (e as { user_city?: string; city?: string }).user_city ??
-          (e as { user_city?: string; city?: string }).city ??
-          "",
-        branch:
-          (e as { branch_name?: string; branch?: string }).branch_name ??
-          (e as { branch_name?: string; branch?: string }).branch ??
-          "",
-        status: (e as { active?: boolean }).active ? "ACTIVE" : "INACTIVE",
-        bio:
-          (e as { qualification_details?: string }).qualification_details ?? "",
-        profileImage:
-          (e as { profile_picture_url?: string; profile_picture?: string })
-            .profile_picture_url ??
-          (e as { profile_picture_url?: string; profile_picture?: string })
-            .profile_picture ??
-          "",
-      }
-    : null;
+	const e = (employee ?? data) as EmployeeInput;
 
-  const [isEditingBio, setIsEditingBio] = useState(false);
-  const [bio, setBio] = useState(resolved?.bio || "");
+	const resolved: Employee = {
+		id: String(e.id ?? ""),
+		name: e.full_name ?? e.name ?? "",
+		role: e.emp_role ?? e.job_title ?? e.role ?? "",
+		email: e.email ?? e.user_email ?? "",
+		phone: e.phone ?? e.phone_number ?? "",
+		joinDate: e.join_date
+			? new Date(e.join_date).toLocaleDateString()
+			: e.joinDate ?? "",
+		department:
+			e.branch_detail?.department_detail?.name ??
+			e.department_name ??
+			e.department ??
+			"",
+		reportingTo: e.supervisor_name ?? e.reportingTo ?? "--",
+		address: e.address ?? "",
+		city: e.user_city ?? e.city ?? "",
+		branch: e.branch_name ?? e.branch ?? "",
+		status: e.active === false ? "INACTIVE" : e.status ?? "Active Employee",
+		bio: e.qualification_details ?? e.bio ?? "",
+		profileImage:
+			e.profile_picture_url ?? e.profile_picture ?? e.profileImage ?? "",
+	};
 
-  if (!resolved) {
-    return (
-      <Card className="border-none rounded-lg shadow-[0px_4px_30px_0px_#2E2D740c] gap-0 p-8">
-        Loading...
-      </Card>
-    );
-  }
+	const [isEditingBio, setIsEditingBio] = useState(false);
+	const [bio, setBio] = useState(resolved.bio || "");
 
-  // Helper to render an icon from public/icons with brand color using CSS mask
-  const PublicIcon = ({ src }: { src: string }) => (
-    <span
-      className="size-4 bg-primary"
-      style={{
-        WebkitMaskImage: `url(${src})`,
-        maskImage: `url(${src})`,
-        WebkitMaskRepeat: "no-repeat",
-        maskRepeat: "no-repeat",
-        WebkitMaskPosition: "center",
-        maskPosition: "center",
-        WebkitMaskSize: "contain",
-        maskSize: "contain",
-        display: "inline-block",
-      }}
-    />
-  );
+	// Pink masked icon helper
+	const PinkIcon = ({ src, size = 18 }: { src: string; size?: number }) => (
+		<span
+			aria-hidden
+			className="inline-block bg-[#E5004E]"
+			style={{
+				width: size,
+				height: size,
+				WebkitMaskImage: `url(${src})`,
+				maskImage: `url(${src})`,
+				WebkitMaskRepeat: "no-repeat",
+				maskRepeat: "no-repeat",
+				WebkitMaskPosition: "center",
+				maskPosition: "center",
+				WebkitMaskSize: "contain",
+				maskSize: "contain",
+			}}
+		/>
+	);
 
-  return (
-    <Card className="border-none mx-auto my w-[1374px] h-[617px] rounded-lg shadow-[0px_4px_30px_0px_#2E2D740c] gap-0">
-      {/* Profile Header Section */}
-      <div className="px-8 py-6">
-        <div className="flex flex-col md:flex-row items-start w-full gap-6">
-          {/* Profile Picture + Edit */}
-          <div className="relative">
-            <Avatar className="size-36">
-              <AvatarImage src={resolved.profileImage} alt={resolved.name} />
-              <AvatarFallback className="text-lg font-semibold bg-gray-100 text-gray-600">
-                {resolved.name
-                  .split(" ")
-                  .map((n) => n[0])
-                  .join("")}
-              </AvatarFallback>
-            </Avatar>
-            {/* Edit button bottom-right */}
-            <ProfilePictureDialog
-              image={resolved.profileImage}
-              name={resolved.name}
-            />
+	return (
+		<div className="w-full bg-[#F8F8F8] py-4 sm:py-6 lg:py-8">
+			<Card
+				className="
+          mx-auto w-full max-w-[1200px]
+          rounded-2xl border-0 bg-white
+          shadow-[0_8px_30px_rgba(0,0,0,0.06)]
+          px-4 sm:px-6 lg:px-8 py-4 sm:py-6 lg:py-7
+        ">
+				{/* Top row */}
+				<div className="grid grid-cols-1 md:grid-cols-[auto_1fr] gap-4 sm:gap-6">
+					{/* Left: Avatar + name/role + status + edit pic */}
+					<div className="flex items-start gap-4 sm:gap-5">
+						<div className="relative">
+							<Avatar className="size-20 sm:size-24 md:size-28">
+								<AvatarImage src={resolved.profileImage} alt={resolved.name} />
+								<AvatarFallback className="bg-gray-100 text-gray-600 font-medium">
+									{resolved.name
+										.split(" ")
+										.map((n) => n[0])
+										.join("")}
+								</AvatarFallback>
+							</Avatar>
+							<ProfilePictureDialog
+								image={resolved.profileImage}
+								name={resolved.name}
+							/>
+						</div>
 
-            {/* <Button
-              size="icon"
-              variant="secondary"
-              className="absolute bottom-1 right-1 rounded-full bg-white shadow-md"
-            >
-              <Image src="/icons/edit.svg" width={24} height={24} alt="edit" />
-            </Button> */}
-          </div>
+						<div className="min-w-0">
+							<Badge className="bg-[#1A9882] text-white rounded-full px-3 py-1 text-xs">
+								{resolved.status}
+							</Badge>
 
-          {/* Info + Bio */}
-          <div className="flex flex-1 flex-col items-start mt-5 md:flex-row w-full">
-            {/* Left Side: Status, Name, Role */}
-            <div className="flex flex-col gap-2 min-w-[150px]">
-              <Badge
-                variant="secondary"
-                className="bg-[#1A9882] text-white rounded-full px-3 py-1 text-sm self-start whitespace-nowrap"
-              >
-                {resolved.status}
-              </Badge>
+							<div className="mt-2 text-[#111827] font-semibold">
+								{resolved.name}
+							</div>
+							<div className="text-sm text-[#6B7280]">{resolved.role}</div>
+						</div>
+					</div>
 
-              <h1 className="text-base font-semibold text-[#1D1F2C]">
-                {resolved.name}
-              </h1>
+					{/* Right: Bio with border and floating edit button */}
+					<div className="relative">
+						{isEditingBio ? (
+							<>
+								<RichTextEditor
+									content={bio}
+									onChange={setBio}
+									className="min-h-[140px] border border-[#E5E7EB] rounded-md bg-white"
+								/>
+								<div className="mt-2 flex justify-end gap-2">
+									<Button
+										variant="outline"
+										onClick={() => setIsEditingBio(false)}>
+										Cancel
+									</Button>
+									<Button
+										className="bg-[#E5004E] hover:bg-[#c90043] text-white"
+										onClick={() => setIsEditingBio(false)}>
+										Save
+									</Button>
+								</div>
+							</>
+						) : (
+							<>
+								<Textarea
+									value={bio}
+									readOnly
+									className="
+                    min-h-[120px] resize-none
+                    border border-[#E5E7EB] bg-white rounded-md
+                    text-[13px] sm:text-sm
+                  "
+								/>
+								<button
+									type="button"
+									onClick={() => setIsEditingBio(true)}
+									aria-label="Edit bio"
+									className="
+                    absolute -right-2 sm:right-0 -top-2 sm:-top-3
+                    size-8 rounded-full bg-white shadow-md ring-1 ring-black/5
+                    grid place-items-center
+                  ">
+									<PinkIcon src="/icons/edit.svg" />
+								</button>
+							</>
+						)}
+					</div>
+				</div>
 
-              <p className="text-sm text-[#667085]">{resolved.role}</p>
-            </div>
+				{/* Divider */}
+				<Separator className="my-5 sm:my-6 bg-[#E7E9EE]" />
 
-            {/* Right Side: Bio + Edit */}
-            <div className="flex-1 max-w-3xl flex items-end gap-1">
-              {isEditingBio ? (
-                <div className="w-full">
-                  {/* Rich Text Editor in edit mode */}
-                  <RichTextEditor
-                    content={bio} // ✅ Use content instead of value
-                    onChange={setBio}
-                    className="min-h-[120px] border border-gray-200 rounded-md"
-                  />
-
-                  {/* Action Buttons */}
-                  <div className="flex justify-end gap-2 mt-2">
-                    <Button
-                      variant="outline"
-                      onClick={() => setIsEditingBio(false)}
-                    >
-                      Cancel
-                    </Button>
-                    <Button
-                      className="bg-pink-600 hover:bg-pink-700 text-white"
-                      onClick={() => {
-                        // 🔥 Save bio logic here (API call)
-                        console.log("Updated bio:", bio);
-                        setIsEditingBio(false);
-                      }}
-                    >
-                      Save
-                    </Button>
-                  </div>
-                </div>
-              ) : (
-                <>
-                  {/* Readonly Bio View */}
-                  <Textarea
-                    value={bio}
-                    readOnly
-                    className="min-h-[120px] resize-none border-[#E2E8F0] bg-gray-50"
-                  />
-
-                  {/* Edit Button */}
-                  <Button
-                    size="icon"
-                    variant="secondary"
-                    className="rounded-full bg-white shadow-md"
-                    onClick={() => setIsEditingBio(true)}
-                  >
-                    <Image
-                      src="/icons/edit.svg"
-                      width={24}
-                      height={24}
-                      alt="edit"
-                    />
-                  </Button>
-                </>
-              )}
-            </div>
-          </div>
-        </div>
-
-        <Separator className="bg-[#E0E2E7] mt-6" />
-      </div>
-
-      <div className="p-8 pt-0">
-        {/* Details Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {[
-            {
-              iconSrc: "/icons/id-badge.svg",
-              label: "User ID",
-              value: resolved.id,
-            },
-            {
-              iconSrc: "/icons/envelope.svg",
-              label: "E-mail",
-              value: resolved.email,
-            },
-            {
-              iconSrc: "/icons/smartphone.svg",
-              label: "Phone Number",
-              value: resolved.phone,
-            },
-            {
-              iconSrc: "/icons/calendar.svg",
-              label: "Join Date",
-              value: resolved.joinDate,
-            },
-            {
-              iconSrc: "/icons/hierarchy.svg",
-              label: "Department",
-              value: resolved.department,
-            },
-            {
-              iconSrc: "/icons/manager.svg",
-              label: "Reporting to",
-              value: resolved.reportingTo,
-            },
-            {
-              iconSrc: "/icons/map-pin.svg",
-              label: "Address",
-              value: resolved.address,
-            },
-            {
-              iconSrc: "/icons/map-pin.svg",
-              label: "City",
-              value: resolved.city,
-            },
-            {
-              iconSrc: "/icons/branch.svg",
-              label: "Branch",
-              value: resolved.branch,
-            },
-          ].map((item, index) => (
-            <div key={index} className="flex items-center gap-3">
-              {/* Icon from public/icons */}
-              <div className="w-10 h-10 rounded-full bg-[#F0F1F3] grid place-items-center flex-shrink-0">
-                <PublicIcon src={item.iconSrc} />
-              </div>
-
-              {/* Content */}
-              <div className="flex-1 min-w-0">
-                <p className="text-sm text-[#667085] mb-1">{item.label}</p>
-                <p className="text-sm font-medium text-[#1D1F2C] truncate">
-                  {item.value}
-                </p>
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
-    </Card>
-  );
+				{/* Details grid */}
+				<div
+					className="
+            grid gap-x-6 gap-y-6
+            grid-cols-1 sm:grid-cols-2 lg:grid-cols-3
+          ">
+					{[
+						{
+							icon: "/icons/id-badge.svg",
+							label: "User ID",
+							value: `ID-${resolved.id}`,
+						},
+						{
+							icon: "/icons/envelope.svg",
+							label: "E-mail",
+							value: resolved.email,
+						},
+						{
+							icon: "/icons/smartphone.svg",
+							label: "Phone Number",
+							value: resolved.phone,
+						},
+						{
+							icon: "/icons/calendar.svg",
+							label: "Join Date",
+							value: resolved.joinDate,
+						},
+						{
+							icon: "/icons/hierarchy.svg",
+							label: "Department",
+							value: resolved.department,
+						},
+						{
+							icon: "/icons/manager.svg",
+							label: "Reporting to",
+							value: resolved.reportingTo,
+						},
+						{
+							icon: "/icons/map-pin.svg",
+							label: "Address",
+							value: resolved.address,
+						},
+						{ icon: "/icons/map-pin.svg", label: "City", value: resolved.city },
+						{
+							icon: "/icons/branch.svg",
+							label: "Branch",
+							value: resolved.branch,
+						},
+					].map((row) => (
+						<div key={row.label} className="flex items-start gap-3">
+							<div className="mt-0.5 size-9 rounded-full bg-[#FFE9F1] grid place-items-center">
+								<PinkIcon src={row.icon} />
+							</div>
+							<div className="min-w-0">
+								<div className="text-[12px] text-[#6B7280]">{row.label}</div>
+								<div className="text-[13px] sm:text-sm font-medium text-[#111827] truncate">
+									{row.value || "--"}
+								</div>
+							</div>
+						</div>
+					))}
+				</div>
+			</Card>
+		</div>
+	);
 }
