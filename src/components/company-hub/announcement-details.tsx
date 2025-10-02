@@ -19,18 +19,18 @@ export default function AnnouncementDetailCard({
 	announcement,
 }: AnnouncementDetailCardProps) {
 	return (
-		<div className="container mx-auto px-4 py-6 max-w-[1374px] lg:px-2">
+		<div className="container mx-auto px-4 py-6  lg:px-2">
 			{/* Card with White Background */}
 			<div className="bg-white rounded-lg shadow-sm p-4 sm:p-6 lg:p-5">
 				{/* Section Header */}
-				<h1
+				{/* <h1
 					className="
             font-bold text-gray-800 pb-3
             text-xl sm:text-2xl md:text-3xl lg:text-4xl
-            min-[1920px]:text-5xl min-[2560px]:text-6xl
+          
           ">
 					Announcement
-				</h1>
+				</h1> */}
 
 				{/* Hero Image */}
 				<div

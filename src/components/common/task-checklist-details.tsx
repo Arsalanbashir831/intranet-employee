@@ -138,14 +138,14 @@ export default function TaskChecklistDetails({
 	return (
 		<div className="min-h-screen bg-gray-100">
 			{/* page rails */}
-			<div className="mx-auto w-full max-w-[1400px] px-4 sm:px-6 md:px-8 lg:px-4 py-5 sm:py-6">
+			<div className="mx-auto w-full  px-4 sm:px-6 md:px-8 lg:px-4 py-5 sm:py-6">
 				<div className="bg-white rounded-2xl shadow-md p-4 sm:p-6 lg:p-5">
-					<h1 className="text-xl sm:text-2xl font-bold text-gray-900 mb-4 sm:mb-6">
+					<h1 className="text-xl font-semibold text-gray-900 mb-4 sm:mb-6">
 						{heading}
 					</h1>
 
 					{/* ✅ Responsive grid: 1 column on mobile, 3 on md+ */}
-					<div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-5 lg:gap-6">
+					<div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-5 lg:gap-6 max-h-[80vh] overflow-hidden">
 						<KanbanProvider<Task>
 							columns={columns}
 							data={tasks}
@@ -156,7 +156,7 @@ export default function TaskChecklistDetails({
 									key={column.id}
 									id={column.id}
 									className={cn(
-										"rounded-xl px-2 py-3 min-h-[480px] sm:min-h-[600px] lg:min-h-[780px]",
+										"rounded-xl px-2 py-3 h-full flex flex-col",
 										column.id === "todo" &&
 											"border-2 border-dashed border-[#E5004E] bg-[#E5004E]/10",
 										column.id === "inprogress" &&
@@ -168,9 +168,9 @@ export default function TaskChecklistDetails({
 										{column.name}
 									</KanbanHeader>
 
-									<KanbanCards
-										id={column.id}
-										className="flex flex-col gap-3 sm:gap-4">
+								<KanbanCards
+									id={column.id}
+									className="flex flex-col gap-3 sm:gap-4 flex-1 min-h-0 overflow-auto">
 										{(task: KanbanItemProps) => (
 											<div key={task.id}>
 												<KanbanCard

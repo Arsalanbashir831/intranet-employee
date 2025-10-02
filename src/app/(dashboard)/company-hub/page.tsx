@@ -222,9 +222,9 @@ export default function CompanyHub() {
 			<main
 				className="
       mx-auto w-full
-      px-4 sm:px-6 md:px-8 lg:px-10 xl:px-5 2xl:px-2
+      px-4 sm:px-6 md:px-8
       py-6 sm:py-8 lg:py-10
-      max-w-[1400px]
+    
     ">
 				{/* White panel with equal padding on every side */}
 				<section className="bg-white rounded-2xl shadow-sm p-6 sm:p-6 lg:p-5">
@@ -257,7 +257,7 @@ export default function CompanyHub() {
 										title={item.title}
 										description={item.description}
 										badgeLines={(item as Announcement).badgeLines}
-										className="w-full xl:max-w-[320px] xl:h-[500px]"
+										className="w-full "
 										imgClassName="object-cover"
 									/>
 								) : (
@@ -266,7 +266,7 @@ export default function CompanyHub() {
 										link={`/company-hub/${item.id}`} // 👈 Add this
 										title={item.title}
 										description={item.description}
-										className="w-full xl:max-w-[320px] xl:h-[500px]"
+										className="w-full "
 										imgClassName="object-cover"
 									/>
 								)
