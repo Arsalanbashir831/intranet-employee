@@ -152,7 +152,7 @@ export default function Teams() {
 
 						<div className="flex flex-wrap gap-3">
 							<Select>
-								<SelectTrigger className="w-40">
+								<SelectTrigger className="w-40 border border-gray-300 rounded-md">
 									<SelectValue placeholder="Expertise" />
 								</SelectTrigger>
 								<SelectContent>
@@ -163,7 +163,7 @@ export default function Teams() {
 							</Select>
 
 							<Select>
-								<SelectTrigger className="w-40">
+								<SelectTrigger className="w-40 border border-gray-300 rounded-md">
 									<SelectValue placeholder="Location" />
 								</SelectTrigger>
 								<SelectContent>
@@ -174,7 +174,7 @@ export default function Teams() {
 							</Select>
 
 							<Select>
-								<SelectTrigger className="w-40">
+								<SelectTrigger className="w-40 border border-gray-300 rounded-md">
 									<SelectValue placeholder="Role" />
 								</SelectTrigger>
 								<SelectContent>
