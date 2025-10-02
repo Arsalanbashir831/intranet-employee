@@ -119,23 +119,28 @@ export const KanbanCard = <T extends KanbanItemProps = KanbanItemProps>({
 				<Card
 					{...props}
 					className={cn(
-						"relative gap-4 rounded-md p-3 shadow-sm cursor-default",
+						"relative rounded-md p-3 shadow-sm cursor-default",
 						isDragging && "pointer-events-none cursor-grabbing opacity-30",
 						className
 					)}>
-					{/* Drag handle - inline (non-overlay). Clicks do not bubble */}
-					<div
-						{...listeners}
-						{...attributes}
-						onClick={(e) => e.stopPropagation()}
-						onPointerUp={(e) => e.stopPropagation()}
-						onMouseUp={(e) => e.stopPropagation()}
-						onTouchEnd={(e) => e.stopPropagation()}
-						className="mb-2 inline-flex items-center justify-center rounded-md w-8 h-8 bg-[#E5004E] text-white hover:opacity-90 cursor-grab touch-none select-none self-start">
-						<span aria-hidden className="text-lg leading-none">⋮⋮</span>
-						<span className="sr-only">Drag card</span>
+					<div className="flex items-start gap-3">
+						{/* Drag handle - inline (non-overlay). Clicks do not bubble */}
+						<button
+							{...listeners}
+							{...attributes}
+							type="button"
+							onClick={(e) => e.stopPropagation()}
+							onPointerUp={(e) => e.stopPropagation()}
+							onMouseUp={(e) => e.stopPropagation()}
+							onTouchEnd={(e) => e.stopPropagation()}
+							className="inline-flex items-center justify-center rounded-md w-8 h-8 bg-[#E5004E] text-white hover:opacity-90 cursor-grab touch-none select-none">
+							<span aria-hidden className="text-lg leading-none">⋮⋮</span>
+							<span className="sr-only">Drag card</span>
+						</button>
+						<div className="flex-1 min-w-0">
+							{children ?? <p className="m-0 font-medium text-sm">{name}</p>}
+						</div>
 					</div>
-					{children ?? <p className="m-0 font-medium text-sm">{name}</p>}
 				</Card>
 			</div>
 			{activeCardId === id && (
