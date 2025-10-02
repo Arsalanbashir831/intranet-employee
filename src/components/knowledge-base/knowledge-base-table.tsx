@@ -2,6 +2,7 @@
 "use client";
 
 import * as React from "react";
+import { usePathname } from "next/navigation";
 import { ColumnDef } from "@tanstack/react-table";
 import { CardTable } from "@/components/common/card-table/card-table";
 import { CardTableColumnHeader } from "@/components/common/card-table/card-table-column-header";
@@ -13,7 +14,7 @@ import { FolderIcon } from "lucide-react";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 
-// ✅ row type
+/* ---------------- Types ---------------- */
 export type KnowledgeBaseRow = {
 	id: string;
 	folder: string;
@@ -22,6 +23,17 @@ export type KnowledgeBaseRow = {
 	dateCreated: string; // YYYY-MM-DD
 };
 
+type Props = {
+	data?: KnowledgeBaseRow[];
+	title?: string;
+	viewMoreHref?: string;
+	limit?: number;
+	showToolbar?: boolean;
+	baseHref?: string;
+	className?: string;
+};
+
+/* --------------- Demo rows --------------- */
 const defaultRows: KnowledgeBaseRow[] = [
 	{
 		id: "1",
@@ -49,16 +61,7 @@ const defaultRows: KnowledgeBaseRow[] = [
 	},
 ];
 
-type Props = {
-	data?: KnowledgeBaseRow[];
-	title?: string;
-	viewMoreHref?: string;
-	limit?: number;
-	showToolbar?: boolean;
-	baseHref?: string;
-	className?: string; // merge external styles
-};
-
+/* --------------- Component --------------- */
 export function KnowledgeBaseTable({
 	data,
 	title = "Knowledge Base",
@@ -68,6 +71,36 @@ export function KnowledgeBaseTable({
 	baseHref = "/knowledge-base",
 	className,
 }: Props) {
+	const pathname = usePathname();
+
+	// Read first segment after baseHref and format it as "Folder 1"
+	const currentFolder = React.useMemo(() => {
+		if (!pathname) return undefined;
+
+		const base = baseHref.replace(/\/+$/, "");
+		const path = pathname.replace(/\/+$/, "");
+		if (!path.startsWith(base)) return undefined;
+
+		const rest = path.slice(base.length).replace(/^\/+/, "");
+		const seg = rest.split("/")[0] || "";
+		if (!seg) return undefined;
+
+		// Try URL decode; then normalize common separators to spaces
+		try {
+			const decoded = decodeURIComponent(seg);
+			return decoded.replace(/[-_]+/g, " ").replace(/\s+/g, " ").trim();
+		} catch {
+			return seg
+				.replace(/%20|#20/gi, " ")
+				.replace(/[-_]+/g, " ")
+				.replace(/\s+/g, " ")
+				.trim();
+		}
+	}, [pathname, baseHref]);
+
+	// If we're inside a folder, show exactly that name, otherwise the default title
+	const displayTitle = currentFolder ?? title;
+
 	const isControlled = data !== undefined;
 	const [sortedBy, setSortedBy] = React.useState<string>("folder");
 	const [internalData, setInternalData] = React.useState<KnowledgeBaseRow[]>(
@@ -102,7 +135,7 @@ export function KnowledgeBaseTable({
 					<FolderIcon className="size-4 sm:size-5 text-[#667085] shrink-0" />
 					<Link
 						href={`${baseHref}/${encodeURIComponent(row.original.folder)}`}
-						className="text-sm sm:text-[15px] text-[#1F2937] leading-none hover:underline hover:text-[#D64575] truncate"
+						className="text-sm sm:text-[15px] text-[#1F2937] leading-none hover:underline hover:text-[#E5004E] truncate"
 						title={row.original.folder}>
 						{row.original.folder}
 					</Link>
@@ -157,28 +190,31 @@ export function KnowledgeBaseTable({
 					Action
 				</span>
 			),
-			cell: ({ row }) => (
-				<Link
-					href={`${baseHref}/${encodeURIComponent(row.original.folder)}`}
-					className="hidden md:inline text-[#D64575] text-sm font-medium underline leading-none">
-					See Details
-				</Link>
-			),
+			cell: ({ row }) => {
+				const href = `${baseHref}/${encodeURIComponent(row.original.folder)}`;
+				const isOnKnowledgeBasePage = pathname === baseHref; // exact match
+
+				return (
+					<Link
+						href={href}
+						className="hidden md:inline text-[#D64575] text-sm font-medium underline leading-none">
+						{isOnKnowledgeBasePage ? "Download" : "See Details"}
+					</Link>
+				);
+			},
 		},
 	];
 
 	return (
 		<Card
 			className={cn(
-				// Base card styling
 				"shadow-none border-[#FFF6F6] p-4 sm:p-5 md:p-5",
-				// Make sure the card can shrink / grow within the wrapper (we’ll cap from outside)
 				"w-full h-full",
 				className
 			)}>
 			{showToolbar ? (
 				<CardTableToolbar
-					title={title}
+					title={displayTitle}
 					onSearchChange={() => {}}
 					sortOptions={[
 						{ label: "Folder", value: "folder" },
@@ -192,35 +228,32 @@ export function KnowledgeBaseTable({
 				/>
 			) : (
 				<div className="mb-3 sm:mb-4 flex items-center justify-between">
-					<h3 className="text-base sm:text-lg font-semibold">{title}</h3>
+					<h3 className="text-base sm:text-lg font-semibold">{displayTitle}</h3>
 					{viewMoreHref && (
 						<Link
 							href={viewMoreHref}
-							className="text-xs sm:text-sm font-medium text-[#D64575] underline">
+							className="text-xs sm:text-sm font-medium text-[#E5004E] underline">
 							View More
 						</Link>
 					)}
 				</div>
 			)}
 
-			{/* Scrollable table area when height is capped */}
 			<div className="overflow-y-auto pr-2 pb-2">
 				<CardTable<KnowledgeBaseRow, unknown>
 					columns={columns}
 					data={tableData}
-					// Responsive grid template: 1 col on xs (Folder only),
-					// add Created By at sm+, then Date/Action at md+
 					headerClassName="
-							grid-cols-[1fr]
-							sm:grid-cols-[1.1fr_0.9fr]
-							md:grid-cols-[1.2fr_1fr_0.9fr_0.7fr]
-						"
+            grid-cols-[1fr]
+            sm:grid-cols-[1.1fr_0.9fr]
+            md:grid-cols-[1.2fr_1fr_0.9fr_0.7fr]
+          "
 					rowClassName={() => `
-							hover:bg-[#FAFAFB]
-							grid-cols-[1fr]
-							sm:grid-cols-[1.1fr_0.9fr]
-							md:grid-cols-[1.2fr_1fr_0.9fr_0.7fr]
-						`}
+            hover:bg-[#FAFAFB]
+            grid-cols-[1fr]
+            sm:grid-cols-[1.1fr_0.9fr]
+            md:grid-cols-[1.2fr_1fr_0.9fr_0.7fr]
+          `}
 					footer={(table) =>
 						limit ? null : <CardTablePagination table={table} />
 					}

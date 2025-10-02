@@ -84,12 +84,8 @@ export default function TeamSection() {
 
 						{/* Right */}
 						<Link
-							href="#"
-							className="
-                underline font-medium text-[#E5004E]
-                text-xs sm:text-sm
-                flex-shrink-0
-              ">
+							href={`/teams/${member.id}`}
+							className="underline font-medium text-[#E5004E] text-xs sm:text-sm flex-shrink-0">
 							View Profile
 						</Link>
 					</div>
