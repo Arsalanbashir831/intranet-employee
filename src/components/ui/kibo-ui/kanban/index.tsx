@@ -115,14 +115,26 @@ export const KanbanCard = <T extends KanbanItemProps = KanbanItemProps>({
 
 	return (
 		<>
-			<div style={style} {...listeners} {...attributes} ref={setNodeRef}>
+			<div style={style} ref={setNodeRef}>
 				<Card
 					{...props}
 					className={cn(
-						"cursor-grab gap-4 rounded-md p-3 shadow-sm",
+						"relative gap-4 rounded-md p-3 shadow-sm cursor-default",
 						isDragging && "pointer-events-none cursor-grabbing opacity-30",
 						className
 					)}>
+					{/* Drag handle - inline (non-overlay). Clicks do not bubble */}
+					<div
+						{...listeners}
+						{...attributes}
+						onClick={(e) => e.stopPropagation()}
+						onPointerUp={(e) => e.stopPropagation()}
+						onMouseUp={(e) => e.stopPropagation()}
+						onTouchEnd={(e) => e.stopPropagation()}
+						className="mb-2 inline-flex items-center justify-center rounded-md w-8 h-8 bg-[#E5004E] text-white hover:opacity-90 cursor-grab touch-none select-none self-start">
+						<span aria-hidden className="text-lg leading-none">⋮⋮</span>
+						<span className="sr-only">Drag card</span>
+					</div>
 					{children ?? <p className="m-0 font-medium text-sm">{name}</p>}
 				</Card>
 			</div>
