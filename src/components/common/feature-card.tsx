@@ -20,7 +20,6 @@ interface PolicyCardProps {
 	badgeLines?: BadgeItem[];
 	className?: string; // ✅ now used
 	imgClassName?: string; // ✅ now used
-	topClassName?: string;
 }
 
 export default function FeatureCard({
@@ -33,7 +32,6 @@ export default function FeatureCard({
 	badgeLines,
 	className,
 	imgClassName,
-	topClassName,
 }: PolicyCardProps) {
 	// Approximate original proportion: 247 / 450 ≈ 0.55
 	const topRatio = 0.55;
@@ -56,8 +54,7 @@ export default function FeatureCard({
 		<Card
 			className={[
 				"overflow-hidden relative grid",
-				!height &&
-					"h-[392px] sm:h-[420px] md:h-[400px] gap-0 ",
+				!height && "h-[392px] sm:h-[420px] md:h-[400px] gap-0 ",
 				"grid-rows-[55%_45%]",
 				className || "",
 			]

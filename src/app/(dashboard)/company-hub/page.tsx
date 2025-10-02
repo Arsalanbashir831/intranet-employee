@@ -258,7 +258,6 @@ export default function CompanyHub() {
 										description={item.description}
 										badgeLines={(item as Announcement).badgeLines}
 										className="w-full xl:max-w-[320px] xl:h-[500px]"
-										topClassName="aspect-[4/3] sm:aspect-[16/10] xl:aspect-auto xl:h-[180px]"
 										imgClassName="object-cover"
 									/>
 								) : (
@@ -268,7 +267,6 @@ export default function CompanyHub() {
 										title={item.title}
 										description={item.description}
 										className="w-full xl:max-w-[320px] xl:h-[500px]"
-										topClassName="aspect-[4/3] sm:aspect-[16/10] xl:aspect-auto xl:h-[180px]"
 										imgClassName="object-cover"
 									/>
 								)

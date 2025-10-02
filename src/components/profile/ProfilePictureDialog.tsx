@@ -1,8 +1,8 @@
 "use client";
 
-import React, { useCallback, useMemo, useRef, useState } from "react";
+import React, { useCallback, useRef, useState } from "react";
 import NextImage from "next/image";
-import Cropper from "react-easy-crop";
+import Cropper, { Area } from "react-easy-crop";
 
 import {
 	Dialog,
@@ -14,6 +14,7 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
+import { Input } from "../ui/input";
 
 /* ---------------------- Types ---------------------- */
 type Props = {
@@ -39,7 +40,7 @@ const readFileAsDataUrl = (file: File) =>
 
 const createImageEl = (src: string) =>
 	new Promise<HTMLImageElement>((resolve, reject) => {
-		const img = new window.Image(); // <-- use DOM Image, not next/image
+		const img = new window.Image();
 		img.crossOrigin = "anonymous";
 		img.onload = () => resolve(img);
 		img.onerror = reject;
@@ -72,7 +73,7 @@ async function cropToDataUrlAndFile(
 		rect.height
 	);
 
-	// 2) circle mask (avatar look)
+	// 2) circle mask
 	const size = Math.min(rect.width, rect.height);
 	const out = document.createElement("canvas");
 	out.width = size;
@@ -112,12 +113,7 @@ export function ProfilePictureDialog({
 	const [source, setSource] = useState<string | null>(null);
 	const [crop, setCrop] = useState<{ x: number; y: number }>({ x: 0, y: 0 });
 	const [zoom, setZoom] = useState(1);
-	const [croppedAreaPixels, setCroppedAreaPixels] = useState<{
-		width: number;
-		height: number;
-		x: number;
-		y: number;
-	} | null>(null);
+	const [croppedAreaPixels, setCroppedAreaPixels] = useState<Area | null>(null);
 
 	const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -129,16 +125,10 @@ export function ProfilePictureDialog({
 	};
 
 	const onCropComplete = useCallback(
-		(
-			_: any,
-			areaPixels: { x: number; y: number; width: number; height: number }
-		) => setCroppedAreaPixels(areaPixels),
+		(_croppedArea: Area, croppedAreaPixels: Area) => {
+			setCroppedAreaPixels(croppedAreaPixels);
+		},
 		[]
-	);
-
-	const disabledDone = useMemo(
-		() => !source || !croppedAreaPixels,
-		[source, croppedAreaPixels]
 	);
 
 	const handleDone = async () => {
@@ -220,7 +210,7 @@ export function ProfilePictureDialog({
 
 					{source && (
 						<div className="w-full px-4 -mt-2">
-							<input
+							<Input
 								type="range"
 								min={1}
 								max={3}
@@ -283,7 +273,7 @@ export function ProfilePictureDialog({
 						</div>
 					</div>
 
-					<input
+					<Input
 						ref={fileInputRef}
 						type="file"
 						accept="image/*"
@@ -302,7 +292,6 @@ export function ProfilePictureDialog({
 					<Button
 						className="w-1/2 bg-[#E5004E] hover:bg-pink-700 text-white"
 						onClick={handleDone}
-						disabled={!source || !croppedAreaPixels}
 						title={
 							!source || !croppedAreaPixels
 								? "Select & crop an image first"

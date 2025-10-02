@@ -6,13 +6,11 @@ import { PageHeader } from "@/components/common/page-header";
 import { ROUTES } from "@/hooks/constants/routes";
 import { KnowledgeBaseRow } from "@/components/knowledge-base/knowledge-base-table";
 
-
 // Simulated data fetcher (replace with real API later)
 const fetchFolderContents = async (
 	folderName: string
 ): Promise<KnowledgeBaseRow[]> => {
-	// In real app: return await api.get(`/folders/${folderName}/files`);
-	return [
+	const all: KnowledgeBaseRow[] = [
 		{
 			id: "1",
 			folder: "File 1",
@@ -29,12 +27,16 @@ const fetchFolderContents = async (
 		},
 		{
 			id: "3",
-			folder: "Folder 1",
+			folder: "Folder 2",
 			createdByName: "Cartwright King",
 			createdByAvatar: "",
 			dateCreated: "2024-07-26",
 		},
 	];
+	// pretend we're filtering by folder
+	return all.filter((r) =>
+		r.folder.toLowerCase().includes(folderName.toLowerCase())
+	);
 };
 
 export function KnowledgeBaseFolderView({

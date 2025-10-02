@@ -152,14 +152,14 @@ export function EmployeeProfileCard({ employee }: EmployeeProfileCardProps) {
 							<ProfilePictureDialog
 								image={resolved.profileImage}
 								name={resolved.name}
-								onSave={async ({ dataUrl, file }) => {
+								onSave={async ({ file }) => {
 									const fd = new FormData();
 									fd.append("file", file);
-									const res = await fetch("/api/profile/upload", {
-										method: "POST",
-										body: fd,
-									});
-									const { url } = await res.json();
+									// const res = await fetch("/api/profile/upload", {
+									// 	method: "POST",
+									// 	body: fd,
+									// });
+									// const { url } = await res.json();
 									// Update the state here with setProfileImage if you add one
 								}}
 								onDelete={async () => {

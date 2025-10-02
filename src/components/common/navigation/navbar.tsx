@@ -103,7 +103,6 @@ export function Navbar() {
 						<NavigationMenu>
 							<NavigationMenuList className="gap-6">
 								{navItems.map((item) => {
-									const active = isActive(item.href);
 									return (
 										<NavigationMenuItem key={item.href}>
 											<NavigationMenuLink asChild>
