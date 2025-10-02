@@ -1,4 +1,3 @@
-// components/common/page-header.tsx
 "use client";
 
 import * as React from "react";
@@ -57,9 +56,6 @@ export function PageHeader(props: PageHeaderProps) {
 		[tabs]
 	);
 
-	// track where the last change came from to avoid URL<->state ping-pong
-	const lastSetRef = React.useRef<"url" | "local" | null>(null);
-
 	// read from URL only if syncing
 	const tabFromUrl = syncTabWithQuery ? search.get(queryKey) : null;
 
@@ -79,39 +75,12 @@ export function PageHeader(props: PageHeaderProps) {
 		if (!syncTabWithQuery || activeTab !== undefined) return;
 		const urlKey = search.get(queryKey);
 		if (isValidTab(urlKey) && urlKey !== internalTab) {
-			// ignore if this exact value was set locally right before
-			if (lastSetRef.current === "local") {
-				lastSetRef.current = null;
-				return;
-			}
-			lastSetRef.current = "url";
 			setInternalTab(String(urlKey));
 		}
 	}, [syncTabWithQuery, activeTab, search, queryKey, isValidTab, internalTab]);
 
-	// if tabs change and current disappears, fall back
-	React.useEffect(() => {
-		const cur = currentValue;
-		if (!isValidTab(cur)) {
-			const fallback =
-				(isValidTab(defaultTab) ? defaultTab : undefined) ?? firstTabKey;
-			if (activeTab === undefined) setInternalTab(fallback);
-			if (syncTabWithQuery) {
-				startTransition(() => {
-					const qs = new URLSearchParams(search.toString());
-					qs.set(queryKey, fallback);
-					router.replace(`${pathname}?${qs.toString()}`, { scroll: false });
-				});
-			}
-			onTabChange?.(fallback);
-		}
-		// react only to structural changes
-		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [tabs.map((t) => t.key).join("|")]);
-
 	const handleChange = (value: string) => {
 		if (activeTab === undefined) {
-			lastSetRef.current = "local";
 			setInternalTab(value);
 		}
 		onTabChange?.(value);
@@ -122,7 +91,6 @@ export function PageHeader(props: PageHeaderProps) {
 				router.replace(`${pathname}?${qs.toString()}`, { scroll: false });
 			});
 		}
-		// scroll active trigger into view smoothly
 		requestAnimationFrame(() => {
 			const el = document.querySelector<HTMLButtonElement>(
 				`[data-tab-trigger="${CSS.escape(value)}"]`

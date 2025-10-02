@@ -35,9 +35,7 @@ const teamMembers: TeamMember[] = [
 
 export default function TeamSection() {
 	return (
-		<Card
-			className="
-        w-full max-w-[494px] bg-[#F9FFFF] rounded-lg p-3 gap-0 sm:p-4 md:p-5 flex flex-col max-h-[269px]">
+		<Card className="w-full bg-[#F9FFFF] rounded-lg p-3 gap-0 sm:p-4 md:p-5 flex flex-col max-h-[269px] min-h-[269px] overflow-hidden">
 			{/* Header */}
 			<div className="flex items-center justify-between mb-3 sm:mb-4">
 				<h2
@@ -60,11 +58,7 @@ export default function TeamSection() {
 			</div>
 
 			{/* Members (scroll area) */}
-			<div
-				className="
-          flex-1 overflow-y-auto pr-1
-          space-y-2
-        ">
+			<div className="flex-1 min-h-0 overflow-y-auto pr-1 space-y-2">
 				{teamMembers.map((member) => (
 					<div
 						key={member.id}

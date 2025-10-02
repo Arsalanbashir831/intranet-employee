@@ -16,8 +16,8 @@ import {
 	SelectTrigger,
 	SelectValue,
 } from "@/components/ui/select";
-import { TableSearch } from "@/components/card-table/table-search";
-import { CardTablePagination } from "@/components/card-table/card-table-pagination";
+import { TableSearch } from "@/components/common/card-table/table-search";
+import { CardTablePagination } from "@/components/common/card-table/card-table-pagination";
 import { useMemo, useState } from "react";
 
 /* ---------------- Types & Data ---------------- */

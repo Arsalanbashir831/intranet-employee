@@ -3,12 +3,12 @@
 
 import * as React from "react";
 import { ColumnDef } from "@tanstack/react-table";
-import { CardTable } from "@/components/card-table/card-table";
-import { CardTableColumnHeader } from "@/components/card-table/card-table-column-header";
+import { CardTable } from "@/components/common/card-table/card-table";
+import { CardTableColumnHeader } from "@/components/common/card-table/card-table-column-header";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Card } from "@/components/ui/card";
-import { CardTableToolbar } from "@/components/card-table/card-table-toolbar";
-import { CardTablePagination } from "@/components/card-table/card-table-pagination";
+import { CardTableToolbar } from "@/components/common/card-table/card-table-toolbar";
+import { CardTablePagination } from "@/components/common/card-table/card-table-pagination";
 import { FolderIcon } from "lucide-react";
 import Link from "next/link";
 import { cn } from "@/lib/utils";

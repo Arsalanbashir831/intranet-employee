@@ -13,6 +13,7 @@ import KnowledgeBaseTable from "@/components/knowledge-base/knowledge-base-table
 import { ArrowRight } from "lucide-react";
 import Link from "next/link";
 import ContactSection from "@/components/common/contact-section";
+import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 
 const cards = [
 	{
@@ -71,7 +72,7 @@ export default function Home() {
           space-y-[calc(var(--gap)*1.25)]
         ">
 				{/* ============ Announcements (desktop = horizontal scroll) ============ */}
-				<section className="bg-white rounded-2xl shadow-sm overflow-hidden p-[calc(var(--gap)*1.25)]">
+				<section className="bg-white rounded-2xl overflow-hidden p-[calc(var(--gap)*1.25)]">
 					<div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-[var(--gap)]">
 						<h2 className="font-semibold leading-tight text-2xl sm:text-xl md:text-2xl">
 							Latest Announcements
@@ -99,37 +100,27 @@ export default function Home() {
 					</div>
 
 					{/* Desktop+: true horizontal scroller with edge alignment, no right gap */}
+					{/* Desktop+: horizontal scroll ONLY for cards */}
 					<div className="mt-[var(--gap)] hidden lg:block">
-						{/* pull content to the section edges */}
-						<div className="-mx-[calc(var(--gap)*1.25)]">
-							{/* push equal padding back inside the scroll area */}
-							<div
-								className="
-                  overflow-x-auto px-[calc(var(--gap)*1.25)]
-                  scroll-smooth
-                  [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden
-                ">
-								<div className="flex gap-[var(--gap)] py-1 snap-x">
-									{cards.map((c, i) => (
-										<div
-											key={`d-${i}`}
-											className="
-                        flex-shrink-0 snap-start
-                        w-[360px] xl:w-[380px]
-                      ">
-											<FeatureCard
-												image={c.image}
-												title={c.title}
-												link={`/company-hub/${c.id}`}
-												description={c.description}
-												badgeLines={c.badgeLines}
-												className="w-full h-full"
-											/>
-										</div>
-									))}
-								</div>
+						<ScrollArea className="w-full">
+							<div className="flex gap-[var(--gap)] py-1 snap-x snap-mandatory pr-[calc(var(--gap)*1.25)]">
+								{cards.map((c, i) => (
+									<div
+										key={`d-${i}`}
+										className="flex-shrink-0 snap-start w-[360px] xl:w-[380px]">
+										<FeatureCard
+											image={c.image}
+											title={c.title}
+											link={`/company-hub/${c.id}`}
+											description={c.description}
+											badgeLines={c.badgeLines}
+											className="w-full h-full"
+										/>
+									</div>
+								))}
 							</div>
-						</div>
+							<ScrollBar orientation="horizontal" className="mt-[var(--gap)]" />
+						</ScrollArea>
 					</div>
 				</section>
 
@@ -186,13 +177,13 @@ export default function Home() {
 
 							{/* Knowledge Base */}
 							<div className="w-full">
-								<div className="rounded-xl overflow-hidden">
+								<div className="rounded-xl h-[315px] overflow-hidden">
 									<KnowledgeBaseTable
 										showToolbar={false}
-										limit={4} // shows four; rest via "View More"
+										limit={30}
 										viewMoreHref="/knowledge-base"
 										baseHref="/knowledge-base"
-										className="bg-[#F9FFFF] gap-0 w-full h-full p-[calc(var(--gap)*0.75)]"
+										className="bg-[#F9FFFF] gap-0 w-full h-full"
 									/>
 								</div>
 							</div>

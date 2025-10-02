@@ -10,8 +10,8 @@ import {
 	getCoreRowModel,
 	useReactTable,
 } from "@tanstack/react-table";
-import { CardTableToolbar } from "@/components/card-table/card-table-toolbar";
-import { CardTablePagination } from "@/components/card-table/card-table-pagination";
+import { CardTableToolbar } from "@/components/common/card-table/card-table-toolbar";
+import { CardTablePagination } from "@/components/common/card-table/card-table-pagination";
 import { useSearchParams, useRouter, usePathname } from "next/navigation";
 
 /* ---------------- Types ---------------- */

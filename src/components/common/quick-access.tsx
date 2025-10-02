@@ -74,7 +74,7 @@ export default function QuickAccess() {
           mt-3
           hidden md:flex
           flex-wrap items-center
-          gap-5 md:gap-6 lg:gap-24 min-[1920px]:gap-9 min-[2560px]:gap-10
+          gap-5 md:gap-6 lg:gap-15 min-[1920px]:gap-9 min-[2560px]:gap-10
         ">
 				{quickAccessItems.map((item) => (
 					<button

@@ -31,7 +31,7 @@ const policies: Policy[] = [
 
 export default function RecentPolicies() {
 	return (
-		<Card className="w-full max-w-[448px] bg-[#F9FEFF] rounded-lg p-3 gap-0 sm:p-4 md:p-5 flex flex-col max-h-[268px]">
+		<Card className="w-full bg-[#F9FEFF] rounded-lg p-3 gap-0 sm:p-4 md:p-5 flex flex-col max-h-[268px] min-h-[268px] overflow-hidden">
 			{/* Header */}
 			<div className="flex items-center justify-between mb-3 sm:mb-4">
 				<h2 className="font-semibold text-gray-900 text-base sm:text-lg md:text-xl">
@@ -45,7 +45,7 @@ export default function RecentPolicies() {
 			</div>
 
 			{/* Policies list (scroll if overflow) */}
-			<div className="flex-1 overflow-y-auto space-y-3 pr-1">
+			<div className="flex-1 min-h-0 overflow-y-auto space-y-3 pr-1">
 				{policies.map((policy) => (
 					<div
 						key={policy.id}

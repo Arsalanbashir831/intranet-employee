@@ -42,8 +42,8 @@ export default function ContactSection() {
 							<Image
 								src={link.icon}
 								alt={`${link.name} icon`}
-								width={28}
-								height={28}
+								width={32}
+								height={32}
 								className="object-contain w-4 h-4 sm:w-6 sm:h-6 md:w-10 md:h-10"
 							/>
 						</a>

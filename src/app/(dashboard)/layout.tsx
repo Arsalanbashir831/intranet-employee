@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Navbar } from "@/components/layout/navbar";
+import { Navbar } from "@/components/common/navigation/navbar";
 import { Suspense } from "react";
 
 export const metadata: Metadata = {
