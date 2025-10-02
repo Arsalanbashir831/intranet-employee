@@ -222,12 +222,12 @@ export default function CompanyHub() {
 			<main
 				className="
       mx-auto w-full
-      px-4 sm:px-6 md:px-8 lg:px-10 xl:px-12 2xl:px-16
+      px-4 sm:px-6 md:px-8 lg:px-10 xl:px-5 2xl:px-2
       py-6 sm:py-8 lg:py-10
       max-w-[1400px]
     ">
 				{/* White panel with equal padding on every side */}
-				<section className="bg-white rounded-2xl shadow-sm p-6 sm:p-6 lg:p-8">
+				<section className="bg-white rounded-2xl shadow-sm p-6 sm:p-6 lg:p-5">
 					{/* Keep internal vertical rhythm consistent */}
 					<div className="space-y-6">
 						{/* Toolbar (no margins here) */}

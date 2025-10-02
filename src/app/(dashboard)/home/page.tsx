@@ -1,3 +1,4 @@
+// app/(dashboard)/home/page.tsx
 "use client";
 
 import BannerSection from "@/components/common/banner-section";
@@ -8,13 +9,14 @@ import Checklist from "@/components/common/checklist";
 import QuickAccess from "@/components/common/quick-access";
 import TeamSection from "@/components/teams/team-section";
 import RecentPolicies from "@/components/common/recent-policies";
-import ContactSection from "@/components/common/contact-section";
 import KnowledgeBaseTable from "@/components/knowledge-base/knowledge-base-table";
 import { ArrowRight } from "lucide-react";
 import Link from "next/link";
+import ContactSection from "@/components/common/contact-section";
 
 const cards = [
 	{
+		id: "1",
 		image: "/images/office-work.png",
 		title: "New technology awareness.",
 		description:
@@ -22,6 +24,7 @@ const cards = [
 		badgeLines: ["30", "Nov", "2021"],
 	},
 	{
+		id: "2",
 		image: "/images/office-work.png",
 		title: "Client meeting discussion.",
 		description:
@@ -29,6 +32,7 @@ const cards = [
 		badgeLines: ["04", "Dec", "2021"],
 	},
 	{
+		id: "3",
 		image: "/images/office-work.png",
 		title: "Fast growth for business",
 		description:
@@ -36,6 +40,7 @@ const cards = [
 		badgeLines: ["04", "Dec", "2021"],
 	},
 	{
+		id: "4",
 		image: "/images/office-work.png",
 		title: "Fourth Announcement",
 		description:
@@ -55,17 +60,19 @@ export default function Home() {
 					{ label: "Home", href: ROUTES.DASHBOARD.HOME },
 				]}
 			/>
-			{/* PAGE CONTAINER — same padding everywhere */}
+
+			{/* one gutter to rule them all */}
 			<main
 				className="
           mx-auto w-full
-          px-4 py-4 sm:px-6 md:px-8 lg:px-10 min-[1920px]:px-12 min-[2560px]:px-16
-          max-w-[95rem] lg:max-w-[110rem] min-[2560px]:max-w-[140rem]
-          space-y-8 sm:space-y-10 lg:space-y-12 min-[1920px]:space-y-14
+          [--gap:1rem] sm:[--gap:1.125rem] lg:[--gap:1.25rem]
+          px-[calc(var(--gap)*1.5)] py-[calc(var(--gap)*1.5)]
+          max-w-[110rem] min-[2560px]:max-w-[140rem]
+          space-y-[calc(var(--gap)*1.25)]
         ">
-				{/* ANNOUNCEMENTS — consistent inner padding */}
-				<section className="bg-white rounded-2xl shadow-sm p-6 sm:p-8 lg:p-10">
-					<div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+				{/* ============ Announcements (desktop = horizontal scroll) ============ */}
+				<section className="bg-white rounded-2xl shadow-sm overflow-hidden p-[calc(var(--gap)*1.25)]">
+					<div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-[var(--gap)]">
 						<h2 className="font-semibold leading-tight text-2xl sm:text-xl md:text-2xl">
 							Latest Announcements
 						</h2>
@@ -77,59 +84,62 @@ export default function Home() {
 						</Link>
 					</div>
 
-					{/* Cards */}
-					<div className="mt-6">
-						{/* Mobile/Tablet grid (no x-scroll) */}
-						<div className="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8 lg:hidden">
-							{cards.map((c, i) => (
-								<FeatureCard
-									key={`m-${i}`}
-									image={c.image}
-									title={c.title}
-									description={c.description}
-									badgeLines={c.badgeLines}
-									className="w-full"
-								/>
-							))}
-						</div>
+					{/* Mobile / Tablet grid (no x-scroll) */}
+					<div className="mt-[var(--gap)] grid grid-cols-1 md:grid-cols-2 gap-[var(--gap)] lg:hidden">
+						{cards.map((c, i) => (
+							<FeatureCard
+								key={`m-${i}`}
+								image={c.image}
+								title={c.title}
+								description={c.description}
+								badgeLines={c.badgeLines}
+								className="w-full"
+							/>
+						))}
+					</div>
 
-						{/* Desktop+ horizontal scroller with edge alignment */}
-						<div className="hidden lg:block">
-							{/* pull to edges, then push inner padding so first/last card align */}
-							<div className="-mx-6 sm:-mx-8 lg:-mx-10">
-								<div className="overflow-x-auto px-6 sm:px-8 lg:px-10">
-									<div className="flex gap-8 py-2">
-										{cards.map((c, i) => (
-											<div
-												key={`d-${i}`}
-												className="flex-shrink-0 w-[340px] md:w-[360px] lg:w-[380px]">
-												<FeatureCard
-													image={c.image}
-													title={c.title}
-													description={c.description}
-													badgeLines={c.badgeLines}
-													className="w-full h-full"
-												/>
-											</div>
-										))}
-									</div>
+					{/* Desktop+: true horizontal scroller with edge alignment, no right gap */}
+					<div className="mt-[var(--gap)] hidden lg:block">
+						{/* pull content to the section edges */}
+						<div className="-mx-[calc(var(--gap)*1.25)]">
+							{/* push equal padding back inside the scroll area */}
+							<div
+								className="
+                  overflow-x-auto px-[calc(var(--gap)*1.25)]
+                  scroll-smooth
+                  [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden
+                ">
+								<div className="flex gap-[var(--gap)] py-1 snap-x">
+									{cards.map((c, i) => (
+										<div
+											key={`d-${i}`}
+											className="
+                        flex-shrink-0 snap-start
+                        w-[360px] xl:w-[380px]
+                      ">
+											<FeatureCard
+												image={c.image}
+												title={c.title}
+												link={`/company-hub/${c.id}`}
+												description={c.description}
+												badgeLines={c.badgeLines}
+												className="w-full h-full"
+											/>
+										</div>
+									))}
 								</div>
 							</div>
 						</div>
 					</div>
 				</section>
 
-				{/* BOTTOM SECTION — consistent gaps */}
-				<section className="pb-7">
+				{/* ======================= Bottom area ======================= */}
+				<section className="pb-[calc(var(--gap)*1.5)]">
 					<div
-						className="
-              grid w-full
-              grid-cols-1
-              md:grid-cols-[32%_60%] lg:grid-cols-[30%_65%] xl:grid-cols-[28%_70%]
-              gap-6 sm:gap-8 lg:gap-10 min-[1920px]:gap-12
-            ">
+						className="grid w-full grid-cols-1 md:grid-cols-[390px_minmax(0,1fr)]
+            gap-[var(--gap)]">
 						{/* Left column */}
-						<div className="flex flex-col gap-6 sm:gap-8 lg:gap-10">
+						<div className="flex flex-col gap-[calc(var(--gap)*0.9)] w-full">
 							<Checklist
 								title="Task Checklist"
 								viewMoreLink="/task-checklist"
@@ -144,18 +154,28 @@ export default function Home() {
 							<Checklist
 								title="Training Checklist"
 								viewMoreLink="/training-checklist"
-								tasks={[]}
+								tasks={[
+									"Follow the instructions and report everything properly",
+									"Complete all assigned tasks on time",
+									"Attend the scheduled team meeting promptly",
+									"Update the documentation as per guidelines",
+									"Submit the weekly report before Friday",
+								]}
 							/>
-							<ContactSection />
+							{/* keep your contact block */}
+							<div>
+								{/* ContactSection keeps its own padding */}
+								<ContactSection />
+							</div>
 						</div>
 
 						{/* Right column */}
-						<div className="flex flex-col gap-5	">
+						<div className="flex flex-col gap-[calc(var(--gap)*0.9)] w-full">
 							<div className="w-full">
 								<QuickAccess />
 							</div>
 
-							<div className="grid grid-cols-1 sm:grid-cols-2 gap-6 sm:gap-8 lg:gap-10 auto-rows-fr">
+							<div className="grid grid-cols-1 sm:grid-cols-2 gap-[var(--gap)] auto-rows-fr">
 								<section className="w-full overflow-hidden rounded-xl">
 									<TeamSection />
 								</section>
@@ -164,15 +184,15 @@ export default function Home() {
 								</section>
 							</div>
 
-							{/* Knowledge Base — size cap + full width inside */}
+							{/* Knowledge Base */}
 							<div className="w-full">
-								<div className="max-w-[950px] h-[231px] rounded-xl overflow-hidden">
+								<div className="rounded-xl overflow-hidden">
 									<KnowledgeBaseTable
 										showToolbar={false}
-										limit={4}
+										limit={4} // shows four; rest via "View More"
 										viewMoreHref="/knowledge-base"
 										baseHref="/knowledge-base"
-										className="bg-[#F9FFFF] gap-0 w-full h-full"
+										className="bg-[#F9FFFF] gap-0 w-full h-full p-[calc(var(--gap)*0.75)]"
 									/>
 								</div>
 							</div>

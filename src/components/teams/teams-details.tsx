@@ -57,10 +57,10 @@ export function TeamsDetailsCard({ employee }: EmployeeProfileCardProps) {
 	);
 
 	return (
-		<div className="min-h-[1px] w-full bg-[#F8F8F8] py-5 sm:py-6 lg:py-8">
+		<div className="min-h-[1px] w-full bg-[#F8F8F8] py-5 sm:py-6 lg:py-5">
 			{/* Page rails (no touching page edges) */}
-			<main className="mx-auto w-full max-w-[1400px] px-4 sm:px-6 md:px-8">
-				<Card className="bg-white border-none rounded-2xl shadow-[0_8px_30px_rgba(0,0,0,0.06)] p-4 sm:p-6 lg:p-8">
+			<main className="mx-auto w-full max-w-[1400px] px-4 sm:px-6 md:px-4">
+				<Card className="bg-white border-none rounded-2xl shadow-[0_8px_30px_rgba(0,0,0,0.06)] p-4 sm:p-6 lg:p-5">
 					{/* Slug Header */}
 					<h2 className="text-lg sm:text-xl font-semibold text-gray-800 mb-4 sm:mb-6">
 						My Team

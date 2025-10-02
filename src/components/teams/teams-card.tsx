@@ -29,7 +29,7 @@ export default function TeamsCard({
 	const card = (
 		<Card
 			className={[
-				"overflow-hidden gap-0 !rounded-none bg-white border",
+				"overflow-hidden gap-0 !rounded-none bg-white",
 				"flex flex-col w-full",
 				className || "",
 			].join(" ")}>

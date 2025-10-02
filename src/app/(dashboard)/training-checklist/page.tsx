@@ -1,6 +1,6 @@
 import { PageHeader } from "@/components/common/page-header";
 import { ROUTES } from "@/hooks/constants/routes";
-import TaskChecklistDeatils from "@/components/task/task-checklist-details";
+import TaskChecklistDeatils from "@/components/common/task-checklist-details";
 
 export default function TrainingChecklist() {
 	return (

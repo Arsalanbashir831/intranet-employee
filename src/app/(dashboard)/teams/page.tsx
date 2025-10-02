@@ -138,14 +138,14 @@ export default function Teams() {
 			/>
 
 			{/* Page rails and breathing room (matches figma spacing at all widths) */}
-			<main className="mx-auto w-full px-4 sm:px-6 md:px-8 lg:px-10 min-[1440px]:px-12 min-[1920px]:px-16 min-[2560px]:px-24 py-6 sm:py-8 lg:py-10 min-[1440px]:py-12 min-[1920px]:py-14 min-[2560px]:py-16 max-w-[1180px] sm:max-w-[1240px] md:max-w-[1320px] lg:max-w-[1360px] min-[1440px]:max-w-[1400px] min-[1920px]:max-w-[1680px] min-[2560px]:max-w-[1920px]">
-				<section className="bg-white rounded-2xl shadow-sm p-6 sm:p-6 lg:p-8">
+			<main className="mx-auto w-full px-4 sm:px-6 md:px-8 lg:px-1 min-[1440px]:px-12 min-[1920px]:px-16 min-[2560px]:px-24 py-6 sm:py-8 lg:py-10 min-[1440px]:py-12 min-[1920px]:py-14 min-[2560px]:py-16 max-w-[1180px] sm:max-w-[1240px] md:max-w-[1320px] lg:max-w-[1360px] min-[1440px]:max-w-[1400px] min-[1920px]:max-w-[1680px] min-[2560px]:max-w-[1920px]">
+				<section className="bg-white rounded-2xl shadow-sm p-6 sm:p-6 lg:p-4">
 					<h1 className="text-[22px] sm:text-2xl md:text-3xl font-semibold text-[#1F2937]">
 						My Team
 					</h1>
 
 					{/* Controls row */}
-					<div className="mt-4 flex flex-col gap-3 md:flex-row md:items-center">
+					<div className="mt-4 flex flex-col gap-0 md:flex-row md:items-center">
 						<div className="flex-1 max-w-sm">
 							<TableSearch placeholder="Search by Name" />
 						</div>

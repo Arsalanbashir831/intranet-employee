@@ -1,6 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import React, { useCallback, useMemo, useRef, useState } from "react";
+import NextImage from "next/image";
+import Cropper from "react-easy-crop";
+
 import {
 	Dialog,
 	DialogContent,
@@ -11,33 +14,177 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
-import Image from "next/image";
 
+/* ---------------------- Types ---------------------- */
+type Props = {
+	image: string | null; // current profile image (can be null)
+	name: string;
+	onSave?: (payload: {
+		dataUrl: string; // cropped PNG data URL
+		file: File; // cropped PNG File (named)
+	}) => Promise<void> | void;
+	onDelete?: () => Promise<void> | void;
+	open?: boolean;
+	onOpenChange?: (open: boolean) => void;
+};
+
+/* ---------------------- Helpers ---------------------- */
+const readFileAsDataUrl = (file: File) =>
+	new Promise<string>((resolve, reject) => {
+		const reader = new FileReader();
+		reader.onload = () => resolve(String(reader.result));
+		reader.onerror = reject;
+		reader.readAsDataURL(file);
+	});
+
+const createImageEl = (src: string) =>
+	new Promise<HTMLImageElement>((resolve, reject) => {
+		const img = new window.Image(); // <-- use DOM Image, not next/image
+		img.crossOrigin = "anonymous";
+		img.onload = () => resolve(img);
+		img.onerror = reject;
+		img.src = src;
+	});
+
+/** Crop a square (circle-masked visually) and return PNG dataURL + File */
+async function cropToDataUrlAndFile(
+	imageSrc: string,
+	rect: { x: number; y: number; width: number; height: number },
+	fileName = "avatar.png"
+) {
+	const img = await createImageEl(imageSrc);
+
+	// 1) draw cropped rectangle
+	const cropCanvas = document.createElement("canvas");
+	cropCanvas.width = rect.width;
+	cropCanvas.height = rect.height;
+	const ctx = cropCanvas.getContext("2d");
+	if (!ctx) throw new Error("Canvas unsupported");
+	ctx.drawImage(
+		img,
+		rect.x,
+		rect.y,
+		rect.width,
+		rect.height,
+		0,
+		0,
+		rect.width,
+		rect.height
+	);
+
+	// 2) circle mask (avatar look)
+	const size = Math.min(rect.width, rect.height);
+	const out = document.createElement("canvas");
+	out.width = size;
+	out.height = size;
+	const octx = out.getContext("2d");
+	if (!octx) throw new Error("Canvas unsupported");
+	octx.beginPath();
+	octx.arc(size / 2, size / 2, size / 2, 0, Math.PI * 2);
+	octx.closePath();
+	octx.clip();
+	octx.drawImage(cropCanvas, (size - rect.width) / 2, (size - rect.height) / 2);
+
+	const dataUrl = out.toDataURL("image/png");
+	const res = await fetch(dataUrl);
+	const blob = await res.blob();
+	const file = new File([blob], fileName, { type: "image/png" });
+	return { dataUrl, file };
+}
+
+/* ---------------------- Component ---------------------- */
 export function ProfilePictureDialog({
 	image,
 	name,
-}: {
-	image: string;
-	name: string;
-}) {
-	const [preview] = useState(image);
+	onSave,
+	onDelete,
+	open,
+	onOpenChange,
+}: Props) {
+	const [internalOpen, setInternalOpen] = useState(false);
+	const isControlled = typeof open === "boolean";
+	const dialogOpen = isControlled ? open! : internalOpen;
+	const setDialogOpen = (v: boolean) =>
+		isControlled ? onOpenChange?.(v) : setInternalOpen(v);
+
+	const initialPreview = image ?? "";
+	const [preview, setPreview] = useState<string>(initialPreview);
+	const [source, setSource] = useState<string | null>(null);
+	const [crop, setCrop] = useState<{ x: number; y: number }>({ x: 0, y: 0 });
+	const [zoom, setZoom] = useState(1);
+	const [croppedAreaPixels, setCroppedAreaPixels] = useState<{
+		width: number;
+		height: number;
+		x: number;
+		y: number;
+	} | null>(null);
+
+	const fileInputRef = useRef<HTMLInputElement>(null);
+
+	const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+		const f = e.target.files?.[0];
+		if (!f) return;
+		const dataUrl = await readFileAsDataUrl(f);
+		setSource(dataUrl);
+	};
+
+	const onCropComplete = useCallback(
+		(
+			_: any,
+			areaPixels: { x: number; y: number; width: number; height: number }
+		) => setCroppedAreaPixels(areaPixels),
+		[]
+	);
+
+	const disabledDone = useMemo(
+		() => !source || !croppedAreaPixels,
+		[source, croppedAreaPixels]
+	);
+
+	const handleDone = async () => {
+		if (!source || !croppedAreaPixels) return;
+		const { dataUrl, file } = await cropToDataUrlAndFile(
+			source,
+			croppedAreaPixels,
+			"avatar.png"
+		);
+		setPreview(dataUrl);
+		await onSave?.({ dataUrl, file });
+		setDialogOpen(false);
+	};
+
+	const handleDelete = async () => {
+		setPreview("");
+		setSource(null);
+		setCroppedAreaPixels(null);
+		setZoom(1);
+		setCrop({ x: 0, y: 0 });
+		await onDelete?.();
+		setDialogOpen(false);
+	};
 
 	return (
-		<Dialog>
-			{/* Trigger Button */}
+		<Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+			{/* Trigger button on avatar corner */}
 			<DialogTrigger asChild>
 				<Button
 					size="icon"
 					variant="secondary"
-					className="absolute bottom-0 right-0 rounded-full bg-white shadow-md">
-					<Image src="/icons/edit.svg" width={19} height={18} alt="edit" />
+					className="absolute bottom-0 right-0 rounded-full bg-white shadow-md hover:bg-[#E5004E] group transition"
+					onClick={() => setDialogOpen(true)}>
+					<NextImage
+						src="/icons/edit.svg"
+						width={19}
+						height={18}
+						alt="edit"
+						className="transition group-hover:brightness-0 group-hover:invert"
+					/>
 				</Button>
 			</DialogTrigger>
 
-			{/* Dialog Content */}
 			<DialogContent className="max-w-md">
 				<DialogHeader className="flex flex-row items-center gap-2">
-					<Image
+					<NextImage
 						src="/icons/featured-icon.svg"
 						width={40}
 						height={40}
@@ -49,16 +196,51 @@ export function ProfilePictureDialog({
 				{/* Profile Preview */}
 				<div className="flex flex-col items-center justify-center gap-4 py-6">
 					<Avatar className="size-36">
-						<AvatarImage src={preview} alt={name} />
-						<AvatarFallback>{name[0]}</AvatarFallback>
+						<AvatarImage
+							src={source ? undefined : preview || "/images/blank.png"}
+							alt={name}
+						/>
+						{!source && <AvatarFallback>{name?.[0] ?? "?"}</AvatarFallback>}
+						{source && (
+							<div className="absolute inset-0 rounded-full overflow-hidden">
+								<Cropper
+									image={source}
+									crop={crop}
+									zoom={zoom}
+									aspect={1}
+									cropShape="round"
+									showGrid={false}
+									onCropChange={setCrop}
+									onZoomChange={setZoom}
+									onCropComplete={onCropComplete}
+								/>
+							</div>
+						)}
 					</Avatar>
-					<p className="text-sm text-muted-foreground">Drag to reposition</p>
+
+					{source && (
+						<div className="w-full px-4 -mt-2">
+							<input
+								type="range"
+								min={1}
+								max={3}
+								step={0.01}
+								value={zoom}
+								onChange={(e) => setZoom(Number(e.target.value))}
+								className="w-full"
+							/>
+						</div>
+					)}
 
 					{/* Actions */}
 					<div className="flex gap-6">
 						<div className="flex flex-col rounded-lg items-center justify-center bg-gray-100 w-[77px] h-[71px]">
-							<Button variant="ghost" size="icon">
-								<Image
+							<Button
+								variant="ghost"
+								size="icon"
+								onClick={() => fileInputRef.current?.click()}
+								title="Choose image to crop">
+								<NextImage
 									src="/icons/crop.svg"
 									width={30}
 									height={30}
@@ -67,9 +249,14 @@ export function ProfilePictureDialog({
 							</Button>
 							<p className="text-xs mt-1">Crop</p>
 						</div>
+
 						<div className="flex flex-col rounded-lg items-center justify-center bg-gray-100 w-[77px] h-[71px]">
-							<Button variant="ghost" size="icon">
-								<Image
+							<Button
+								variant="ghost"
+								size="icon"
+								onClick={() => fileInputRef.current?.click()}
+								title="Upload new">
+								<NextImage
 									src="/icons/upload.svg"
 									width={20}
 									height={20}
@@ -78,9 +265,14 @@ export function ProfilePictureDialog({
 							</Button>
 							<p className="text-xs mt-1">Upload</p>
 						</div>
+
 						<div className="flex flex-col rounded-lg items-center justify-center bg-gray-100 w-[77px] h-[71px]">
-							<Button variant="ghost" size="icon">
-								<Image
+							<Button
+								variant="ghost"
+								size="icon"
+								onClick={handleDelete}
+								title="Delete">
+								<NextImage
 									src="/icons/delete.svg"
 									width={20}
 									height={20}
@@ -90,14 +282,32 @@ export function ProfilePictureDialog({
 							<p className="text-xs mt-1">Delete</p>
 						</div>
 					</div>
+
+					<input
+						ref={fileInputRef}
+						type="file"
+						accept="image/*"
+						className="hidden"
+						onChange={handleFileChange}
+					/>
 				</div>
 
-				{/* Footer */}
 				<DialogFooter className="flex w-full gap-2">
-					<Button variant="outline" className="w-1/2">
+					<Button
+						variant="outline"
+						className="w-1/2"
+						onClick={() => setDialogOpen(false)}>
 						Cancel
 					</Button>
-					<Button className="w-1/2 bg-[#E5004E] hover:bg-pink-700 text-white">
+					<Button
+						className="w-1/2 bg-[#E5004E] hover:bg-pink-700 text-white"
+						onClick={handleDone}
+						disabled={!source || !croppedAreaPixels}
+						title={
+							!source || !croppedAreaPixels
+								? "Select & crop an image first"
+								: "Save"
+						}>
 						Done
 					</Button>
 				</DialogFooter>

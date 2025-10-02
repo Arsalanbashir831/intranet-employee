@@ -9,6 +9,7 @@ import { Textarea } from "../ui/textarea";
 import { Button } from "../ui/button";
 import { ProfilePictureDialog } from "./ProfilePictureDialog";
 import { RichTextEditor } from "../common/rich-text-editor";
+import Image from "next/image";
 
 /* ---------- Types ---------- */
 interface Employee {
@@ -125,10 +126,10 @@ export function EmployeeProfileCard({ employee }: EmployeeProfileCardProps) {
 	);
 
 	return (
-		<div className="w-full bg-[#F8F8F8] py-4 sm:py-6 lg:py-8">
+		<div className="w-full bg-[#F8F8F8] py-4 sm:py-6 lg:py-2">
 			<Card
 				className="
-          mx-auto w-full max-w-[1200px]
+          mx-auto w-full max-w-[1374px]
           rounded-2xl border-0 bg-white
           shadow-[0_8px_30px_rgba(0,0,0,0.06)]
           px-4 sm:px-6 lg:px-8 py-4 sm:py-6 lg:py-7
@@ -147,9 +148,24 @@ export function EmployeeProfileCard({ employee }: EmployeeProfileCardProps) {
 										.join("")}
 								</AvatarFallback>
 							</Avatar>
+
 							<ProfilePictureDialog
 								image={resolved.profileImage}
 								name={resolved.name}
+								onSave={async ({ dataUrl, file }) => {
+									const fd = new FormData();
+									fd.append("file", file);
+									const res = await fetch("/api/profile/upload", {
+										method: "POST",
+										body: fd,
+									});
+									const { url } = await res.json();
+									// Update the state here with setProfileImage if you add one
+								}}
+								onDelete={async () => {
+									await fetch("/api/profile/delete", { method: "POST" });
+									// Clear image from state if you manage it
+								}}
 							/>
 						</div>
 
@@ -166,49 +182,56 @@ export function EmployeeProfileCard({ employee }: EmployeeProfileCardProps) {
 					</div>
 
 					{/* Right: Bio with border and floating edit button */}
-					<div className="relative">
+					<div className="flex-1 max-w-3xl flex items-end gap-1">
 						{isEditingBio ? (
-							<>
+							<div className="w-full">
+								{/* Rich Text Editor in edit mode */}
 								<RichTextEditor
 									content={bio}
 									onChange={setBio}
-									className="min-h-[140px] border border-[#E5E7EB] rounded-md bg-white"
+									className="min-h-[120px] border border-gray-200 rounded-md"
 								/>
-								<div className="mt-2 flex justify-end gap-2">
+
+								{/* Action Buttons */}
+								<div className="flex justify-end gap-2 mt-2">
 									<Button
 										variant="outline"
 										onClick={() => setIsEditingBio(false)}>
 										Cancel
 									</Button>
 									<Button
-										className="bg-[#E5004E] hover:bg-[#c90043] text-white"
-										onClick={() => setIsEditingBio(false)}>
+										className="bg-pink-600 hover:bg-pink-700 text-white"
+										onClick={() => {
+											console.log("Updated bio:", bio);
+											setIsEditingBio(false);
+										}}>
 										Save
 									</Button>
 								</div>
-							</>
+							</div>
 						) : (
 							<>
+								{/* Readonly Bio View */}
 								<Textarea
 									value={bio}
 									readOnly
-									className="
-                    min-h-[120px] resize-none
-                    border border-[#E5E7EB] bg-white rounded-md
-                    text-[13px] sm:text-sm
-                  "
+									className="min-h-[120px] resize-none border-[#E2E8F0] bg-gray-50"
 								/>
-								<button
-									type="button"
-									onClick={() => setIsEditingBio(true)}
-									aria-label="Edit bio"
-									className="
-                    absolute -right-2 sm:right-0 -top-2 sm:-top-3
-                    size-8 rounded-full bg-white shadow-md ring-1 ring-black/5
-                    grid place-items-center
-                  ">
-									<PinkIcon src="/icons/edit.svg" />
-								</button>
+
+								{/* Edit Button */}
+								<Button
+									size="icon"
+									variant="secondary"
+									className="rounded-full bg-[#F0F1F3] shadow-md  group transition hover:bg-[#E5004E]"
+									onClick={() => setIsEditingBio(true)}>
+									<Image
+										src="/icons/edit.svg"
+										width={18}
+										height={19}
+										alt="edit"
+										className="transition group-hover:brightness-0 group-hover:invert"
+									/>
+								</Button>
 							</>
 						)}
 					</div>

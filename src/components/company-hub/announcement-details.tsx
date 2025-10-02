@@ -19,9 +19,9 @@ export default function AnnouncementDetailCard({
 	announcement,
 }: AnnouncementDetailCardProps) {
 	return (
-		<div className="container mx-auto px-4 py-6 max-w-7xl lg:px-8">
+		<div className="container mx-auto px-4 py-6 max-w-[1374px] lg:px-2">
 			{/* Card with White Background */}
-			<div className="bg-white rounded-lg shadow-sm p-4 sm:p-6 lg:p-10">
+			<div className="bg-white rounded-lg shadow-sm p-4 sm:p-6 lg:p-5">
 				{/* Section Header */}
 				<h1
 					className="

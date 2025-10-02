@@ -1,3 +1,4 @@
+// components/common/page-header.tsx
 "use client";
 
 import * as React from "react";
@@ -22,69 +23,116 @@ type PageHeaderProps = {
 	action?: React.ReactNode;
 	className?: string;
 
-	// Tabs
 	tabs?: Tab[];
-	/** Controlled tab value (if you want to control it from the page) */
-	activeTab?: string;
-	/** Callback when tab changes (fires in both controlled & uncontrolled) */
-	onTabChange?: (val: string) => void;
+	activeTab?: string; // controlled
+	onTabChange?: (val: string) => void; // fires for both controlled/uncontrolled
 
-	/** Uncontrolled default tab key (fallback when URL has no ?tab=...) */
-	defaultTab?: string;
-
-	/** Sync tab to query string like ?tab=policies (default: false) */
-	syncTabWithQuery?: boolean;
-	/** Query key to use (default: "tab") */
-	queryKey?: string;
+	defaultTab?: string; // fallback when URL has no ?tab=
+	syncTabWithQuery?: boolean; // default false
+	queryKey?: string; // default "tab"
 };
 
-export function PageHeader({
-	title,
-	crumbs,
-	action,
-	className,
+export function PageHeader(props: PageHeaderProps) {
+	const {
+		title,
+		crumbs,
+		action,
+		className,
+		tabs = [],
+		activeTab,
+		onTabChange,
+		defaultTab = tabs[0]?.key || "",
+		syncTabWithQuery = false,
+		queryKey = "tab",
+	} = props;
 
-	tabs = [],
-	activeTab, // controlled value (optional)
-	onTabChange, // callback (optional)
-	defaultTab = tabs[0]?.key || "announcements",
-	syncTabWithQuery = false,
-	queryKey = "tab",
-}: PageHeaderProps) {
 	const router = useRouter();
 	const search = useSearchParams();
 	const pathname = usePathname();
 
-	// derive initial from URL if syncing is enabled
-	const tabFromUrl = syncTabWithQuery
-		? (search.get(queryKey) as string) || defaultTab
-		: defaultTab;
+	// --- helpers
+	const firstTabKey = tabs[0]?.key ?? "";
+	const isValidTab = React.useCallback(
+		(k: string | undefined | null) => !!k && tabs.some((t) => t.key === k),
+		[tabs]
+	);
 
-	// uncontrolled state (used when activeTab is not provided)
-	const [internalTab, setInternalTab] = React.useState(tabFromUrl);
+	// track where the last change came from to avoid URL<->state ping-pong
+	const lastSetRef = React.useRef<"url" | "local" | null>(null);
 
-	// keep internal state in sync if URL changes (e.g., back/forward)
-	React.useEffect(() => {
-		if (!syncTabWithQuery) return;
-		setInternalTab(tabFromUrl);
-	}, [syncTabWithQuery, tabFromUrl]);
+	// read from URL only if syncing
+	const tabFromUrl = syncTabWithQuery ? search.get(queryKey) : null;
 
+	// initial
+	const safeInitial =
+		(isValidTab(tabFromUrl) ? String(tabFromUrl) : undefined) ??
+		(isValidTab(defaultTab) ? defaultTab : firstTabKey);
+
+	const [internalTab, setInternalTab] = React.useState(safeInitial);
 	const currentValue = activeTab ?? internalTab;
 
+	// smooth non-blocking URL updates
+	const [isPending, startTransition] = React.useTransition();
+
+	// sync FROM URL -> internal, only when value truly changed and uncontrolled
+	React.useEffect(() => {
+		if (!syncTabWithQuery || activeTab !== undefined) return;
+		const urlKey = search.get(queryKey);
+		if (isValidTab(urlKey) && urlKey !== internalTab) {
+			// ignore if this exact value was set locally right before
+			if (lastSetRef.current === "local") {
+				lastSetRef.current = null;
+				return;
+			}
+			lastSetRef.current = "url";
+			setInternalTab(String(urlKey));
+		}
+	}, [syncTabWithQuery, activeTab, search, queryKey, isValidTab, internalTab]);
+
+	// if tabs change and current disappears, fall back
+	React.useEffect(() => {
+		const cur = currentValue;
+		if (!isValidTab(cur)) {
+			const fallback =
+				(isValidTab(defaultTab) ? defaultTab : undefined) ?? firstTabKey;
+			if (activeTab === undefined) setInternalTab(fallback);
+			if (syncTabWithQuery) {
+				startTransition(() => {
+					const qs = new URLSearchParams(search.toString());
+					qs.set(queryKey, fallback);
+					router.replace(`${pathname}?${qs.toString()}`, { scroll: false });
+				});
+			}
+			onTabChange?.(fallback);
+		}
+		// react only to structural changes
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [tabs.map((t) => t.key).join("|")]);
+
 	const handleChange = (value: string) => {
-		// update internal only when uncontrolled
 		if (activeTab === undefined) {
+			lastSetRef.current = "local";
 			setInternalTab(value);
 		}
-		// always notify parent if provided
 		onTabChange?.(value);
-
-		// optionally sync to URL but keep current path
 		if (syncTabWithQuery) {
-			const qs = new URLSearchParams(search.toString());
-			qs.set(queryKey, value);
-			router.replace(`${pathname}?${qs.toString()}`, { scroll: false });
+			startTransition(() => {
+				const qs = new URLSearchParams(search.toString());
+				qs.set(queryKey, value);
+				router.replace(`${pathname}?${qs.toString()}`, { scroll: false });
+			});
 		}
+		// scroll active trigger into view smoothly
+		requestAnimationFrame(() => {
+			const el = document.querySelector<HTMLButtonElement>(
+				`[data-tab-trigger="${CSS.escape(value)}"]`
+			);
+			el?.scrollIntoView({
+				behavior: "smooth",
+				inline: "center",
+				block: "nearest",
+			});
+		});
 	};
 
 	return (
@@ -95,8 +143,8 @@ export function PageHeader({
 			)}>
 			<div className="flex flex-col md:flex-row md:items-center justify-between gap-3">
 				{/* Left */}
-				<div className="flex items-center gap-3 min-w-0">
-					<div>
+				<div className="flex flex-col md:flex-row md:items-center gap-3 min-w-0">
+					<div className="min-w-0">
 						<h1 className="text-2xl font-semibold tracking-tight truncate">
 							{title}
 						</h1>
@@ -134,23 +182,46 @@ export function PageHeader({
 
 					{/* Tabs */}
 					{tabs.length > 0 && (
-						<Tabs value={currentValue} onValueChange={handleChange}>
-							<TabsList className="border border-gray-300 rounded-lg p-1 inline-flex ml-3">
-								{tabs.map((t) => (
-									<TabsTrigger
-										key={t.key}
-										value={t.key}
-										className="p-3 rounded-md text-gray-600 data-[state=active]:bg-[#E5004E] data-[state=active]:text-white">
-										{t.label}
-									</TabsTrigger>
-								))}
-							</TabsList>
-						</Tabs>
+						<div
+							className="
+            md:ml-3 w-full md:w-auto overflow-x-auto
+            scroll-smooth
+            [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden
+          ">
+							<Tabs value={currentValue} onValueChange={handleChange}>
+								<TabsList
+									className="
+                border border-gray-300 rounded-lg p-1 inline-flex min-w-max gap-1
+              ">
+									{tabs.map((t) => {
+										const isActive = currentValue === t.key;
+										return (
+											<TabsTrigger
+												key={t.key}
+												value={t.key}
+												data-tab-trigger={t.key}
+												className={cn(
+													"shrink-0 whitespace-nowrap px-3 py-2 text-sm rounded-md text-gray-600 transition",
+													"data-[state=active]:bg-[#E5004E] data-[state=active]:text-white",
+													// subtle animation to feel instant
+													isActive
+														? "scale-[0.98] animate-[fadeIn_.16s_ease-out]"
+														: ""
+												)}>
+												{t.label}
+											</TabsTrigger>
+										);
+									})}
+								</TabsList>
+							</Tabs>
+						</div>
 					)}
 				</div>
 
 				{/* Right action */}
-				{action ? <div className="shrink-0 self-end">{action}</div> : null}
+				{action ? (
+					<div className="shrink-0 self-end md:self-center">{action}</div>
+				) : null}
 			</div>
 		</div>
 	);

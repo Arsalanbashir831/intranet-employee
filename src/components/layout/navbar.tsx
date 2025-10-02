@@ -1,3 +1,4 @@
+// Navbar.tsx
 "use client";
 import Image from "next/image";
 import Link from "next/link";
@@ -63,6 +64,16 @@ function NavIcon({ src, className }: { src: string; className?: string }) {
 export function Navbar() {
 	const pathname = usePathname();
 
+	// Active rule:
+	// - Home only on exact match
+	// - Others active on exact or any subpath (slug), e.g. /knowledge-base/*.
+	const isActive = (href: string) => {
+		if (!href) return false;
+		const isHome = href === ROUTES.DASHBOARD.HOME;
+		if (isHome) return pathname === href;
+		return pathname === href || pathname.startsWith(href + "/");
+	};
+
 	return (
 		<header className="sticky top-0 z-50 w-full border-b bg-secondary text-white">
 			<div className="mx-auto flex max-w-screen-2xl items-center gap-16 px-4 h-24 sm:px-6 lg:px-8">
@@ -80,31 +91,40 @@ export function Navbar() {
 					</Link>
 				</div>
 
+				{/* mobile right side */}
 				<div className="ml-auto flex items-center gap-2 sm:gap-3 lg:hidden">
 					<UserMenu />
 					<MobileMenu />
 				</div>
 
+				{/* desktop */}
 				<div className="hidden flex-1 items-center justify-between lg:flex">
 					<nav className="flex items-center">
 						<NavigationMenu>
 							<NavigationMenuList className="gap-6">
-								{navItems.map((item) => (
-									<NavigationMenuItem key={item.href}>
-										<NavigationMenuLink asChild>
-											<Link
-												href={item.href}
-												className={cn(
-													"px-2.5 py-1.5 text-md font-medium transition-colors rounded-[4px] inline-flex items-center flex-row gap-2",
-													"text-white/80 hover:text-black",
-													pathname === item.href && "bg-white text-black"
-												)}>
-												<NavIcon src={item.icon} className="text-current" />
-												{item.label}
-											</Link>
-										</NavigationMenuLink>
-									</NavigationMenuItem>
-								))}
+								{navItems.map((item) => {
+									const active = isActive(item.href);
+									return (
+										<NavigationMenuItem key={item.href}>
+											<NavigationMenuLink asChild>
+												<Link
+													href={item.href}
+													className={cn(
+														"px-2.5 py-1.5 text-md font-medium transition-colors rounded-[4px] inline-flex items-center flex-row gap-2",
+														"text-white/80 hover:text-black",
+														isActive(item.href) && "bg-white text-black"
+													)}>
+													{" "}
+													<NavIcon
+														src={item.icon}
+														className="text-current"
+													/>{" "}
+													{item.label}{" "}
+												</Link>
+											</NavigationMenuLink>
+										</NavigationMenuItem>
+									);
+								})}
 							</NavigationMenuList>
 						</NavigationMenu>
 					</nav>

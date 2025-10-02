@@ -7,7 +7,6 @@ const quickAccessItems = [
 	{ id: 1, src: "/logos/profile-circle.svg", alt: "CK" },
 	{ id: 2, src: "/logos/outlook.svg", alt: "Outlook" },
 	{ id: 3, src: "/logos/teams.svg", alt: "Teams" },
-	{ id: 4, src: "/logos/cycle-circle.svg", alt: "Circle" },
 	{ id: 5, src: "/logos/linkedin.svg", alt: "LinkedIn" },
 	{ id: 6, src: "/logos/openai.svg", alt: "OpenAI" },
 ];
@@ -75,7 +74,7 @@ export default function QuickAccess() {
           mt-3
           hidden md:flex
           flex-wrap items-center
-          gap-5 md:gap-6 lg:gap-8 min-[1920px]:gap-9 min-[2560px]:gap-10
+          gap-5 md:gap-6 lg:gap-24 min-[1920px]:gap-9 min-[2560px]:gap-10
         ">
 				{quickAccessItems.map((item) => (
 					<button

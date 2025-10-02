@@ -38,7 +38,7 @@ export default function Checklist({
 		<Card
 			className="
         bg-white border-gray-200 shadow-sm flex flex-col
-        w-full max-w-[390px] max-h-[281px] p-3 gap-0 sm:p-4">
+        w-full max-w-[390px] max-h-[390px] p-3 gap-0 sm:p-4">
 			{/* Header */}
 			<CardHeader className="!px-0 !pb-2 flex items-center justify-between">
 				<h1 className="font-semibold text-gray-800 text-base sm:text-lg md:text-xl">
