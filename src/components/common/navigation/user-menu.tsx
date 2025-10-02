@@ -1,3 +1,5 @@
+"use client";
+
 import Link from "next/link";
 import { ROUTES } from "@/hooks/constants/routes";
 import { Button } from "@/components/ui/button";
@@ -14,7 +16,7 @@ import { ChevronDown, LogOut, User } from "lucide-react";
 export default function UserMenu() {
 	return (
 		<DropdownMenu>
-			<DropdownMenuTrigger asChild>
+			<DropdownMenuTrigger id="dropdown-trigger-user-menu" asChild>
 				<Button
 					variant="ghost"
 					className="h-9 gap-2 px-2 text-white hover:bg-transparent hover:text-white">

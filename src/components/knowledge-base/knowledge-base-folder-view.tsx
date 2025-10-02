@@ -10,7 +10,8 @@ import { KnowledgeBaseRow } from "@/components/knowledge-base/knowledge-base-tab
 const fetchFolderContents = async (
 	folderName: string
 ): Promise<KnowledgeBaseRow[]> => {
-	const all: KnowledgeBaseRow[] = [
+	// In real app: return await api.get(`/folders/${folderName}/files`);
+	return [
 		{
 			id: "1",
 			folder: "File 1",
@@ -27,16 +28,12 @@ const fetchFolderContents = async (
 		},
 		{
 			id: "3",
-			folder: "Folder 2",
+			folder: "Folder 1",
 			createdByName: "Cartwright King",
 			createdByAvatar: "",
 			dateCreated: "2024-07-26",
 		},
 	];
-	// pretend we're filtering by folder
-	return all.filter((r) =>
-		r.folder.toLowerCase().includes(folderName.toLowerCase())
-	);
 };
 
 export function KnowledgeBaseFolderView({
