@@ -167,7 +167,8 @@ export function useChangePassword() {
     mutationFn: (data: { current_password: string; new_password: string }) => changePassword(data),
     onError: (error) => {
       console.error("Change password failed:", error);
-      throw new Error("Failed to change password. Please try again.");
+      // Let the specific error message from the API pass through instead of overriding it
+      throw error;
     },
   });
 }

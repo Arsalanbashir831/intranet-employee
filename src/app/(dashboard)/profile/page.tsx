@@ -5,40 +5,10 @@ import { EmployeeProfileCard } from "@/components/profile/profile-card";
 import { PageHeader } from "@/components/common/page-header";
 import { ROUTES } from "@/constants/routes";
 import { Button } from "@/components/ui/button";
-import { ChangePasswordDialog } from "@/components/profile/ChangePasswordDialog";
-import { useChangePassword } from "@/hooks/queries/use-auth";
-import { toast } from "sonner";
+import { ChangePasswordDialog } from "@/components/profile/change-password-dialog";
 
 export default function Profile() {
 	const [open, setOpen] = React.useState(false);
-	const { mutate: changePassword, isPending } = useChangePassword();
-
-	const handleChangePassword = async (vals: {
-		current: string;
-		next: string;
-		confirm: string;
-	}) => {
-		if (vals.next !== vals.confirm) {
-			toast.error("New passwords do not match");
-			return;
-		}
-		
-		changePassword(
-			{
-				current_password: vals.current,
-				new_password: vals.next,
-			},
-			{
-				onSuccess: () => {
-					toast.success("Password changed successfully");
-					setOpen(false);
-				},
-				onError: (error) => {
-					toast.error(error instanceof Error ? error.message : "Failed to change password");
-				},
-			}
-		);
-	};
 
 	return (
 		<div>
@@ -61,7 +31,6 @@ export default function Profile() {
 			<ChangePasswordDialog
 				open={open}
 				onOpenChange={setOpen}
-				onSubmit={handleChangePassword}
 			/>
 			<div className="p-4 sm:p-8 lg:p-6">
 				<EmployeeProfileCard />
