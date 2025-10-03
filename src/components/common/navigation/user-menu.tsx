@@ -12,8 +12,15 @@ import {
 	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { ChevronDown, LogOut, User } from "lucide-react";
+import { useLogout } from "@/hooks/queries/use-auth";
 
 export default function UserMenu() {
+	const { mutate: logout } = useLogout();
+
+	const handleLogout = () => {
+		logout();
+	};
+
 	return (
 		<DropdownMenu>
 			<DropdownMenuTrigger id="dropdown-trigger-user-menu" asChild>
@@ -36,7 +43,7 @@ export default function UserMenu() {
 					</Link>
 				</DropdownMenuItem>
 				{/* <DropdownMenuSeparator /> */}
-				<DropdownMenuItem className="text-red-500">
+				<DropdownMenuItem className="text-red-500" onClick={handleLogout}>
 					<LogOut className="h-4 w-4 text-red-500" />
 					Sign out
 				</DropdownMenuItem>

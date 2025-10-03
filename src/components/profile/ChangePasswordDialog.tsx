@@ -7,6 +7,7 @@ import {
 	DialogHeader,
 	DialogTitle,
 } from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Eye, EyeOff } from "lucide-react";
@@ -30,6 +31,7 @@ export function ChangePasswordDialog({
 		confirm: "",
 	});
 	const [error, setError] = React.useState<string>("");
+	const [loading, setLoading] = React.useState(false);
 
 	const toggle = (k: keyof Values) => setShow((s) => ({ ...s, [k]: !s[k] }));
 
@@ -44,7 +46,15 @@ export function ChangePasswordDialog({
 			setError("New password and confirm password do not match.");
 			return;
 		}
-		await onSubmit(values);
+		
+		setLoading(true);
+		try {
+			await onSubmit(values);
+			// Reset form on success
+			setValues({ current: "", next: "", confirm: "" });
+		} finally {
+			setLoading(false);
+		}
 	};
 
 	const Field = ({
@@ -70,6 +80,7 @@ export function ChangePasswordDialog({
 					}
 					className="pl-9 pr-10"
 					placeholder="Your Password"
+					disabled={loading}
 				/>
 				<Image
 					src="/icons/lock-black.svg"
@@ -83,7 +94,8 @@ export function ChangePasswordDialog({
 					type="button"
 					onClick={() => toggle(valueKey)}
 					className="absolute right-3 top-1/2 -translate-y-1/2"
-					aria-label="Toggle password visibility">
+					aria-label="Toggle password visibility"
+					disabled={loading}>
 					{show[valueKey] ? (
 						<EyeOff className="h-4 w-4" />
 					) : (
@@ -108,16 +120,18 @@ export function ChangePasswordDialog({
 
 					{error && <p className="text-sm text-red-600">{error}</p>}
 
-					{/* <DialogFooter className="gap-2">
-						<DialogClose asChild>
-							<Button type="button" variant="outline">
-								Cancel
-							</Button>
-						</DialogClose>
+					<div className="flex justify-end gap-2">
+						<Button 
+							type="button" 
+							variant="outline" 
+							onClick={() => onOpenChange(false)}
+							disabled={loading}>
+							Cancel
+						</Button>
 						<Button type="submit" disabled={loading}>
 							{loading ? "Saving..." : "Change Password"}
 						</Button>
-					</DialogFooter> */}
+					</div>
 				</form>
 			</DialogContent>
 		</Dialog>

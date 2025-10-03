@@ -6,25 +6,38 @@ import { PageHeader } from "@/components/common/page-header";
 import { ROUTES } from "@/constants/routes";
 import { Button } from "@/components/ui/button";
 import { ChangePasswordDialog } from "@/components/profile/ChangePasswordDialog";
+import { useChangePassword } from "@/hooks/queries/use-auth";
+import { toast } from "sonner";
 
 export default function Profile() {
 	const [open, setOpen] = React.useState(false);
-	const [saving, setSaving] = React.useState(false);
+	const { mutate: changePassword, isPending } = useChangePassword();
 
-	// TODO: replace with your API call
 	const handleChangePassword = async (vals: {
 		current: string;
 		next: string;
 		confirm: string;
 	}) => {
-		setSaving(true);
-		try {
-			// await api.post("/me/change-password", vals);
-			// toast.success("Password changed");
-			setOpen(false);
-		} finally {
-			setSaving(false);
+		if (vals.next !== vals.confirm) {
+			toast.error("New passwords do not match");
+			return;
 		}
+		
+		changePassword(
+			{
+				current_password: vals.current,
+				new_password: vals.next,
+			},
+			{
+				onSuccess: () => {
+					toast.success("Password changed successfully");
+					setOpen(false);
+				},
+				onError: (error) => {
+					toast.error(error instanceof Error ? error.message : "Failed to change password");
+				},
+			}
+		);
 	};
 
 	return (

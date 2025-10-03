@@ -1,22 +1,26 @@
-import type { Metadata } from "next";
-import { Navbar } from "@/components/common/navigation/navbar";
-import { Suspense } from "react";
+'use client'
 
-export const metadata: Metadata = {
-	title: "Dashboard | Intranet",
-};
+import { Navbar } from "@/components/common/navigation/navbar";
+import { Suspense, useState } from "react";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { AuthProvider } from "@/contexts/auth-context";
 
 export default function DashboardLayout({
 	children,
 }: Readonly<{
 	children: React.ReactNode;
 }>) {
+	const [queryClient] = useState(() => new QueryClient());
 	return (
-		<div className="min-h-screen bg-[#F8F8F8]">
-			<Navbar />
-			<main className="mx-auto max-w-screen-2xl">
-				<Suspense>{children}</Suspense>
-			</main>
-		</div>
+		<QueryClientProvider client={queryClient}>
+			<AuthProvider>
+				<div className="min-h-screen bg-[#F8F8F8]">
+					<Navbar />
+					<main className="mx-auto max-w-screen-2xl">
+						<Suspense>{children}</Suspense>
+					</main>
+				</div>
+			</AuthProvider>
+		</QueryClientProvider>
 	);
 }
