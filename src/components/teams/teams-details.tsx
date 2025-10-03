@@ -14,6 +14,16 @@ interface Employee {
 	status: string;
 	bio: string;
 	profileImage: string;
+	education: string;
+	email: string;
+	phone: string;
+	hireDate: string;
+	department: string;
+	manager?: {
+		name: string;
+		role: string;
+		profileImage: string;
+	};
 }
 
 interface EmployeeProfileCardProps {
@@ -31,6 +41,16 @@ const data: Employee = {
 	status: "ACTIVE",
 	bio: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua...",
 	profileImage: "https://via.placeholder.com/150",
+	education: "<p>Qualified</p>",
+	email: "jocelyn@example.com",
+	phone: "03001234567",
+	hireDate: "2025-10-01",
+	department: "IT",
+	manager: {
+		name: "John Manager",
+		role: "Senior Manager",
+		profileImage: "https://via.placeholder.com/150"
+	}
 };
 
 export function TeamsDetailsCard({ employee }: EmployeeProfileCardProps) {
@@ -97,16 +117,20 @@ export function TeamsDetailsCard({ employee }: EmployeeProfileCardProps) {
 
 							{/* Right: Bio */}
 							<div className="min-w-0">
-								<p className="text-sm sm:text-[15px] text-gray-700 leading-relaxed">
-									{resolved.bio}
-								</p>
+								{resolved.bio && resolved.bio !== "null" ? (
+									<div className="text-sm sm:text-[15px] text-[#535862] leading-relaxed" dangerouslySetInnerHTML={{ __html: resolved.education }}/>
+								) : (
+									<p className="text-sm sm:text-[15px] text-[#535862] leading-relaxed">
+										No bio available
+									</p>
+								)}
 							</div>
 						</div>
 					</section>
 
-					{/* Address, City, Branch */}
+					{/* Address Information Section */}
 					<section className="mt-5 sm:mt-6">
-						<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-6">
+						<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 sm:gap-6">
 							{[
 								{
 									iconSrc: "/icons/map-pin.svg",
@@ -146,7 +170,7 @@ export function TeamsDetailsCard({ employee }: EmployeeProfileCardProps) {
 						</h3>
 
 						{/* readable line lengths on large screens */}
-						<div className="mt-4 sm:mt-5 text-gray-700 leading-relaxed ">
+						<div className="mt-4 sm:mt-5 text-[#535862] leading-relaxed ">
 							<div className="space-y-4">
 								<p>
 									Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed

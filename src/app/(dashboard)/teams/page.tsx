@@ -19,6 +19,8 @@ import {
 import { TableSearch } from "@/components/common/card-table/table-search";
 import { CardTablePagination } from "@/components/common/card-table/card-table-pagination";
 import { useMemo, useState } from "react";
+import { useAuth } from "@/contexts/auth-context";
+import { useBranchDepartmentEmployees } from "@/hooks/queries/use-departments";
 
 /* ---------------- Types & Data ---------------- */
 interface TeamMember {
@@ -26,58 +28,12 @@ interface TeamMember {
 	name: string;
 	designation: string;
 	image: string;
+	email: string;
+	phone: string;
+	branch: string;
+	department: string;
+	education: string;
 }
-
-const teamData: TeamMember[] = [
-	{
-		id: "1",
-		name: "Jocelyn Schleifer",
-		designation: "Manager",
-		image: "/images/team-member-1.png",
-	},
-	{
-		id: "2",
-		name: "John Doe",
-		designation: "Developer",
-		image: "/images/team-member-2.png",
-	},
-	{
-		id: "3",
-		name: "Martin Donin",
-		designation: "Lead",
-		image: "/images/team-member-3.png",
-	},
-	{
-		id: "4",
-		name: "Jordyn Septimus",
-		designation: "Software Engineer",
-		image: "/images/team-member-4.png",
-	},
-	{
-		id: "5",
-		name: "Marilyn Levin",
-		designation: "Software Engineer",
-		image: "/images/team-member-5.png",
-	},
-	{
-		id: "6",
-		name: "Lindsey Dokidis",
-		designation: "Software Engineer",
-		image: "/images/team-member-6.png",
-	},
-	{
-		id: "7",
-		name: "Hanna Dias",
-		designation: "Software Engineer",
-		image: "/images/team-member-7.png",
-	},
-	{
-		id: "8",
-		name: "Ryan Gouse",
-		designation: "Software Engineer",
-		image: "/images/team-member-8.png",
-	},
-];
 
 const columnHelper = createColumnHelper<TeamMember>();
 const columns = [
@@ -96,22 +52,36 @@ const columns = [
 ];
 
 export default function Teams() {
-	const [query] = useState("");
+	const { user } = useAuth();
+	const [query, setQuery] = useState("");
 	const [page, setPage] = useState(1);
 	const pageSize = 8;
+	
+	// Fetch team members based on user's branch department with search query
+	const { data, isLoading, isError } = useBranchDepartmentEmployees(
+		user?.branchDepartmentId || 0,
+		{ page, pageSize },
+		query ? { search: query } : undefined // Pass search query as a parameter
+	);
+	
+	// Transform API data to match component structure
+	const teamData: TeamMember[] = data?.employees?.results?.map(employee => ({
+		id: employee.id.toString(),
+		name: employee.emp_name,
+		designation: employee.role,
+		image: employee.profile_picture || "/images/avatar.jpg",
+		email: employee.email,
+		phone: employee.phone,
+		branch: employee.branch_department.branch.branch_name,
+		department: employee.branch_department.department.dept_name,
+		education: employee.education
+	})) || [];
 
-	const filtered = useMemo(() => {
-		const q = query.trim().toLowerCase();
-		return q
-			? teamData.filter((m) => m.name.toLowerCase().includes(q))
-			: teamData;
-	}, [query]);
-
-	const pageCount = Math.max(1, Math.ceil(filtered.length / pageSize));
-	const pageItems = filtered.slice((page - 1) * pageSize, page * pageSize);
+	const pageCount = data ? Math.max(1, Math.ceil(data.employees.count / pageSize)) : 1;
+	const pageItems = teamData;
 
 	const table = useReactTable({
-		data: filtered,
+		data: teamData,
 		columns,
 		getCoreRowModel: getCoreRowModel(),
 		pageCount,
@@ -126,6 +96,33 @@ export default function Teams() {
 			}
 		},
 	});
+	
+	// Show loading state
+	if (isLoading) {
+		return (
+			<div className="min-h-screen bg-[#F8F8F8] flex items-center justify-center">
+				<div>Loading team members...</div>
+			</div>
+		);
+	}
+	
+	// Show error state
+	if (isError) {
+		return (
+			<div className="min-h-screen bg-[#F8F8F8] flex items-center justify-center">
+				<div>Error loading team members</div>
+			</div>
+		);
+	}
+	
+	// Show empty state
+	if (!user?.branchDepartmentId) {
+		return (
+			<div className="min-h-screen bg-[#F8F8F8] flex items-center justify-center">
+				<div>No team data available</div>
+			</div>
+		);
+	}
 
 	return (
 		<div className="min-h-screen bg-[#F8F8F8]">
@@ -147,7 +144,13 @@ export default function Teams() {
 					{/* Controls row */}
 					<div className="mt-4 flex flex-col gap-0 md:flex-row md:items-center">
 						<div className="flex-1 max-w-sm">
-							<TableSearch placeholder="Search by Name" />
+							<TableSearch 
+								placeholder="Search by Name" 
+								onChange={(value) => {
+									setQuery(value);
+									setPage(1); // Reset to first page when searching
+								}}
+							/>
 						</div>
 
 						<div className="flex flex-wrap gap-3">
@@ -196,7 +199,7 @@ export default function Teams() {
 										image={m.image}
 										name={m.name}
 										designation={m.designation}
-										description="There are many variations of passages of Lorem Ipsum available."
+										description={m.education}
 										className="w-full mx-auto xl:max-w-[320px] xl:h-[370px]"
 										topClassName="relative w-full aspect-[4/3] sm:aspect-[16/10] xl:aspect-auto xl:h-[230px]"
 										imgClassName="object-cover"

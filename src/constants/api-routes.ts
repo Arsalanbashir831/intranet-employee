@@ -8,9 +8,12 @@ export const API_ROUTES = {
         RESET_PASSWORD: '/reset_password/',
         CHANGE_PASSWORD: '/change_password/'
     },
+    DEPARTMENTS: {
+        GET_ALL_BRANCH_DEPT_EMPLOYEES: (id: number | string) => `/branchdepartments/employees/${id}`,
+    },
     EMPLOYEES: {
-        LIST: "/employees/",
         DETAIL: (id: number | string) => `/employees/${id}/`,
+        UPDATE: (id: number | string) => `/employees/${id}/`,
         UPLOAD_PICTURE: (id: number | string) => `/employees/${id}/profile_picture/upload/`,
         DELETE_PICTURE: (id: number | string) => `/employees/${id}/profile_picture/`,
     },

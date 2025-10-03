@@ -1,41 +1,80 @@
-// app/(dashboard)/teams/[id]/page.tsx
+'use client'
+
 import { notFound } from "next/navigation";
 import { PageHeader } from "@/components/common/page-header";
 import { TeamsDetailsCard } from "@/components/teams/teams-details";
 import { ROUTES } from "@/constants/routes";
+import { useEmployee } from "@/hooks/queries/use-employees";
+import { useParams } from "next/navigation";
 
-type PageProps = { params: Promise<{ id: string }> }; // 👈 params is a Promise
+interface EmployeeData {
+	id: string;
+	name: string;
+	role: string;
+	address: string;
+	city: string;
+	branch: string;
+	status: string;
+	bio: string;
+	profileImage: string;
+	education: string;
+	email: string;
+	phone: string;
+	hireDate: string;
+	department: string;
+	manager?: {
+		name: string;
+		role: string;
+		profileImage: string;
+	};
+}
 
-const teamData = [
-	{
-		id: "1",
-		name: "Jocelyn Schleifer",
-		role: "Manager",
-		address: "3890 Poplar Dr.",
-		city: "Lahore",
-		branch: "Lahore",
-		status: "ACTIVE",
-		bio: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua...",
-		profileImage: "/images/team-member-1.png",
-	},
-	{
-		id: "2",
-		name: "John Doe",
-		role: "Developer",
-		address: "123 Main St.",
-		city: "Karachi",
-		branch: "Karachi",
-		status: "ACTIVE",
-		bio: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua...",
-		profileImage: "/images/team-member-2.png",
-	},
-];
+export default function TeamSlug() {
+	const params = useParams();
+	const id = params.id as string;
+	
+	const { data, isLoading, isError, error } = useEmployee(id);
+	
+	// Transform API data to match component structure
+	const employee: EmployeeData | undefined = data?.employee ? {
+		id: data.employee.id.toString(),
+		name: data.employee.emp_name,
+		role: data.employee.role,
+		address: data.employee.address,
+		city: data.employee.city,
+		branch: data.employee.branch_department.branch.branch_name,
+		status: "ACTIVE", // Default status
+		bio: data.employee.bio || "No bio available",
+		profileImage: data.employee.profile_picture || "/images/default-profile.png",
+		education: data.employee.education,
+		email: data.employee.email,
+		phone: data.employee.phone,
+		hireDate: data.employee.hire_date,
+		department: data.employee.branch_department.department.dept_name,
+		manager: data.employee.branch_department.manager ? {
+			name: data.employee.branch_department.manager.employee.emp_name,
+			role: data.employee.branch_department.manager.employee.role,
+			profileImage: data.employee.branch_department.manager.employee.profile_picture || "/images/default-profile.png"
+		} : undefined
+	} : undefined;
 
-export default async function TeamSlug({ params }: PageProps) {
-	const { id } = await params; // 👈 Await params
-	const member = teamData.find((m) => String(m.id) === String(id));
+	if (isLoading) {
+		return (
+			<div className="min-h-screen bg-[#F8F8F8] flex items-center justify-center">
+				<div>Loading employee details...</div>
+			</div>
+		);
+	}
 
-	if (!member) return notFound();
+	if (isError) {
+		return (
+			<div className="min-h-screen bg-[#F8F8F8] flex items-center justify-center">
+				<div>Error loading employee details: {error?.message || 'Unknown error'}</div>
+			</div>
+		);
+	}
+
+	if (!employee) return notFound();
 
 	return (
 		<div>
@@ -44,9 +83,10 @@ export default async function TeamSlug({ params }: PageProps) {
 				crumbs={[
 					{ label: "Pages", href:'#' },
 					{ label: "Teams", href: ROUTES.DASHBOARD.TEAMS },
+					{ label: employee.name, href: `${ROUTES.DASHBOARD.TEAMS}/${id}` },
 				]}
 			/>
-			<TeamsDetailsCard employee={member} />
+			<TeamsDetailsCard employee={employee} />
 		</div>
 	);
 }

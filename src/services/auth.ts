@@ -31,7 +31,29 @@ export type Executive = {
 
 export type Employee = {
   id: number;
-  // Add employee fields as needed
+  emp_name: string;
+  branch_department_id: number | null;
+  hire_date: string;
+  address: string;
+  city: string;
+  phone: string;
+  email: string;
+  role: string;
+  education: string;
+  bio: string;
+  profile_picture: string | null;
+  branch_department: {
+    id: number;
+    branch: {
+      id: number;
+      branch_name: string;
+    };
+    department: {
+      id: number;
+      dept_name: string;
+    };
+    manager: null;
+  } | null;
 };
 
 export type MeResponse = {

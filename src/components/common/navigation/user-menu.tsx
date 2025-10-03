@@ -28,7 +28,7 @@ export default function UserMenu() {
 					variant="ghost"
 					className="h-9 gap-2 px-2 text-white hover:bg-transparent hover:text-white">
 					<Avatar className="h-8 w-8">
-						<AvatarImage src="/images/avatar.png" alt="User" />
+						<AvatarImage src="/images/avatar.jpg" alt="User" />
 						<AvatarFallback className="text-black">BK</AvatarFallback>
 					</Avatar>
 					<span className="hidden sm:inline-block text-sm">Brian F.</span>

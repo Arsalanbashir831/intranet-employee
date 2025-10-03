@@ -50,10 +50,18 @@ export default function TeamsCard({
 
 			{/* Body */}
 			<div className="p-4 flex-1 flex flex-col">
-				<h3 className="text-pink-600 text-lg font-semibold">{name}</h3>
-				<p className="text-teal-600 text-sm">{designation}</p>
+				<h3 className="text-[#E5004E] text-lg font-semibold">{name}</h3>
+				<p className="text-[#49A2A6] text-sm">{designation}</p>
 
-				<p className="text-gray-600 text-sm mt-2 line-clamp-3">{description}</p>
+				{/* Render description as HTML if it contains HTML tags, otherwise as plain text */}
+				{description && description.includes('<') ? (
+					<div 
+						className="text-[#5F6980] text-sm mt-2 line-clamp-3"
+						dangerouslySetInnerHTML={{ __html: description }}
+					/>
+				) : (
+					<p className="text-[#5F6980] text-sm mt-2 line-clamp-3">{description}</p>
+				)}
 			</div>
 		</Card>
 	);

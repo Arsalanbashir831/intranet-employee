@@ -4,6 +4,8 @@ import { Card } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import Link from "next/link";
+import { useBranchDepartmentEmployees } from "@/hooks/queries/use-departments";
+import { useAuth } from "@/contexts/auth-context";
 
 interface TeamMember {
 	id: number;
@@ -12,28 +14,80 @@ interface TeamMember {
 	image?: string;
 }
 
-const teamMembers: TeamMember[] = [
-	{
-		id: 1,
-		name: "Raheem Hussain",
-		role: "Manager",
-		image: "/images/profile-pic.png",
-	},
-	{
-		id: 2,
-		name: "Raheem Hussain",
-		role: "Team",
-		image: "/images/profile-pic.png",
-	},
-	{
-		id: 3,
-		name: "Raheem Hussain",
-		role: "Team",
-		image: "/images/profile-pic.png",
-	},
-];
-
 export default function TeamSection() {
+	const { user } = useAuth();
+	
+	// Fetch team members based on user's branch department, limit to 3
+	const { data, isLoading, isError } = useBranchDepartmentEmployees(
+		user?.branchDepartmentId || 0,
+		{ page: 1, pageSize: 3 }
+	);
+	
+	// Transform API data to match component structure
+	const teamMembers: TeamMember[] = data?.employees?.results?.slice(0, 3).map(employee => ({
+		id: employee.id,
+		name: employee.emp_name,
+		role: employee.role.toLowerCase().includes('manager') ? "Manager" : "Team",
+		image: employee.profile_picture || "/images/default-profile.png",
+	})) || [];
+
+	// Show loading state
+	if (isLoading) {
+		return (
+			<Card className="w-full bg-[#F9FFFF] rounded-lg p-3 gap-0 sm:p-4 md:p-5 flex flex-col max-h-[269px] min-h-[269px] overflow-hidden">
+				<div className="flex items-center justify-between mb-3 sm:mb-4">
+					<h2 className="font-semibold text-gray-900 text-base sm:text-lg md:text-xl leading-tight">
+						My Team
+					</h2>
+					<Link href="/teams" className="underline font-medium text-[#E5004E] text-xs sm:text-sm md:text-base">
+						View More
+					</Link>
+				</div>
+				<div className="flex-1 min-h-0 overflow-y-auto pr-1 space-y-2 flex items-center justify-center">
+					<div>Loading team members...</div>
+				</div>
+			</Card>
+		);
+	}
+
+	// Show error state
+	if (isError) {
+		return (
+			<Card className="w-full bg-[#F9FFFF] rounded-lg p-3 gap-0 sm:p-4 md:p-5 flex flex-col max-h-[269px] min-h-[269px] overflow-hidden">
+				<div className="flex items-center justify-between mb-3 sm:mb-4">
+					<h2 className="font-semibold text-gray-900 text-base sm:text-lg md:text-xl leading-tight">
+						My Team
+					</h2>
+					<Link href="/teams" className="underline font-medium text-[#E5004E] text-xs sm:text-sm md:text-base">
+						View More
+					</Link>
+				</div>
+				<div className="flex-1 min-h-0 overflow-y-auto pr-1 space-y-2 flex items-center justify-center">
+					<div>Error loading team members</div>
+				</div>
+			</Card>
+		);
+	}
+
+	// Show empty state
+	if (!user?.branchDepartmentId || teamMembers.length === 0) {
+		return (
+			<Card className="w-full bg-[#F9FFFF] rounded-lg p-3 gap-0 sm:p-4 md:p-5 flex flex-col max-h-[269px] min-h-[269px] overflow-hidden">
+				<div className="flex items-center justify-between mb-3 sm:mb-4">
+					<h2 className="font-semibold text-gray-900 text-base sm:text-lg md:text-xl leading-tight">
+						My Team
+					</h2>
+					<Link href="/teams" className="underline font-medium text-[#E5004E] text-xs sm:text-sm md:text-base">
+						View More
+					</Link>
+				</div>
+				<div className="flex-1 min-h-0 overflow-y-auto pr-1 space-y-2 flex items-center justify-center">
+					<div>No team members found</div>
+				</div>
+			</Card>
+		);
+	}
+
 	return (
 		<Card className="w-full bg-[#F9FFFF] rounded-lg p-3 gap-0 sm:p-4 md:p-5 flex flex-col max-h-[269px] min-h-[269px] overflow-hidden">
 			{/* Header */}
