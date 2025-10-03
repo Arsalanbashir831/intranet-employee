@@ -2,6 +2,7 @@
 
 import RightAuthAside from "@/components/auth/RightAuthAside";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import Image from "next/image";
 import { useState } from "react";
 import * as React from "react";
@@ -28,6 +29,7 @@ export default function AuthLayout({
 					</section>
 				</div>
 			</AuthProvider>
+			<ReactQueryDevtools initialIsOpen={false} />
 		</QueryClientProvider>
 	);
 }

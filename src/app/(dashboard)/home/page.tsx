@@ -14,41 +14,9 @@ import { ArrowRight } from "lucide-react";
 import Link from "next/link";
 import ContactSection from "@/components/common/contact-section";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
+import { LatestAnnouncements } from "@/components/dashboard/latest-announcements";
 
-const cards = [
-	{
-		id: "1",
-		image: "/images/office-work.png",
-		title: "New technology awareness.",
-		description:
-			"Delightful remarkably mr on announcing themselves entreaties favourable.",
-		badgeLines: ["30", "Nov", "2021"],
-	},
-	{
-		id: "2",
-		image: "/images/office-work.png",
-		title: "Client meeting discussion.",
-		description:
-			"About to in so terms voice at. Equal an would is found seems of.",
-		badgeLines: ["04", "Dec", "2021"],
-	},
-	{
-		id: "3",
-		image: "/images/office-work.png",
-		title: "Fast growth for business",
-		description:
-			"It more shed went up is roof if loud case. Delay music livel noise an.",
-		badgeLines: ["04", "Dec", "2021"],
-	},
-	{
-		id: "4",
-		image: "/images/office-work.png",
-		title: "Fourth Announcement",
-		description:
-			"Static extra card example for testing the grid layout with 4+ items.",
-		badgeLines: ["10", "Dec", "2021"],
-	},
-];
+
 
 export default function Home() {
 	return (
@@ -57,7 +25,7 @@ export default function Home() {
 			<PageHeader
 				title="Home"
 				crumbs={[
-					{ label: "Pages" },
+					{ label: "Pages", href:'#' },
 					{ label: "Home", href: ROUTES.DASHBOARD.HOME },
 				]}
 			/>
@@ -72,57 +40,7 @@ export default function Home() {
           space-y-[calc(var(--gap)*1.25)]
         ">
 				{/* ============ Announcements (desktop = horizontal scroll) ============ */}
-				<section className="bg-white rounded-2xl overflow-hidden p-[calc(var(--gap)*1.25)]">
-					<div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-[var(--gap)]">
-						<h2 className="font-semibold leading-tight text-2xl sm:text-xl md:text-2xl">
-							Latest Announcements
-						</h2>
-						<Link
-							href="/company-hub"
-							className="flex items-center underline font-medium text-[#E5004E] text-sm sm:text-base md:text-md">
-							View More
-							<ArrowRight className="ml-1 w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-5" />
-						</Link>
-					</div>
-
-					{/* Mobile / Tablet grid (no x-scroll) */}
-					<div className="mt-[var(--gap)] grid grid-cols-1 md:grid-cols-2 gap-[var(--gap)] lg:hidden">
-						{cards.map((c, i) => (
-							<FeatureCard
-								key={`m-${i}`}
-								image={c.image}
-								title={c.title}
-								description={c.description}
-								badgeLines={c.badgeLines}
-								className="w-full"
-							/>
-						))}
-					</div>
-
-					{/* Desktop+: true horizontal scroller with edge alignment, no right gap */}
-					{/* Desktop+: horizontal scroll ONLY for cards */}
-					<div className="mt-[var(--gap)] hidden lg:block">
-						<ScrollArea className="w-full">
-							<div className="flex gap-[var(--gap)] py-1 snap-x snap-mandatory pr-[calc(var(--gap)*1.25)]">
-								{cards.map((c, i) => (
-									<div
-										key={`d-${i}`}
-										className="flex-shrink-0 snap-start w-[360px] xl:w-[380px]">
-										<FeatureCard
-											image={c.image}
-											title={c.title}
-											link={`/company-hub/${c.id}`}
-											description={c.description}
-											badgeLines={c.badgeLines}
-											className="w-full h-full"
-										/>
-									</div>
-								))}
-							</div>
-							<ScrollBar orientation="horizontal" className="mt-[var(--gap)]" />
-						</ScrollArea>
-					</div>
-				</section>
+				<LatestAnnouncements />
 
 				{/* ======================= Bottom area ======================= */}
 				<section className="pb-[calc(var(--gap)*1.5)]">

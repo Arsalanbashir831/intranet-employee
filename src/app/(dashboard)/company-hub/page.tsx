@@ -13,6 +13,9 @@ import {
 import { CardTableToolbar } from "@/components/common/card-table/card-table-toolbar";
 import { CardTablePagination } from "@/components/common/card-table/card-table-pagination";
 import { useSearchParams, useRouter, usePathname } from "next/navigation";
+import { useAnnouncements } from "@/hooks/queries/use-announcements";
+import { useAuth } from "@/contexts/auth-context";
+import { calculateTotalPages } from "@/lib/pagination-utils";
 
 /* ---------------- Types ---------------- */
 interface CompanyHubItem {
@@ -23,107 +26,9 @@ interface CompanyHubItem {
 interface Announcement extends CompanyHubItem {
 	image: string;
 	badgeLines: [string, string, string];
+	createdAt: string;
 }
 type Policy = CompanyHubItem;
-
-/* ---------------- Mock Data ---------------- */
-const ALL_ANNOUNCEMENTS: Announcement[] = [
-	{
-		id: "1",
-		title: "New technology awareness.",
-		description:
-			"Delightful remarkably mr on announcing themselves entreaties favourable.",
-		image: "/images/office-work.png",
-		badgeLines: ["3", "No", "2021"],
-	},
-	{
-		id: "2",
-		title: "New technology awareness",
-		description:
-			"Delightful remarkably mr on announcing themselves entreaties favourable.",
-		image: "/images/office-work.png",
-		badgeLines: ["3", "No", "2021"],
-	},
-	{
-		id: "3",
-		title: "New technology awareness.",
-		description:
-			"Delightful remarkably mr on announcing themselves entreaties favourable.",
-		image: "/images/office-work.png",
-		badgeLines: ["3", "No", "2021"],
-	},
-	{
-		id: "4",
-		title: "New technology awareness",
-		description:
-			"Delightful remarkably mr on announcing themselves entreaties favourable.",
-		image: "/images/office-work.png",
-		badgeLines: ["3", "No", "2021"],
-	},
-	{
-		id: "5",
-		title: "New technology awareness.",
-		description:
-			"Delightful remarkably mr on announcing themselves entreaties favourable.",
-		image: "/images/office-work.png",
-		badgeLines: ["3", "No", "2021"],
-	},
-	{
-		id: "6",
-		title: "New technology awareness",
-		description:
-			"Delightful remarkably mr on announcing themselves entreaties favourable.",
-		image: "/images/office-work.png",
-		badgeLines: ["3", "No", "2021"],
-	},
-	{
-		id: "7",
-		title: "New technology awareness.",
-		description:
-			"Delightful remarkably mr on announcing themselves entreaties favourable.",
-		image: "/images/office-work.png",
-		badgeLines: ["3", "No", "2021"],
-	},
-];
-
-const ALL_POLICIES: Policy[] = [
-	{
-		id: "p1",
-		title: "Policy 1",
-		description:
-			"Delightful remarkably mr on announcing themselves entreaties favourable.",
-	},
-	{
-		id: "p2",
-		title: "Policy 1",
-		description:
-			"Delightful remarkably mr on announcing themselves entreaties favourable.",
-	},
-	{
-		id: "p3",
-		title: "Policy 1",
-		description:
-			"Delightful remarkably mr on announcing themselves entreaties favourable.",
-	},
-	{
-		id: "p4",
-		title: "Policy 1",
-		description:
-			"Delightful remarkably mr on announcing themselves entreaties favourable.",
-	},
-	{
-		id: "p5",
-		title: "Policy 1",
-		description:
-			"Delightful remarkably mr on announcing themselves entreaties favourable.",
-	},
-	{
-		id: "p6",
-		title: "Policy 1",
-		description:
-			"Delightful remarkably mr on announcing themselves entreaties favourable.",
-	},
-];
 
 /* ---------------- Table scaffold (for pagination UI) ---------------- */
 const columnHelper = createColumnHelper<CompanyHubItem>();
@@ -147,6 +52,7 @@ export default function CompanyHub() {
 	const search = useSearchParams();
 	const router = useRouter();
 	const pathname = usePathname();
+	const { user } = useAuth();
 
 	const urlTab =
 		(search.get("tab") as "announcements" | "policies") ?? "announcements";
@@ -166,8 +72,59 @@ export default function CompanyHub() {
 	// Figma-like: 4 across on xl; 2 across on lg; 1 on small → page size 8 (2 rows of 4)
 	const pageSize = 8;
 
+	// Fetch announcements data with caching
+	const {
+		data: announcementsData,
+		isLoading: announcementsLoading,
+		isFetching: announcementsFetching,
+		isPlaceholderData: announcementsPlaceholder
+	} = useAnnouncements(
+		user?.employeeId
+			? {
+				type: "announcement",
+				employee_id: user.employeeId
+			}
+			: undefined,
+		{ page, pageSize }
+	);
+
+	// Fetch policies data with caching
+	const {
+		data: policiesData,
+		isLoading: policiesLoading,
+		isFetching: policiesFetching,
+		isPlaceholderData: policiesPlaceholder
+	} = useAnnouncements(
+		user?.employeeId
+			? {
+				type: "policy",
+				employee_id: user.employeeId
+			}
+			: undefined,
+		{ page, pageSize }
+	);
+
 	const dataSource: CompanyHubItem[] =
-		activeTab === "announcements" ? ALL_ANNOUNCEMENTS : ALL_POLICIES;
+		activeTab === "announcements"
+			? (announcementsData?.announcements.results.map(announcement => ({
+				id: announcement.id.toString(),
+				title: announcement.title,
+				description: announcement.body.replace(/<[^>]*>/g, "").substring(0, 100) + "...",
+				image: announcement.attachments.length > 0
+					? announcement.attachments[0].file_url
+					: "/images/office-work.png",
+				badgeLines: [
+					new Date(announcement.created_at).getDate().toString(),
+					new Date(announcement.created_at).toLocaleString('default', { month: 'short' }),
+					new Date(announcement.created_at).getFullYear().toString()
+				] as [string, string, string],
+				createdAt: announcement.created_at
+			})) as Announcement[] || [])
+			: (policiesData?.announcements.results.map(policy => ({
+				id: policy.id.toString(),
+				title: policy.title,
+				description: policy.body.replace(/<[^>]*>/g, "").substring(0, 100) + "...",
+			})) as Policy[] || []);
 
 	const filtered = useMemo(() => {
 		const q = query.trim().toLowerCase();
@@ -176,7 +133,13 @@ export default function CompanyHub() {
 			: dataSource;
 	}, [query, dataSource]);
 
-	const pageCount = Math.max(1, Math.ceil(filtered.length / pageSize));
+	const announcementsCount = announcementsData?.announcements.count || 0;
+	const policiesCount = policiesData?.announcements.count || 0;
+
+	const pageCount = activeTab === "announcements"
+		? Math.max(1, calculateTotalPages(announcementsCount, pageSize))
+		: Math.max(1, calculateTotalPages(policiesCount, pageSize));
+
 	const pageItems = filtered.slice((page - 1) * pageSize, page * pageSize);
 
 	const table = useReactTable<CompanyHubItem>({
@@ -184,6 +147,24 @@ export default function CompanyHub() {
 		columns,
 		getCoreRowModel: getCoreRowModel(),
 		pageCount,
+		state: {
+			pagination: {
+				pageIndex: page - 1, // Convert to 0-based for react-table
+				pageSize,
+			},
+		},
+		onPaginationChange: (updater) => {
+			// Convert back to 1-based pagination for our API
+			if (typeof updater === "function") {
+				const newState = updater({
+					pageIndex: page - 1,
+					pageSize,
+				});
+				setPage(newState.pageIndex + 1);
+			} else {
+				setPage(updater.pageIndex + 1);
+			}
+		},
 	});
 
 	const handleSearchChange = (value: string) => {
@@ -202,12 +183,20 @@ export default function CompanyHub() {
 		router.replace(`${pathname}?${qs.toString()}`, { scroll: false });
 	};
 
+	// Show loading state only for the initial load of each tab
+	const showLoading = (activeTab === "announcements" && !announcementsData && (announcementsLoading || announcementsFetching)) ||
+		(activeTab === "policies" && !policiesData && (policiesLoading || policiesFetching));
+
+	// Show cached data while fetching new data to prevent glitch
+	const isTransitioning = (announcementsFetching && activeTab === "announcements" && !announcementsPlaceholder) ||
+		(policiesFetching && activeTab === "policies" && !policiesPlaceholder);
+
 	return (
 		<div className="min-h-screen bg-[#F8F8F8]">
 			<PageHeader
 				title="Company Hub"
 				crumbs={[
-					{ label: "Pages" },
+					{ label: "Pages", href:'#' },
 					{ label: "Company Hub", href: ROUTES.DASHBOARD.COMPANY_HUB },
 				]}
 				tabs={[
@@ -219,13 +208,7 @@ export default function CompanyHub() {
 			/>
 
 			{/* Page rails + top/bottom breathing room */}
-			<main
-				className="
-      mx-auto w-full
-      px-4 sm:px-6 md:px-8
-      py-6 sm:py-8 lg:py-10
-    
-    ">
+			<main className="mx-auto w-full px-4 sm:px-6 md:px-8 py-6 sm:py-8 lg:py-10">
 				{/* White panel with equal padding on every side */}
 				<section className="bg-white rounded-2xl shadow-sm p-6 sm:p-6 lg:p-5">
 					{/* Keep internal vertical rhythm consistent */}
@@ -248,28 +231,38 @@ export default function CompanyHub() {
 
 						{/* Grid with equal gutters */}
 						<div className="grid auto-rows-fr min-w-0 grid-cols-1 sm:grid-cols lg:grid-cols-3 xl:grid-cols-4 gap-6 justify-items-stretch xl:justify-items-center">
-							{pageItems.map((item) =>
-								activeTab === "announcements" ? (
-									<FeatureCard
-										key={item.id}
-										link={`/company-hub/${item.id}`} // 👈 Add this
-										image={(item as Announcement).image}
-										title={item.title}
-										description={item.description}
-										badgeLines={(item as Announcement).badgeLines}
-										className="w-full "
-										imgClassName="object-cover"
-									/>
-								) : (
-									<FeatureCard
-										key={item.id}
-										link={`/company-hub/${item.id}`} // 👈 Add this
-										title={item.title}
-										description={item.description}
-										className="w-full "
-										imgClassName="object-cover"
-									/>
+							{showLoading ? (
+								<div className="col-span-full flex justify-center py-8">
+									<div>Loading {activeTab}...</div>
+								</div>
+							) : pageItems.length > 0 ? (
+								pageItems.map((item) =>
+									activeTab === "announcements" ? (
+										<FeatureCard
+											key={item.id}
+											link={`${ROUTES.DASHBOARD.COMPANY_HUB}/${item.id}`}
+											image={(item as Announcement).image}
+											title={item.title}
+											description={item.description}
+											badgeLines={(item as Announcement).badgeLines}
+											className="w-full"
+											imgClassName="object-cover"
+										/>
+									) : (
+										<FeatureCard
+											key={item.id}
+											link={`${ROUTES.DASHBOARD.COMPANY_HUB}/${item.id}`}
+											title={item.title}
+											description={item.description}
+											className="w-full"
+											imgClassName="object-cover"
+										/>
+									)
 								)
+							) : (
+								<div className="col-span-full text-center py-8">
+									<p>No {activeTab} found.</p>
+								</div>
 							)}
 							{/* keep full rows on last page (optional) */}
 							{Array.from({
@@ -280,9 +273,11 @@ export default function CompanyHub() {
 						</div>
 
 						{/* Pagination aligned right with the same vertical spacing as above */}
-						<div className="flex items-center justify-end">
-							<CardTablePagination table={table} />
-						</div>
+						{pageItems.length > 0 && (
+							<div className="flex items-center justify-end">
+								<CardTablePagination table={table} />
+							</div>
+						)}
 					</div>
 				</section>
 			</main>

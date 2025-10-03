@@ -3,36 +3,36 @@
 import React from "react";
 import Image from "next/image";
 import { Badge } from "@/components/ui/badge";
+import { Announcement } from "@/services/announcements";
 
 interface AnnouncementDetailCardProps {
-	announcement: {
-		id: string;
-		title: string;
-		date: string;
-		tag: string;
-		image: string;
-		content: string;
-	};
+	announcement: Announcement;
 }
 
 export default function AnnouncementDetailCard({
 	announcement,
 }: AnnouncementDetailCardProps) {
-	return (
-		<div className="container mx-auto px-4 py-6  lg:px-2">
-			{/* Card with White Background */}
-			<div className="bg-white rounded-lg shadow-sm p-4 sm:p-6 lg:p-5">
-				{/* Section Header */}
-				{/* <h1
-					className="
-            font-bold text-gray-800 pb-3
-            text-xl sm:text-2xl md:text-3xl lg:text-4xl
-          
-          ">
-					Announcement
-				</h1> */}
+	// Use the first attachment as the hero image, or a default image
+	const heroImage = announcement.attachments.length > 0
+		? announcement.attachments[0].file_url
+		: "/images/office-work.png";
 
-				{/* Hero Image */}
+	// Format the date
+	const formattedDate = new Date(announcement.created_at).toLocaleDateString('en-US', {
+		weekday: 'long',
+		year: 'numeric',
+		month: 'long',
+		day: 'numeric'
+	});
+
+	// Handle hash_tags - it can be a string or array
+	const hashTags = Array.isArray(announcement.hash_tags)
+		? announcement.hash_tags.join(' ')
+		: announcement.hash_tags || '';
+
+	return (
+		<div className="mx-auto w-full px-4 sm:px-6 md:px-8 py-6 sm:py-8 lg:py-10">
+		<div className="bg-white rounded-lg shadow-sm p-4 sm:p-6 lg:p-5">
 				<div
 					className="
             w-full relative overflow-hidden rounded-md mb-6
@@ -40,7 +40,7 @@ export default function AnnouncementDetailCard({
             min-[1920px]:h-[600px] min-[2560px]:h-[700px] min-[3840px]:h-[800px]
           ">
 					<Image
-						src={announcement.image}
+						src={heroImage}
 						alt={announcement.title}
 						fill
 						className="object-cover"
@@ -48,7 +48,7 @@ export default function AnnouncementDetailCard({
 				</div>
 
 				{/* Meta Row */}
-				<div className="border-t border-b">
+				<div className="border-t border-b border-[#CDD0D5]">
 					<div className="flex items-center py-3 gap-3">
 						{/* Logo */}
 						<div className="w-10 h-10 sm:w-12 sm:h-12 flex items-center justify-center">
@@ -66,14 +66,14 @@ export default function AnnouncementDetailCard({
 								className="
                   font-extrabold
                   text-sm sm:text-base md:text-lg lg:text-xl
-                  min-[1920px]:text-2xl
+                  min-[1920px]:text-2xl text-[#202124]
                 ">
 								CARTWRIGHT KING
 							</h2>
 							<div
 								className="
                   flex items-center gap-1
-                  text-xs sm:text-sm md:text-base text-gray-500
+                  text-xs sm:text-sm md:text-base font-extralight text-[#202124]
                 ">
 								<Image
 									src="/icons/date-calendar.svg"
@@ -81,28 +81,28 @@ export default function AnnouncementDetailCard({
 									height={20}
 									alt="Date"
 								/>
-								<span>{announcement.date}</span>
+								<span>{formattedDate}</span>
 							</div>
 						</div>
 					</div>
 				</div>
 
 				{/* Badge */}
-				<div className="border-b py-3">
+				<div className="border-b border-[#CDD0D5] py-3">
 					<Badge
 						className="
-              bg-neutral font-light text-gray-600
-              text-xs sm:text-sm md:text-base lg:text-lg
+              bg-neutral font-extralight text-[#000000]
+              text-xs sm:text-sm md:text-base
             ">
-						{announcement.tag}
+						{hashTags}
 					</Badge>
 				</div>
 
 				{/* Title */}
-				<div className="border-b py-6 mb-6">
+				<div className="border-b border-[#CDD0D5] py-6 mb-6">
 					<h1
 						className="
-              font-bold text-gray-900
+              font-medium text-[#202124]
               text-2xl sm:text-3xl md:text-4xl lg:text-5xl
               min-[1920px]:text-6xl min-[2560px]:text-7xl
             ">
@@ -113,17 +113,11 @@ export default function AnnouncementDetailCard({
 				{/* Content */}
 				<div
 					className="
-            text-gray-700 leading-relaxed space-y-5
-            text-sm sm:text-base md:text-lg lg:text-xl
-            min-[1920px]:text-2xl min-[2560px]:text-[26px]
-          ">
-					{announcement.content
-						.split("\n\n")
-						.filter((p) => p.trim())
-						.map((paragraph, i) => (
-							<p key={i}>{paragraph.trim()}</p>
-						))}
-				</div>
+            text-[#202124] leading-relaxed space-y-5
+            text-sm sm:text-base md:text-lg font-extralight
+          "
+					dangerouslySetInnerHTML={{ __html: announcement.body }}
+				/>
 			</div>
 		</div>
 	);

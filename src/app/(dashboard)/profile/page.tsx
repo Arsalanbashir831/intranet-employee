@@ -45,7 +45,7 @@ export default function Profile() {
 			<PageHeader
 				title="Profile"
 				crumbs={[
-					{ label: "Pages" },
+					{ label: "Pages", href:'#' },
 					{ label: "Profile", href: ROUTES.DASHBOARD.PROFILE },
 				]}
 				action={

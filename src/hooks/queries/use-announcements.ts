@@ -1,29 +1,38 @@
 import * as React from "react";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient, keepPreviousData } from "@tanstack/react-query";
 import { 
-  createAnnouncement, 
-  deleteAnnouncement, 
   getAnnouncement, 
   listAnnouncements,
-  updateAnnouncement,
-  createAnnouncementAttachment,
-  deleteAnnouncementAttachment,
-  listAnnouncementAttachments
+  listAnnouncementAttachments,
+  getLatestAnnouncements,
+  getLatestPolicies
 } from "@/services/announcements";
 import type { 
-  AnnouncementCreateRequest, 
-  AnnouncementUpdateRequest,
-  AnnouncementAttachmentCreateRequest,
   AnnouncementListResponse
 } from "@/services/announcements";
+
+// Helper to create stable query keys
+const normalizeParams = (params?: Record<string, string | number | boolean>) => {
+  if (!params) return undefined;
+  // Sort keys to ensure consistent query key ordering
+  const entries = Object.entries(params).sort(([a], [b]) => (a > b ? 1 : -1));
+  return Object.fromEntries(entries) as Record<string, string | number | boolean>;
+};
 
 export function useAnnouncements(
   params?: Record<string, string | number | boolean>,
   pagination?: { page?: number; pageSize?: number },
-  options?: { placeholderData?: (previousData?: AnnouncementListResponse) => AnnouncementListResponse | undefined }
+  options?: { 
+    placeholderData?: (previousData?: AnnouncementListResponse) => AnnouncementListResponse | undefined;
+    enabled?: boolean;
+  }
 ) {
+  // Normalize params to ensure consistent query keys
+  const normalizedParams = React.useMemo(() => normalizeParams(params), [JSON.stringify(params)]);
+  const paginationKey = React.useMemo(() => JSON.stringify(pagination), [JSON.stringify(pagination)]);
+
   return useQuery({
-    queryKey: ["announcements", params, pagination],
+    queryKey: ["announcements", normalizedParams, paginationKey],
     queryFn: () => {
       // Always include inactive announcements (drafts) in the results
       const queryParams = {
@@ -32,52 +41,39 @@ export function useAnnouncements(
       };
       return listAnnouncements(queryParams, pagination);
     },
-    staleTime: 60_000,
-    placeholderData: options?.placeholderData,
+    staleTime: 60_000, // Cache for 1 minute
+    gcTime: 5 * 60 * 1000, // Keep in memory for 5 minutes
+    placeholderData: options?.placeholderData || keepPreviousData, // Keep previous data while fetching
+    enabled: options?.enabled !== undefined ? options.enabled : true, // Enable by default
   });
 }
 
 export function useAnnouncement(id: number | string) {
   return useQuery({
-    queryKey: ["announcements", id],
+    queryKey: ["announcements", String(id)],
     queryFn: () => getAnnouncement(id),
     enabled: !!id,
     staleTime: 60_000,
   });
 }
 
-export function useCreateAnnouncement() {
-  const queryClient = useQueryClient();
-  
-  return useMutation({
-    mutationFn: (payload: AnnouncementCreateRequest) => createAnnouncement(payload),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["announcements"] });
-    },
+// New hook for fetching latest announcements for a specific employee
+export function useLatestAnnouncements(employeeId: number, limit: number = 5) {
+  return useQuery({
+    queryKey: ["latest-announcements", employeeId, limit],
+    queryFn: () => getLatestAnnouncements(employeeId, limit),
+    enabled: !!employeeId,
+    staleTime: 60_000,
   });
 }
 
-export function useUpdateAnnouncement(id: number | string) {
-  const queryClient = useQueryClient();
-  
-  return useMutation({
-    mutationFn: (payload: AnnouncementUpdateRequest) => updateAnnouncement(id, payload),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["announcements"] });
-      queryClient.invalidateQueries({ queryKey: ["announcements", id] });
-      queryClient.invalidateQueries({ queryKey: ["announcements", String(id)] }); // Handle both string and number ids
-    },
-  });
-}
-
-export function useDeleteAnnouncement() {
-  const queryClient = useQueryClient();
-  
-  return useMutation({
-    mutationFn: (id: number | string) => deleteAnnouncement(id),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["announcements"] });
-    },
+// New hook for fetching latest policies for a specific employee
+export function useLatestPolicies(employeeId: number, limit: number = 3) {
+  return useQuery({
+    queryKey: ["latest-policies", employeeId, limit],
+    queryFn: () => getLatestPolicies(employeeId, limit),
+    enabled: !!employeeId,
+    staleTime: 60_000,
   });
 }
 
@@ -86,58 +82,12 @@ export function useAnnouncementAttachments(
   announcementId: number | string,
   params?: Record<string, string | number | boolean>
 ) {
+  const normalizedParams = React.useMemo(() => normalizeParams(params), [JSON.stringify(params)]);
+
   return useQuery({
-    queryKey: ["announcement-attachments", announcementId, params],
+    queryKey: ["announcement-attachments", String(announcementId), normalizedParams],
     queryFn: () => listAnnouncementAttachments(announcementId, params),
     enabled: !!announcementId,
     staleTime: 60_000,
   });
-}
-
-export function useCreateAnnouncementAttachment() {
-  const queryClient = useQueryClient();
-  
-  return useMutation({
-    mutationFn: (payload: AnnouncementAttachmentCreateRequest) => createAnnouncementAttachment(payload),
-    onSuccess: (_, variables) => {
-      queryClient.invalidateQueries({ queryKey: ["announcement-attachments", variables.announcement] });
-      queryClient.invalidateQueries({ queryKey: ["announcements", variables.announcement] });
-    },
-  });
-}
-
-export function useDeleteAnnouncementAttachment() {
-  const queryClient = useQueryClient();
-  
-  return useMutation({
-    mutationFn: (id: number | string) => deleteAnnouncementAttachment(id),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["announcement-attachments"] });
-      queryClient.invalidateQueries({ queryKey: ["announcements"] });
-    },
-  });
-}
-
-// Hook to track attachments to be deleted
-export function useAttachmentDeletions() {
-  const [deletedAttachmentIds, setDeletedAttachmentIds] = React.useState<number[]>([]);
-  
-  const markForDeletion = (id: number) => {
-    setDeletedAttachmentIds(prev => [...prev, id]);
-  };
-  
-  const unmarkForDeletion = (id: number) => {
-    setDeletedAttachmentIds(prev => prev.filter(deletedId => deletedId !== id));
-  };
-  
-  const clearDeletions = () => {
-    setDeletedAttachmentIds([]);
-  };
-  
-  return {
-    deletedAttachmentIds,
-    markForDeletion,
-    unmarkForDeletion,
-    clearDeletions
-  };
 }

@@ -8,7 +8,7 @@ export default function TrainingChecklist() {
 			<PageHeader
 				title="Training Checklist"
 				crumbs={[
-					{ label: "Pages" },
+					{ label: "Pages", href:'#' },
 					{
 						label: "Task Checklist",
 						href: ROUTES.DASHBOARD.TRAINING_CHECKLIST,

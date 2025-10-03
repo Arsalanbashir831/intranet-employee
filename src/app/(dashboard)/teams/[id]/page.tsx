@@ -42,7 +42,7 @@ export default async function TeamSlug({ params }: PageProps) {
 			<PageHeader
 				title="Teams"
 				crumbs={[
-					{ label: "Pages" },
+					{ label: "Pages", href:'#' },
 					{ label: "Teams", href: ROUTES.DASHBOARD.TEAMS },
 				]}
 			/>

@@ -3,6 +3,9 @@
 import { Card } from "@/components/ui/card";
 import Link from "next/link";
 import Image from "next/image";
+import { useLatestPolicies } from "@/hooks/queries/use-announcements";
+import { useAuth } from "@/contexts/auth-context";
+import { ROUTES } from "@/constants/routes";
 
 interface Policy {
 	id: number;
@@ -12,24 +15,61 @@ interface Policy {
 	date: string;
 }
 
-const policies: Policy[] = [
-	{
-		id: 1,
-		title: "Policy 1",
-		description: "HERE ARE THE NEW ANNOUNCED POLICY FOR HR",
-		author: "Cartwright King",
-		date: "2024-07-26",
-	},
-	{
-		id: 2,
-		title: "Policy 2",
-		description: "HERE ARE THE NEW ANNOUNCED POLICY FOR HR",
-		author: "Cartwright King",
-		date: "2024-07-26",
-	},
-];
-
 export default function RecentPolicies() {
+	const { user } = useAuth();
+	const { data, isLoading, isError } = useLatestPolicies(user?.employeeId || 0, 3);
+	
+	// Transform API data to match the component's expected structure
+	const policies: Policy[] = data?.announcements?.results?.map(policy => ({
+		id: policy.id,
+		title: policy.title,
+		description: policy.body.replace(/<[^>]*>/g, "").substring(0, 100) + "...",
+		author: "Cartwright King", // Default author as in mock data
+		date: new Date(policy.created_at).toLocaleDateString('en-CA'), // Format as YYYY-MM-DD
+	})) || [];
+
+	// Show loading state
+	if (isLoading) {
+		return (
+			<Card className="w-full bg-[#F9FEFF] rounded-lg p-3 gap-0 sm:p-4 md:p-5 flex flex-col max-h-[268px] min-h-[268px] overflow-hidden">
+				<div className="flex items-center justify-between mb-3 sm:mb-4">
+					<h2 className="font-semibold text-gray-900 text-base sm:text-lg md:text-xl">
+						Recent Policies
+					</h2>
+					<Link
+						href={ROUTES.DASHBOARD.COMPANY_HUB + "/?tab=policies"}
+						className="underline font-medium text-[#E5004E] text-xs sm:text-sm md:text-base">
+						View More
+					</Link>
+				</div>
+				<div className="flex-1 min-h-0 overflow-y-auto space-y-3 pr-1 flex items-center justify-center">
+					<div>Loading policies...</div>
+				</div>
+			</Card>
+		);
+	}
+
+	// Show error state
+	if (isError) {
+		return (
+			<Card className="w-full bg-[#F9FEFF] rounded-lg p-3 gap-0 sm:p-4 md:p-5 flex flex-col max-h-[268px] min-h-[268px] overflow-hidden">
+				<div className="flex items-center justify-between mb-3 sm:mb-4">
+					<h2 className="font-semibold text-gray-900 text-base sm:text-lg md:text-xl">
+						Recent Policies
+					</h2>
+					<Link
+						href={ROUTES.DASHBOARD.COMPANY_HUB + "/?tab=policies"}
+						className="underline font-medium text-[#E5004E] text-xs sm:text-sm md:text-base">
+						View More
+					</Link>
+				</div>
+				<div className="flex-1 min-h-0 overflow-y-auto space-y-3 pr-1 flex items-center justify-center">
+					<div>Error loading policies</div>
+				</div>
+			</Card>
+		);
+	}
+
 	return (
 		<Card className="w-full bg-[#F9FEFF] rounded-lg p-3 gap-0 sm:p-4 md:p-5 flex flex-col max-h-[268px] min-h-[268px] overflow-hidden">
 			{/* Header */}
@@ -38,7 +78,7 @@ export default function RecentPolicies() {
 					Recent Policies
 				</h2>
 				<Link
-					href="/company-hub?tab=policies"
+					href={ROUTES.DASHBOARD.COMPANY_HUB + "/?tab=policies"}
 					className="underline font-medium text-[#E5004E] text-xs sm:text-sm md:text-base">
 					View More
 				</Link>

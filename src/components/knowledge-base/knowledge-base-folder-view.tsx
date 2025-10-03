@@ -57,7 +57,7 @@ export function KnowledgeBaseFolderView({
 				<PageHeader
 					title="Knowledge Base"
 					crumbs={[
-						{ label: "Pages" },
+						{ label: "Pages", href:'#' },
 						{ label: "Knowledge Base", href: ROUTES.DASHBOARD.KNOWLEDGE_BASE },
 					]}
 				/>
@@ -80,7 +80,7 @@ export function KnowledgeBaseFolderView({
 			<PageHeader
 				title="Knowledge Base"
 				crumbs={[
-					{ label: "Pages" },
+					{ label: "Pages", href:'#' },
 					{ label: "Knowledge Base", href: ROUTES.DASHBOARD.KNOWLEDGE_BASE },
 				]}
 			/>

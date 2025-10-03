@@ -8,26 +8,11 @@ export const API_ROUTES = {
         RESET_PASSWORD: '/reset_password/',
         CHANGE_PASSWORD: '/change_password/'
     },
-    BRANCHES: {
-        LIST: "/branches/",
-        DETAIL: (id: number | string) => `/branches/${id}/`,
-    },
-    DEPARTMENTS: {
-        LIST: "/departments/",
-        DETAIL: (id: number | string) => `/departments/${id}/`,
-        GET_ALL_EMPLOYEES: (id: number | string) => `/departments/employees/${id}/`,
-        GET_ALL_DEPT_EMPLOYEES: (id: number | string) => `/departments/employees/${id}/`,
-        GET_ALL_BRANCH_DEPT_EMPLOYEES: (id: number | string) => `/branchdepartments/employees/${id}`,
-    },
     EMPLOYEES: {
         LIST: "/employees/",
         DETAIL: (id: number | string) => `/employees/${id}/`,
         UPLOAD_PICTURE: (id: number | string) => `/employees/${id}/profile_picture/upload/`,
         DELETE_PICTURE: (id: number | string) => `/employees/${id}/profile_picture/`,
-    },
-    MANAGERS: {
-        LIST: "/managers/",
-        DETAIL: (id: number | string) => `/managers/${id}/`,
     },
     KNOWLEDGE_BASE: {
         FOLDERS: {
@@ -42,10 +27,6 @@ export const API_ROUTES = {
         ANNOUNCEMENTS: {
             LIST: "/knowledge/announcements/",
             DETAIL: (id: number | string) => `/knowledge/announcements/${id}/`,
-            DELETE: (id: number | string) => `/knowledge/announcements/${id}/`,
-            ATTACHMENTS: {
-                LIST: (announcement_id: number | string, employee_id: number | string) => `/knowledge/announcement-attachments?announcement_id=${announcement_id}&employee_id=${employee_id}/`,
-            },
         },
     },
     NEW_HIRE: {

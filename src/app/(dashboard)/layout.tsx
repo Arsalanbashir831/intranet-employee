@@ -3,6 +3,7 @@
 import { Navbar } from "@/components/common/navigation/navbar";
 import { Suspense, useState } from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { AuthProvider } from "@/contexts/auth-context";
 
 export default function DashboardLayout({
@@ -20,6 +21,7 @@ export default function DashboardLayout({
 						<Suspense>{children}</Suspense>
 					</main>
 				</div>
+				<ReactQueryDevtools initialIsOpen={false} />
 			</AuthProvider>
 		</QueryClientProvider>
 	);
