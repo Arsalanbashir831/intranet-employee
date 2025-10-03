@@ -15,6 +15,9 @@ import {
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Input } from "../ui/input";
+import { useUploadProfilePicture, useDeleteProfilePicture } from "@/hooks/queries/use-employees";
+import { useAuth } from "@/contexts/auth-context";
+import { toast } from "sonner";
 
 /* ---------------------- Types ---------------------- */
 type Props = {
@@ -102,6 +105,10 @@ export function ProfilePictureDialog({
 	open,
 	onOpenChange,
 }: Props) {
+	const { user } = useAuth();
+	const { mutate: uploadProfilePicture } = useUploadProfilePicture();
+	const { mutate: deleteProfilePicture } = useDeleteProfilePicture();
+	
 	const [internalOpen, setInternalOpen] = useState(false);
 	const isControlled = typeof open === "boolean";
 	const dialogOpen = isControlled ? open! : internalOpen;
@@ -132,25 +139,63 @@ export function ProfilePictureDialog({
 	);
 
 	const handleDone = async () => {
-		if (!source || !croppedAreaPixels) return;
-		const { dataUrl, file } = await cropToDataUrlAndFile(
-			source,
-			croppedAreaPixels,
-			"avatar.png"
-		);
-		setPreview(dataUrl);
-		await onSave?.({ dataUrl, file });
-		setDialogOpen(false);
+		if (!source || !croppedAreaPixels || !user?.employeeId) return;
+		
+		try {
+			const { dataUrl, file } = await cropToDataUrlAndFile(
+				source,
+				croppedAreaPixels,
+				"avatar.png"
+			);
+			
+			// Upload the file using the hook
+			uploadProfilePicture(file, {
+				onSuccess: () => {
+					// Call the onSave callback if provided
+					onSave?.({ dataUrl, file });
+					
+					// Close the dialog
+					setDialogOpen(false);
+					
+					toast.success("Profile picture updated successfully");
+				},
+				onError: (error) => {
+					console.error("Failed to upload profile picture:", error);
+					toast.error("Failed to update profile picture");
+				}
+			});
+		} catch (error) {
+			console.error("Failed to process profile picture:", error);
+			toast.error("Failed to process profile picture");
+		}
 	};
 
 	const handleDelete = async () => {
-		setPreview("");
-		setSource(null);
-		setCroppedAreaPixels(null);
-		setZoom(1);
-		setCrop({ x: 0, y: 0 });
-		await onDelete?.();
-		setDialogOpen(false);
+		if (!user?.employeeId) return;
+		
+		// Delete the profile picture using the hook
+		deleteProfilePicture(undefined, {
+			onSuccess: () => {
+				// Reset the preview
+				setPreview("");
+				setSource(null);
+				setCroppedAreaPixels(null);
+				setZoom(1);
+				setCrop({ x: 0, y: 0 });
+				
+				// Call the onDelete callback if provided
+				onDelete?.();
+				
+				// Close the dialog
+				setDialogOpen(false);
+				
+				toast.success("Profile picture deleted successfully");
+			},
+			onError: (error) => {
+				console.error("Failed to delete profile picture:", error);
+				toast.error("Failed to delete profile picture");
+			}
+		});
 	};
 
 	return (

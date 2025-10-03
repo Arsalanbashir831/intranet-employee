@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Card } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { Badge } from "../ui/badge";
@@ -10,6 +10,8 @@ import { Button } from "../ui/button";
 import { ProfilePictureDialog } from "./ProfilePictureDialog";
 import { RichTextEditor } from "../common/rich-text-editor";
 import Image from "next/image";
+import { useEmployee, useUpdateEmployee } from "@/hooks/queries/use-employees";
+import { toast } from "sonner";
 
 /* ---------- Types ---------- */
 interface Employee {
@@ -25,85 +27,59 @@ interface Employee {
 	city: string;
 	branch: string;
 	status: string;
-	bio: string;
+	education: string;
 	profileImage: string;
 }
 
-type EmployeeInput = Partial<Employee> & {
-	full_name?: string;
-	emp_role?: string;
-	job_title?: string;
-	user_email?: string;
-	phone_number?: string;
-	join_date?: string | Date;
-	department_name?: string;
-	supervisor_name?: string;
-	user_city?: string;
-	branch_name?: string;
-	active?: boolean;
-	qualification_details?: string;
-	profile_picture_url?: string;
-	profile_picture?: string;
-	branch_detail?: {
-		department_detail?: {
-			name?: string;
-		};
-	};
-};
 interface EmployeeProfileCardProps {
 	employee?: Employee;
-	employeeId?: number | string;
 }
 
-/* ---------- Demo fallback ---------- */
-const data = {
-	id: 1,
-	name: "Brian F.",
-	role: "Design",
-	email: "lindablair@mail.com",
-	phone: "050 414 8778",
-	joinDate: "2022-12-12",
-	department: "HR",
-	reportingTo: "Flores",
-	address: "3890 Poplar Dr.",
-	city: "Lahore",
-	branch: "Lahore",
-	status: "Active Employee",
-	bio: `Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.`,
-	profileImage: "https://via.placeholder.com/280",
-	active: true,
-	branch_detail: { department_detail: { name: "HR" } },
-};
-
 export function EmployeeProfileCard({ employee }: EmployeeProfileCardProps) {
-	const e = (employee ?? data) as EmployeeInput;
+	const { data, isLoading, isError } = useEmployee();
+	const { mutate: updateEmployeeMutation } = useUpdateEmployee();
+	const [isEditingEducation, setIsEditingEducation] = useState(false);
+	const [education, setEducation] = useState("");
+	const [initialEducation, setInitialEducation] = useState("");
 
-	const resolved: Employee = {
-		id: String(e.id ?? ""),
-		name: e.full_name ?? e.name ?? "",
-		role: e.emp_role ?? e.job_title ?? e.role ?? "",
-		email: e.email ?? e.user_email ?? "",
-		phone: e.phone ?? e.phone_number ?? "",
-		joinDate: e.join_date
-			? new Date(e.join_date).toLocaleDateString()
-			: e.joinDate ?? "",
-		department:
-			e.branch_detail?.department_detail?.name ??
-			e.department_name ??
-			e.department ??
-			"",
-		reportingTo: e.supervisor_name ?? e.reportingTo ?? "--",
-		address: e.address ?? "",
-		city: e.user_city ?? e.city ?? "",
-		branch: e.branch_name ?? e.branch ?? "",
-		status: e.active === false ? "INACTIVE" : e.status ?? "Active Employee",
-		bio: e.qualification_details ?? e.bio ?? "",
-		profileImage:
-			e.profile_picture_url ?? e.profile_picture ?? e.profileImage ?? "",
-	};
+	// Transform API data to match component structure
+	const resolvedEmployee: Employee | undefined = data?.employee ? {
+		id: data.employee.id.toString(),
+		name: data.employee.emp_name,
+		role: data.employee.role,
+		email: data.employee.email,
+		phone: data.employee.phone,
+		joinDate: new Date(data.employee.hire_date).toLocaleDateString(),
+		department: data.employee.branch_department?.department?.dept_name || "",
+		reportingTo: data.employee.branch_department?.manager ? 
+			data.employee.branch_department.manager.employee.emp_name : "--",
+		address: data.employee.address,
+		city: data.employee.city,
+		branch: data.employee.branch_department?.branch?.branch_name || "",
+		status: "Active Employee", // Default status
+		education: data.employee.education || "",
+		profileImage: data.employee.profile_picture || "",
+	} : employee;
 
-	const [isEditingBio, setIsEditingBio] = useState(false);
-	const [bio, setBio] = useState(resolved.bio || "");
+	// Initialize education state when employee data is first loaded
+	useEffect(() => {
+		if (resolvedEmployee && !initialEducation) {
+			setEducation(resolvedEmployee.education);
+			setInitialEducation(resolvedEmployee.education);
+		}
+	}, [resolvedEmployee, initialEducation]);
+
+	if (isLoading) {
+		return <div>Loading...</div>;
+	}
+
+	if (isError) {
+		return <div>Error loading profile data</div>;
+	}
+
+	if (!resolvedEmployee) {
+		return <div>No profile data available</div>;
+	}
 
 	// Pink masked icon helper
 	const PinkIcon = ({ src, size = 18 }: { src: string; size?: number }) => (
@@ -125,6 +101,24 @@ export function EmployeeProfileCard({ employee }: EmployeeProfileCardProps) {
 		/>
 	);
 
+	const handleSaveEducation = () => {
+		updateEmployeeMutation(
+			{ education }, // Use the current education state value
+			{
+				onSuccess: () => {
+					toast.success("Education updated successfully");
+					setIsEditingEducation(false);
+					// Update initialEducation to the new value after successful save
+					setInitialEducation(education);
+				},
+				onError: (error) => {
+					toast.error("Failed to update education");
+					console.error("Failed to update education:", error);
+				},
+			}
+		);
+	};
+
 	return (
 		<div className="w-full bg-[#F8F8F8] py-4 sm:py-6 lg:py-2">
 			<Card
@@ -140,9 +134,9 @@ export function EmployeeProfileCard({ employee }: EmployeeProfileCardProps) {
 					<div className="flex items-start gap-4 sm:gap-5">
 						<div className="relative">
 							<Avatar className="size-20 sm:size-24 md:size-28">
-								<AvatarImage src={resolved.profileImage} alt={resolved.name} />
+								<AvatarImage src={resolvedEmployee.profileImage} alt={resolvedEmployee.name} />
 								<AvatarFallback className="bg-gray-100 text-gray-600 font-medium">
-									{resolved.name
+									{resolvedEmployee.name
 										.split(" ")
 										.map((n) => n[0])
 										.join("")}
@@ -150,45 +144,39 @@ export function EmployeeProfileCard({ employee }: EmployeeProfileCardProps) {
 							</Avatar>
 
 							<ProfilePictureDialog
-								image={resolved.profileImage}
-								name={resolved.name}
+								image={resolvedEmployee.profileImage}
+								name={resolvedEmployee.name}
 								onSave={async ({ file }) => {
-									const fd = new FormData();
-									fd.append("file", file);
-									// const res = await fetch("/api/profile/upload", {
-									// 	method: "POST",
-									// 	body: fd,
-									// });
-									// const { url } = await res.json();
-									// Update the state here with setProfileImage if you add one
+									// The hook in ProfilePictureDialog handles the API call
+									console.log("Profile picture saved");
 								}}
 								onDelete={async () => {
-									await fetch("/api/profile/delete", { method: "POST" });
-									// Clear image from state if you manage it
+									// The hook in ProfilePictureDialog handles the API call
+									console.log("Profile picture deleted");
 								}}
 							/>
 						</div>
 
 						<div className="min-w-0">
 							<Badge className="bg-[#1A9882] text-white rounded-full px-3 py-1 text-xs">
-								{resolved.status}
+								{resolvedEmployee.status}
 							</Badge>
 
 							<div className="mt-2 text-[#111827] font-semibold">
-								{resolved.name}
+								{resolvedEmployee.name}
 							</div>
-							<div className="text-sm text-[#6B7280]">{resolved.role}</div>
+							<div className="text-sm text-[#6B7280]">{resolvedEmployee.role}</div>
 						</div>
 					</div>
 
-					{/* Right: Bio with border and floating edit button */}
+					{/* Right: Education with border and floating edit button */}
 					<div className="flex-1 max-w-3xl flex items-end gap-1">
-						{isEditingBio ? (
+						{isEditingEducation ? (
 							<div className="w-full">
 								{/* Rich Text Editor in edit mode */}
 								<RichTextEditor
-									content={bio}
-									onChange={setBio}
+									content={education}
+									onChange={setEducation}
 									className="min-h-[120px] border border-gray-200 rounded-md"
 								/>
 
@@ -196,34 +184,48 @@ export function EmployeeProfileCard({ employee }: EmployeeProfileCardProps) {
 								<div className="flex justify-end gap-2 mt-2">
 									<Button
 										variant="outline"
-										onClick={() => setIsEditingBio(false)}>
+										onClick={() => {
+											setIsEditingEducation(false);
+											// Reset to initial value when canceling
+											setEducation(initialEducation);
+										}}>
 										Cancel
 									</Button>
 									<Button
 										className="bg-pink-600 hover:bg-pink-700 text-white"
-										onClick={() => {
-											console.log("Updated bio:", bio);
-											setIsEditingBio(false);
-										}}>
+										onClick={handleSaveEducation}>
 										Save
 									</Button>
 								</div>
 							</div>
 						) : (
 							<>
-								{/* Readonly Bio View */}
-								<Textarea
-									value={bio}
-									readOnly
-									className="min-h-[120px] resize-none border-[#E2E8F0] bg-gray-50"
-								/>
+								{/* Readonly Education View */}
+								{education && education.includes('<') ? (
+									<div 
+										className="min-h-[120px] border border-[#E2E8F0] bg-gray-50 p-3 rounded-md overflow-y-auto min-w-[75vw] md:min-w-[40vw] lg:min-w-[50vw]"
+										dangerouslySetInnerHTML={{ __html: education }}
+									/>
+								) : education ? (
+									<Textarea
+										value={education}
+										readOnly
+										className="min-h-[120px] resize-none border-[#E2E8F0] bg-gray-50"
+									/>
+								) : (
+									<Textarea
+										value="No education information available"
+										readOnly
+										className="min-h-[120px] resize-none border-[#E2E8F0] bg-gray-50"
+									/>
+								)}
 
 								{/* Edit Button */}
 								<Button
 									size="icon"
 									variant="secondary"
 									className="rounded-full bg-[#F0F1F3] shadow-md  group transition hover:bg-[#E5004E]"
-									onClick={() => setIsEditingBio(true)}>
+									onClick={() => setIsEditingEducation(true)}>
 									<Image
 										src="/icons/edit.svg"
 										width={18}
@@ -250,43 +252,43 @@ export function EmployeeProfileCard({ employee }: EmployeeProfileCardProps) {
 						{
 							icon: "/icons/id-badge.svg",
 							label: "User ID",
-							value: `ID-${resolved.id}`,
+							value: `ID-${resolvedEmployee.id}`,
 						},
 						{
 							icon: "/icons/envelope.svg",
 							label: "E-mail",
-							value: resolved.email,
+							value: resolvedEmployee.email,
 						},
 						{
 							icon: "/icons/smartphone.svg",
 							label: "Phone Number",
-							value: resolved.phone,
+							value: resolvedEmployee.phone,
 						},
 						{
 							icon: "/icons/calendar.svg",
 							label: "Join Date",
-							value: resolved.joinDate,
+							value: resolvedEmployee.joinDate,
 						},
 						{
 							icon: "/icons/hierarchy.svg",
 							label: "Department",
-							value: resolved.department,
+							value: resolvedEmployee.department,
 						},
 						{
 							icon: "/icons/manager.svg",
 							label: "Reporting to",
-							value: resolved.reportingTo,
+							value: resolvedEmployee.reportingTo,
 						},
 						{
 							icon: "/icons/map-pin.svg",
 							label: "Address",
-							value: resolved.address,
+							value: resolvedEmployee.address,
 						},
-						{ icon: "/icons/map-pin.svg", label: "City", value: resolved.city },
+						{ icon: "/icons/map-pin.svg", label: "City", value: resolvedEmployee.city },
 						{
 							icon: "/icons/branch.svg",
 							label: "Branch",
-							value: resolved.branch,
+							value: resolvedEmployee.branch,
 						},
 					].map((row) => (
 						<div key={row.label} className="flex items-start gap-3">

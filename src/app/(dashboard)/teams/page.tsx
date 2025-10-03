@@ -135,7 +135,7 @@ export default function Teams() {
 			/>
 
 			{/* Page rails and breathing room (matches figma spacing at all widths) */}
-			<main className="mx-auto w-full px-4 sm:px-6 md:p-5 ">
+			<main className="mx-auto w-full px-4 sm:px-6 md:px-8 py-6 sm:py-8 lg:py-10">
 				<section className="bg-white rounded-2xl shadow-sm p-6 sm:p-6 lg:p-4">
 					<h1 className="text-2xl font-semibold text-[#1F2937]">
 						My Team

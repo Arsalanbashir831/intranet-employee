@@ -53,7 +53,55 @@ export type EmployeeDetailResponse = {
   employee: Employee;
 };
 
+// Type for updating employee data
+export type UpdateEmployeeRequest = {
+  bio?: string | null;
+  education?: string;
+  // Add other fields that can be updated as needed
+};
+
+export type UpdateEmployeeResponse = {
+  employee: Employee;
+};
+
 export async function getEmployee(id: number | string) {
   const res = await apiCaller<EmployeeDetailResponse>(API_ROUTES.EMPLOYEES.DETAIL(id), "GET");
+  return res.data;
+}
+
+// Profile picture upload function
+export async function uploadProfilePicture(employeeId: number | string, file: File) {
+  const formData = new FormData();
+  formData.append("profile_picture", file);
+  
+  const res = await apiCaller<{ profile_picture: string }>(
+    API_ROUTES.EMPLOYEES.UPLOAD_PICTURE(employeeId),
+    "POST",
+    formData,
+    {},
+    "formdata"
+  );
+  
+  return res.data;
+}
+
+// Profile picture delete function
+export async function deleteProfilePicture(employeeId: number | string) {
+  const res = await apiCaller<void>(
+    API_ROUTES.EMPLOYEES.DELETE_PICTURE(employeeId),
+    "DELETE"
+  );
+  
+  return res.data;
+}
+
+// Update employee function
+export async function updateEmployee(employeeId: number | string, data: UpdateEmployeeRequest) {
+  const res = await apiCaller<UpdateEmployeeResponse>(
+    API_ROUTES.EMPLOYEES.UPDATE(employeeId),
+    "PATCH",
+    data
+  );
+  
   return res.data;
 }

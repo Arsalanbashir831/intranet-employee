@@ -61,7 +61,7 @@ export function KnowledgeBaseFolderView({
 						{ label: "Knowledge Base", href: ROUTES.DASHBOARD.KNOWLEDGE_BASE },
 					]}
 				/>
-				<div className="p-4 sm:p-8 lg:p-6">
+				<div className="mx-auto w-full px-4 sm:px-6 md:px-8 py-6 sm:py-8 lg:py-10">
 					<div className="animate-pulse">
 						<div className="h-6 bg-gray-200 rounded w-1/4 mb-4"></div>
 						<div className="space-y-3">

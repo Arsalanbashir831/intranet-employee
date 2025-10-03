@@ -63,9 +63,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
               isSuperuser: meData.user.is_superuser,
               executiveId: meData.executive?.id || null,
               employeeId: meData.employee?.id || null,
-              name: meData.executive?.name || meData.user.username,
-              profilePicture: meData.executive?.profile_picture,
-              role: meData.executive?.role,
+              name: meData.employee?.emp_name || meData.executive?.name || meData.user.username,
+              profilePicture: meData.employee?.profile_picture || meData.executive?.profile_picture,
+              role: meData.employee?.role || meData.executive?.role,
               branchDepartmentId: meData.employee?.branch_department_id || null,
               branchName: meData.employee?.branch_department?.branch?.branch_name || undefined,
               departmentName: meData.employee?.branch_department?.department?.dept_name || undefined,
@@ -91,9 +91,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
                 isSuperuser: meData.user.is_superuser,
                 executiveId: meData.executive?.id || null,
                 employeeId: meData.employee?.id || null,
-                name: meData.executive?.name || meData.user.username,
-                profilePicture: meData.executive?.profile_picture,
-                role: meData.executive?.role,
+                name: meData.employee?.emp_name || meData.executive?.name || meData.user.username,
+                profilePicture: meData.employee?.profile_picture || meData.executive?.profile_picture,
+                role: meData.employee?.role || meData.executive?.role,
                 branchDepartmentId: meData.employee?.branch_department_id || null,
                 branchName: meData.employee?.branch_department?.branch?.branch_name || undefined,
                 departmentName: meData.employee?.branch_department?.department?.dept_name || undefined,
@@ -146,9 +146,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             isSuperuser: meData.user.is_superuser,
             executiveId: meData.executive?.id || null,
             employeeId: meData.employee?.id || null,
-            name: meData.executive?.name || meData.user.username,
-            profilePicture: meData.executive?.profile_picture,
-            role: meData.executive?.role,
+            name: meData.employee?.emp_name || meData.executive?.name || meData.user.username,
+            profilePicture: meData.employee?.profile_picture || meData.executive?.profile_picture,
+            role: meData.employee?.role || meData.executive?.role,
             branchDepartmentId: meData.employee?.branch_department_id || null,
             branchName: meData.employee?.branch_department?.branch?.branch_name || undefined,
             departmentName: meData.employee?.branch_department?.department?.dept_name || undefined,
@@ -174,9 +174,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
               isSuperuser: meData.user.is_superuser,
               executiveId: meData.executive?.id || null,
               employeeId: meData.employee?.id || null,
-              name: meData.executive?.name || meData.user.username,
-              profilePicture: meData.executive?.profile_picture,
-              role: meData.executive?.role,
+              name: meData.employee?.emp_name || meData.executive?.name || meData.user.username,
+              profilePicture: meData.employee?.profile_picture || meData.executive?.profile_picture,
+              role: meData.employee?.role || meData.executive?.role,
               branchDepartmentId: meData.employee?.branch_department_id || null,
               branchName: meData.employee?.branch_department?.branch?.branch_name || undefined,
               departmentName: meData.employee?.branch_department?.department?.dept_name || undefined,
@@ -216,11 +216,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     // Also listen for custom events if needed
     window.addEventListener('auth:login', handleTokenUpdate);
     window.addEventListener('auth:logout', () => setUser(null));
+    window.addEventListener('auth:refresh', handleTokenUpdate);
 
     return () => {
       window.removeEventListener('storage', handleTokenUpdate);
       window.removeEventListener('auth:login', handleTokenUpdate);
       window.removeEventListener('auth:logout', () => setUser(null));
+      window.removeEventListener('auth:refresh', handleTokenUpdate);
     };
   }, []);
 

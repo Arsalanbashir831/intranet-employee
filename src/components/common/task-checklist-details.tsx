@@ -136,7 +136,7 @@ export default function TaskChecklistDetails({
 	};
 
 	return (
-		<div className="min-h-screen bg-gray-100">
+		<div className="mx-auto w-full px-4 sm:px-6 md:px-8 py-6 sm:py-8 lg:py-10 min-h-screen bg-gray-100">
 			{/* page rails */}
 			<div className="mx-auto w-full  px-4 sm:px-6 md:px-8 lg:px-4 py-5 sm:py-6 min-h-[100svh] flex flex-col">
 				<div className="bg-white rounded-2xl shadow-md p-4 sm:p-6 lg:p-5 flex-1 min-h-0 flex flex-col">
