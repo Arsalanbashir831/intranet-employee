@@ -3,7 +3,7 @@
 
 import BannerSection from "@/components/common/banner-section";
 import { PageHeader } from "@/components/common/page-header";
-import { ROUTES } from "@/hooks/constants/routes";
+import { ROUTES } from "@/constants/routes";
 import FeatureCard from "@/components/common/feature-card";
 import Checklist from "@/components/common/checklist";
 import QuickAccess from "@/components/common/quick-access";

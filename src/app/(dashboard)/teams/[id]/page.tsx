@@ -2,7 +2,7 @@
 import { notFound } from "next/navigation";
 import { PageHeader } from "@/components/common/page-header";
 import { TeamsDetailsCard } from "@/components/teams/teams-details";
-import { ROUTES } from "@/hooks/constants/routes";
+import { ROUTES } from "@/constants/routes";
 
 type PageProps = { params: Promise<{ id: string }> }; // 👈 params is a Promise
 

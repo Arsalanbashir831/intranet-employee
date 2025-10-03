@@ -2,7 +2,7 @@
 
 import { KnowledgeBaseTable } from "@/components/knowledge-base/knowledge-base-table";
 import { PageHeader } from "@/components/common/page-header";
-import { ROUTES } from "@/hooks/constants/routes";
+import { ROUTES } from "@/constants/routes";
 
 export default function KnowledgeBase() {
 	return (

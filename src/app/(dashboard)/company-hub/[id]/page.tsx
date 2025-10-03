@@ -3,7 +3,7 @@
 import React from "react";
 import AnnouncementDetailCard from "@/components/company-hub/announcement-details";
 import { PageHeader } from "@/components/common/page-header";
-import { ROUTES } from "@/hooks/constants/routes";
+import { ROUTES } from "@/constants/routes";
 
 // Mock data
 const ANNOUNCEMENTS = [

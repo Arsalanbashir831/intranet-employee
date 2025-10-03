@@ -2,7 +2,7 @@
 
 import { PageHeader } from "@/components/common/page-header";
 import FeatureCard from "@/components/common/feature-card";
-import { ROUTES } from "@/hooks/constants/routes";
+import { ROUTES } from "@/constants/routes";
 
 import { useState, useMemo, useEffect } from "react";
 import {

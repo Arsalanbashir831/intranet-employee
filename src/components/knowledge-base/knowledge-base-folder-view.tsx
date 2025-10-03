@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { KnowledgeBaseTable } from "@/components/knowledge-base/knowledge-base-table";
 import { PageHeader } from "@/components/common/page-header";
-import { ROUTES } from "@/hooks/constants/routes";
+import { ROUTES } from "@/constants/routes";
 import { KnowledgeBaseRow } from "@/components/knowledge-base/knowledge-base-table";
 
 // Simulated data fetcher (replace with real API later)

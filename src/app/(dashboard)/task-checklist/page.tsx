@@ -1,7 +1,7 @@
 "use client";
 
 import TaskChecklistDeatils from "@/components/common/task-checklist-details";
-import { ROUTES } from "@/hooks/constants/routes";
+import { ROUTES } from "@/constants/routes";
 import { PageHeader } from "@/components/common/page-header";
 
 export default function TaskChecklist() {

@@ -2,7 +2,7 @@
 
 import { PageHeader } from "@/components/common/page-header";
 import TeamsCard from "@/components/teams/teams-card";
-import { ROUTES } from "@/hooks/constants/routes";
+import { ROUTES } from "@/constants/routes";
 import Link from "next/link";
 import {
 	createColumnHelper,

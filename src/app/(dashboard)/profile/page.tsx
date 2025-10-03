@@ -3,7 +3,7 @@
 import * as React from "react";
 import { EmployeeProfileCard } from "@/components/profile/profile-card";
 import { PageHeader } from "@/components/common/page-header";
-import { ROUTES } from "@/hooks/constants/routes";
+import { ROUTES } from "@/constants/routes";
 import { Button } from "@/components/ui/button";
 import { ChangePasswordDialog } from "@/components/profile/ChangePasswordDialog";
 
