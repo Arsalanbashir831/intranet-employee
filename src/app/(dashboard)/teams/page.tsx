@@ -176,7 +176,7 @@ export default function Teams() {
 								</SelectContent>
 							</Select>
 
-							<Select>
+							{/* <Select>
 								<SelectTrigger className="w-40 border border-gray-300 rounded-md">
 									<SelectValue placeholder="Role" />
 								</SelectTrigger>
@@ -185,7 +185,7 @@ export default function Teams() {
 									<SelectItem value="developer">Developer</SelectItem>
 									<SelectItem value="designer">Designer</SelectItem>
 								</SelectContent>
-							</Select>
+							</Select> */}
 						</div>
 					</div>
 
