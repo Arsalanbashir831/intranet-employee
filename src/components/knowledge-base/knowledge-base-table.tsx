@@ -11,6 +11,7 @@ import { CardTablePagination } from "@/components/common/card-table/card-table-p
 import { FolderIcon, FileIcon } from "lucide-react";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
+import { PaginationState } from "@/lib/pagination-utils";
 
 /* ---------------- Types ---------------- */
 export type KnowledgeBaseRow = {
@@ -32,6 +33,12 @@ type Props = {
 	baseHref?: string;
 	className?: string;
 	onRowClick?: (row: KnowledgeBaseRow) => void; // Added onRowClick handler
+	pagination?: {
+		pageIndex: number;
+		pageSize: number;
+		totalCount: number;
+		onPaginationChange: (pagination: PaginationState) => void;
+	};
 };
 
 /* --------------- Demo rows --------------- */
@@ -44,8 +51,10 @@ export function KnowledgeBaseTable({
 	viewMoreHref,
 	limit,
 	showToolbar = true,
+	baseHref = "/knowledge-base",
 	className,
 	onRowClick,
+	pagination,
 }: Props) {
 	// Use the provided title prop directly
 	const displayTitle = title;
@@ -211,21 +220,35 @@ export function KnowledgeBaseTable({
 			)}
 
 			<div className="overflow-y-auto pr-2 pb-2">
-				<CardTable<KnowledgeBaseRow, unknown>
-					columns={columns}
-					data={tableData}
-					headerClassName="
+				{tableData.length === 0 ? (
+					<div className="text-center py-8 text-gray-500">
+						No items found
+					</div>
+				) : (
+					<CardTable<KnowledgeBaseRow, unknown>
+						columns={columns}
+						data={tableData}
+						headerClassName="
             grid-cols-[1fr]
             sm:grid-cols-[1.1fr_0.9fr]
             md:grid-cols-[1.2fr_1fr_0.9fr_0.7fr]
           "
-					rowClassName='hover:bg-[#FAFAFB] grid-cols-[1fr] sm:grid-cols-[1.1fr_0.9fr] md:grid-cols-[1.2fr_1fr_0.9fr_0.7fr] cursor-pointer'
+						rowClassName='hover:bg-[#FAFAFB] grid-cols-[1fr] sm:grid-cols-[1.1fr_0.9fr] md:grid-cols-[1.2fr_1fr_0.9fr_0.7fr] cursor-pointer'
           
-					onRowClick={onRowClick ? (row) => onRowClick(row.original) : undefined}
-					footer={(table) =>
-						limit ? null : <CardTablePagination table={table} />
-					}
-				/>
+						onRowClick={onRowClick ? (row) => onRowClick(row.original) : undefined}
+						footer={(table) =>
+							pagination ? (
+								<CardTablePagination 
+									table={table}
+									pageIndex={pagination.pageIndex}
+									pageSize={pagination.pageSize}
+									totalCount={pagination.totalCount}
+									onPaginationChange={pagination.onPaginationChange}
+								/>
+							) : limit ? null : <CardTablePagination table={table} />
+						}
+					/>
+				)}
 			</div>
 		</Card>
 	);

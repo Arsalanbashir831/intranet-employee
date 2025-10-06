@@ -11,10 +11,51 @@ import RecentPolicies from "@/components/common/recent-policies";
 import KnowledgeBaseTable from "@/components/knowledge-base/knowledge-base-table";
 import ContactSection from "@/components/common/contact-section";
 import { LatestAnnouncements } from "@/components/dashboard/latest-announcements";
-
-
+import { useKnowledgeFolders } from "@/hooks/queries/use-knowledge-folders";
+import { useState } from "react";
+import { PaginationState, pageIndexToPageNumber } from "@/lib/pagination-utils";
+import { KnowledgeBaseRow } from "@/components/knowledge-base/knowledge-base-table";
+import { FolderTreeItem } from "@/services/knowledge-folders";
+import { useRouter } from "next/navigation";
 
 export default function Home() {
+	const router = useRouter();
+	const [pagination, setPagination] = useState<PaginationState>({
+		pageIndex: 0,
+		pageSize: 5,
+	});
+	
+	const { data, isLoading, isError } = useKnowledgeFolders(
+		pageIndexToPageNumber(pagination.pageIndex),
+		pagination.pageSize
+	);
+	
+	// Convert API folder data to table row format
+	const convertFolderToRow = (folder: FolderTreeItem): KnowledgeBaseRow => ({
+		id: folder.id.toString(),
+		folder: folder.name,
+		createdByName: "Cartwright King",
+		createdByAvatar: "/images/logo-circle.png",
+		dateCreated: new Date(folder.created_at).toISOString().split('T')[0],
+		type: "folder",
+	});
+	
+	// Transform API data to table rows
+	const tableData = data?.folders?.results?.map(convertFolderToRow) || [];
+	
+	const handlePaginationChange = (newPagination: PaginationState) => {
+		setPagination(newPagination);
+	};
+
+	// Handle row click to navigate to knowledge base
+	const handleRowClick = (row: KnowledgeBaseRow) => {
+		if (row.type === "folder") {
+			// Navigate to the folder in knowledge base
+			router.push(`${ROUTES.DASHBOARD.KNOWLEDGE_BASE}/${encodeURIComponent(row.folder)}`);
+		}
+		// Note: Since these are top-level folders, there won't be files to download directly from home page
+	};
+
 	return (
 		<div className="min-h-screen bg-[#F8F8F8]">
 			<BannerSection />
@@ -85,14 +126,38 @@ export default function Home() {
 
 							{/* Knowledge Base */}
 							<div className="w-full">
-								<div className="rounded-xl h-[315px] overflow-hidden">
-									<KnowledgeBaseTable
-										showToolbar={false}
-										limit={30}
-										viewMoreHref="/knowledge-base"
-										baseHref="/knowledge-base"
-										className="bg-[#F9FFFF] gap-0 w-full h-full"
-									/>
+								<div className="rounded-xl h-auto overflow-hidden">
+									{isLoading ? (
+										<div className="bg-[#F9FFFF] p-4 sm:p-5 md:p-5 rounded-xl">
+											<div className="animate-pulse space-y-3">
+												<div className="h-6 bg-gray-200 rounded w-1/4"></div>
+												<div className="space-y-2">
+													{Array.from({ length: 5 }).map((_, i) => (
+														<div key={i} className="h-12 bg-gray-100 rounded"></div>
+													))}
+												</div>
+											</div>
+										</div>
+									) : isError ? (
+										<div className="bg-[#F9FFFF] p-4 sm:p-5 md:p-5 rounded-xl">
+											<div className="text-red-500">Failed to load knowledge base data</div>
+										</div>
+									) : (
+										<KnowledgeBaseTable
+											data={tableData}
+											showToolbar={false}
+											viewMoreHref="/knowledge-base"
+											baseHref="/knowledge-base"
+											className="bg-[#F9FFFF] gap-0 w-full"
+											onRowClick={handleRowClick} // Add row click handler
+											pagination={{
+												pageIndex: pagination.pageIndex,
+												pageSize: pagination.pageSize,
+												totalCount: data?.folders?.count || 0,
+												onPaginationChange: handlePaginationChange,
+											}}
+										/>
+									)}
 								</div>
 							</div>
 						</div>
