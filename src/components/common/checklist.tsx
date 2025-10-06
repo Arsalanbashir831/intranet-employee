@@ -4,18 +4,41 @@ import { Card, CardHeader, CardContent } from "@/components/ui/card";
 import Link from "next/link";
 import Image from "next/image";
 import ChecklistDrawer from "./checklist-drawer";
+import { useAttachmentStatus } from "@/hooks/queries/use-new-hire";
+import { useAuth } from "@/contexts/auth-context";
 
 interface ChecklistProps {
 	title: string;
 	viewMoreLink?: string;
-	tasks: string[];
+	type: 'task' | 'training';
 }
 
 export default function Checklist({
 	title,
 	viewMoreLink,
-	tasks,
+	type,
 }: ChecklistProps) {
+	const { user } = useAuth();
+	
+	// Fetch attachment status data
+	const { data, isLoading, isError } = useAttachmentStatus(
+		user?.employeeId || 0,
+		{ type }
+	);
+	
+	// Transform API data to match component structure
+	const tasks = data?.results?.map((item) => ({
+		id: item.id,
+		title: item.attachment_details.title,
+		description: item.attachment_details.detail,
+		date: new Date(item.created_at).toLocaleDateString('en-GB', {
+			day: '2-digit',
+			month: 'short',
+			year: 'numeric'
+		}).replace(' ', ' '),
+		files: item.attachment_details.files
+	})) || [];
+	
 	const hasTasks = tasks && tasks.length > 0;
 
 	const getEmptyMessage = () => {
@@ -33,6 +56,48 @@ export default function Checklist({
 	};
 
 	const emptyMessage = getEmptyMessage();
+
+	// Show loading state
+	if (isLoading) {
+		return (
+			<Card
+				className="
+        bg-white border-gray-200 shadow-sm flex flex-col
+        w-full max-w-[390px] max-h-[390px] p-3 gap-0 sm:p-4">
+				<CardHeader className="!px-0 !pb-2 flex items-center justify-between">
+					<h1 className="font-semibold text-gray-800 text-base sm:text-lg md:text-xl">
+						{title}
+					</h1>
+				</CardHeader>
+				<CardContent className="p-0 flex-1 overflow-hidden">
+					<div className="flex items-center justify-center h-full">
+						<div className="animate-pulse text-gray-500">Loading...</div>
+					</div>
+				</CardContent>
+			</Card>
+		);
+	}
+
+	// Show error state
+	if (isError) {
+		return (
+			<Card
+				className="
+        bg-white border-gray-200 shadow-sm flex flex-col
+        w-full max-w-[390px] max-h-[390px] p-3 gap-0 sm:p-4">
+				<CardHeader className="!px-0 !pb-2 flex items-center justify-between">
+					<h1 className="font-semibold text-gray-800 text-base sm:text-lg md:text-xl">
+						{title}
+					</h1>
+				</CardHeader>
+				<CardContent className="p-0 flex-1 overflow-hidden">
+					<div className="flex items-center justify-center h-full">
+						<div className="text-red-500">Failed to load tasks</div>
+					</div>
+				</CardContent>
+			</Card>
+		);
+	}
 
 	return (
 		<Card
@@ -60,9 +125,9 @@ export default function Checklist({
 			<CardContent className="p-0 flex-1 overflow-hidden">
 				{hasTasks ? (
 					<div className="h-full overflow-y-auto pr-1 space-y-2">
-						{tasks.map((task, index) => (
+						{tasks.map((task) => (
 							<div
-								key={index}
+								key={task.id}
 								className="
                   flex items-center justify-between
                   bg-[#E5004E] text-white
@@ -85,16 +150,16 @@ export default function Checklist({
                       text-[11px] sm:text-xs font-medium
                       truncate text-white
                     ">
-										{task.split(" ").slice(0, 5).join(" ")}...
+										{task.title}
 									</span>
 								</div>
 
 								{/* Right: drawer trigger */}
 								<ChecklistDrawer
-									title="Design new UI presentation"
-									subtitle="Dribbble marketing"
-									description="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua."
-									date="25 Aug 2022"
+									title={task.title}
+									description={task.description}
+									date={task.date}
+									files={task.files}
 								/>
 							</div>
 						))}

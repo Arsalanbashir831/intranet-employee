@@ -1,5 +1,5 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { login, logout, refreshToken, getMe, forgotPassword, resetPasswordWithOTP, changePassword } from "@/services/auth";
+import { login, logout, refreshToken, forgotPassword, resetPasswordWithOTP, changePassword } from "@/services/auth";
 import type { LoginRequest, ForgotPasswordRequest, ResetPasswordWithOTPRequest } from "@/services/auth";
 import { ROUTES } from "@/constants/routes";
 import { setAuthCookies, clearAuthCookies } from "@/lib/cookies";

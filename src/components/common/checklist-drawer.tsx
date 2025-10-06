@@ -9,9 +9,14 @@ interface ChecklistDrawerProps {
 	subtitle?: string;
 	description: string;
 	date: string;
+	files?: {
+		id: number;
+		file: string;
+		uploaded_at: string;
+	}[];
 }
 
-export default function ChecklistDrawer(props: ChecklistDrawerProps) {
+export default function ChecklistDrawer({ files = [], ...props }: ChecklistDrawerProps) {
 	return (
 		<Sheet>
 			<SheetTrigger id="sheet-trigger-checklist-drawer" asChild>
@@ -21,7 +26,7 @@ export default function ChecklistDrawer(props: ChecklistDrawerProps) {
 				</span>
 			</SheetTrigger>
 
-			<ChecklistDrawerContent {...props} />
+			<ChecklistDrawerContent {...props} files={files} />
 		</Sheet>
 	);
 }

@@ -27,17 +27,9 @@ export const API_ROUTES = {
         },
     },
     NEW_HIRE: {
-        CHECKLISTS: {
-            LIST: "/newhire/checklists/",
-            DETAIL: (id: number | string) => `/newhire/checklists/${id}/`,
-            UPDATE: (id: number | string) => `/newhire/checklists/${id}/`,
-        },
-        ATTACHMENTS: {
-            LIST: "/newhire/attachments/",
-            DETAIL: (id: number | string) => `/newhire/attachments/${id}/`,
-        },
-        FILES: {
-            LIST: "/newhire/attachment-files/",
+        ATTACHEMENT_STATUS: {
+            LIST: (id: number | string) => `/newhire/attachment-status/?employee_id=${id}`,
+            UPDATE: (id: number | string) => `/newhire/attachment-status/${id}/`,
         },
     },
 } as const;

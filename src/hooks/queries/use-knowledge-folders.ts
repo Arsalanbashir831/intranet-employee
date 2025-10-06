@@ -5,7 +5,7 @@ import { useAuth } from "@/contexts/auth-context";
 // Query key factory
 export const knowledgeFoldersKeys = {
 	all: ["knowledgeFolders"] as const,
-	list: (params: Record<string, any> = {}) => [...knowledgeFoldersKeys.all, "list", params] as const,
+	list: (params: Record<string, unknown> = {}) => [...knowledgeFoldersKeys.all, "list", params] as const,
 };
 
 // Hook to get paginated knowledge folders from tree

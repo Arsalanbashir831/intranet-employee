@@ -1,6 +1,6 @@
 import { PageHeader } from "@/components/common/page-header";
 import { ROUTES } from "@/constants/routes";
-import TaskChecklistDeatils from "@/components/common/task-checklist-details";
+import TaskChecklistDetails from "@/components/common/task-checklist-details";
 
 export default function TrainingChecklist() {
 	return (
@@ -10,12 +10,12 @@ export default function TrainingChecklist() {
 				crumbs={[
 					{ label: "Pages", href:'#' },
 					{
-						label: "Task Checklist",
+						label: "Training Checklist",
 						href: ROUTES.DASHBOARD.TRAINING_CHECKLIST,
 					},
 				]}
 			/>
-			<TaskChecklistDeatils heading="Training Checklist" />
+			<TaskChecklistDetails heading="Training Checklist" type="training" />
 		</div>
 	);
 }

@@ -16,10 +16,8 @@ import { useState } from "react";
 import { PaginationState, pageIndexToPageNumber } from "@/lib/pagination-utils";
 import { KnowledgeBaseRow } from "@/components/knowledge-base/knowledge-base-table";
 import { FolderTreeItem } from "@/services/knowledge-folders";
-import { useRouter } from "next/navigation";
 
 export default function Home() {
-	const router = useRouter();
 	const [pagination, setPagination] = useState<PaginationState>({
 		pageIndex: 0,
 		pageSize: 5,
@@ -45,15 +43,6 @@ export default function Home() {
 	
 	const handlePaginationChange = (newPagination: PaginationState) => {
 		setPagination(newPagination);
-	};
-
-	// Handle row click to navigate to knowledge base
-	const handleRowClick = (row: KnowledgeBaseRow) => {
-		if (row.type === "folder") {
-			// Navigate to the folder in knowledge base
-			router.push(`${ROUTES.DASHBOARD.KNOWLEDGE_BASE}/${encodeURIComponent(row.folder)}`);
-		}
-		// Note: Since these are top-level folders, there won't be files to download directly from home page
 	};
 
 	return (
@@ -83,24 +72,12 @@ export default function Home() {
 							<Checklist
 								title="Task Checklist"
 								viewMoreLink="/task-checklist"
-								tasks={[
-									"Follow the instructions and report everything properly",
-									"Complete all assigned tasks on time",
-									"Attend the scheduled team meeting promptly",
-									"Update the documentation as per guidelines",
-									"Submit the weekly report before Friday",
-								]}
+								type="task"
 							/>
 							<Checklist
 								title="Training Checklist"
 								viewMoreLink="/training-checklist"
-								tasks={[
-									"Follow the instructions and report everything properly",
-									"Complete all assigned tasks on time",
-									"Attend the scheduled team meeting promptly",
-									"Update the documentation as per guidelines",
-									"Submit the weekly report before Friday",
-								]}
+								type="training"
 							/>
 							{/* keep your contact block */}
 							<div>
@@ -149,7 +126,6 @@ export default function Home() {
 											viewMoreHref="/knowledge-base"
 											baseHref="/knowledge-base"
 											className="bg-[#F9FFFF] gap-0 w-full"
-											onRowClick={handleRowClick} // Add row click handler
 											pagination={{
 												pageIndex: pagination.pageIndex,
 												pageSize: pagination.pageSize,

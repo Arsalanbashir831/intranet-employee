@@ -34,6 +34,29 @@ export function CardTablePagination<TData>({
     ? externalPageIndex 
     : table?.getState().pagination.pageIndex || 0;
 
+  const numbers = React.useMemo(() => {
+    if (pageCount <= 1) return [];
+    
+    if (isExternalPagination) {
+      return generatePageNumbers(pageIndex, pageCount);
+    }
+    
+    if (!table) return [];
+    
+    const pages: (number | "...")[] = [];
+    for (let i = 0; i < pageCount; i++) pages.push(i);
+    if (pages.length <= 7) return pages;
+    const cur = pageIndex;
+    const start = Math.max(0, cur - 1);
+    const end = Math.min(pageCount - 1, cur + 1);
+    const res: (number | "...")[] = [0];
+    if (start > 1) res.push("...");
+    for (let i = start; i <= end; i++) if (i !== 0 && i !== pageCount - 1) res.push(i);
+    if (end < pageCount - 2) res.push("...");
+    res.push(pageCount - 1);
+    return res;
+  }, [pageCount, pageIndex, isExternalPagination, table]);
+
   // Don't show pagination if there's only one page or no data
   if (pageCount <= 1) {
     return null;
@@ -70,27 +93,6 @@ export function CardTablePagination<TData>({
       table.nextPage();
     }
   };
-
-  const numbers = React.useMemo(() => {
-    if (isExternalPagination) {
-      return generatePageNumbers(pageIndex, pageCount);
-    }
-    
-    if (!table) return [];
-    
-    const pages: (number | "...")[] = [];
-    for (let i = 0; i < pageCount; i++) pages.push(i);
-    if (pages.length <= 7) return pages;
-    const cur = pageIndex;
-    const start = Math.max(0, cur - 1);
-    const end = Math.min(pageCount - 1, cur + 1);
-    const res: (number | "...")[] = [0];
-    if (start > 1) res.push("...");
-    for (let i = start; i <= end; i++) if (i !== 0 && i !== pageCount - 1) res.push(i);
-    if (end < pageCount - 2) res.push("...");
-    res.push(pageCount - 1);
-    return res;
-  }, [pageCount, pageIndex, isExternalPagination, table]);
 
   return (
     <div className="flex items-center justify-end gap-2">
