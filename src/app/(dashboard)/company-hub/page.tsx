@@ -77,13 +77,12 @@ export default function CompanyHub() {
 		data: announcementsData,
 		isLoading: announcementsLoading,
 		isFetching: announcementsFetching,
-		isPlaceholderData: announcementsPlaceholder
 	} = useAnnouncements(
 		user?.employeeId
 			? {
-				type: "announcement",
-				employee_id: user.employeeId
-			}
+					type: "announcement",
+					employee_id: user.employeeId,
+			  }
 			: undefined,
 		{ page, pageSize }
 	);
@@ -93,38 +92,42 @@ export default function CompanyHub() {
 		data: policiesData,
 		isLoading: policiesLoading,
 		isFetching: policiesFetching,
-		isPlaceholderData: policiesPlaceholder
 	} = useAnnouncements(
 		user?.employeeId
 			? {
-				type: "policy",
-				employee_id: user.employeeId
-			}
+					type: "policy",
+					employee_id: user.employeeId,
+			  }
 			: undefined,
 		{ page, pageSize }
 	);
 
 	const dataSource: CompanyHubItem[] =
 		activeTab === "announcements"
-			? (announcementsData?.announcements.results.map(announcement => ({
-				id: announcement.id.toString(),
-				title: announcement.title,
-				description: announcement.body.replace(/<[^>]*>/g, "").substring(0, 100) + "...",
-				image: announcement.attachments.length > 0
-					? announcement.attachments[0].file_url
-					: "/images/office-work.png",
-				badgeLines: [
-					new Date(announcement.created_at).getDate().toString(),
-					new Date(announcement.created_at).toLocaleString('default', { month: 'short' }),
-					new Date(announcement.created_at).getFullYear().toString()
-				] as [string, string, string],
-				createdAt: announcement.created_at
-			})) as Announcement[] || [])
-			: (policiesData?.announcements.results.map(policy => ({
-				id: policy.id.toString(),
-				title: policy.title,
-				description: policy.body.replace(/<[^>]*>/g, "").substring(0, 100) + "...",
-			})) as Policy[] || []);
+			? (announcementsData?.announcements.results.map((announcement) => ({
+					id: announcement.id.toString(),
+					title: announcement.title,
+					description:
+						announcement.body.replace(/<[^>]*>/g, "").substring(0, 100) + "...",
+					image:
+						announcement.attachments.length > 0
+							? announcement.attachments[0].file_url
+							: "/images/office-work.png",
+					badgeLines: [
+						new Date(announcement.created_at).getDate().toString(),
+						new Date(announcement.created_at).toLocaleString("default", {
+							month: "short",
+						}),
+						new Date(announcement.created_at).getFullYear().toString(),
+					] as [string, string, string],
+					createdAt: announcement.created_at,
+			  })) as Announcement[]) || []
+			: (policiesData?.announcements.results.map((policy) => ({
+					id: policy.id.toString(),
+					title: policy.title,
+					description:
+						policy.body.replace(/<[^>]*>/g, "").substring(0, 100) + "...",
+			  })) as Policy[]) || [];
 
 	const filtered = useMemo(() => {
 		const q = query.trim().toLowerCase();
@@ -136,9 +139,10 @@ export default function CompanyHub() {
 	const announcementsCount = announcementsData?.announcements.count || 0;
 	const policiesCount = policiesData?.announcements.count || 0;
 
-	const pageCount = activeTab === "announcements"
-		? Math.max(1, calculateTotalPages(announcementsCount, pageSize))
-		: Math.max(1, calculateTotalPages(policiesCount, pageSize));
+	const pageCount =
+		activeTab === "announcements"
+			? Math.max(1, calculateTotalPages(announcementsCount, pageSize))
+			: Math.max(1, calculateTotalPages(policiesCount, pageSize));
 
 	const pageItems = filtered.slice((page - 1) * pageSize, page * pageSize);
 
@@ -184,19 +188,20 @@ export default function CompanyHub() {
 	};
 
 	// Show loading state only for the initial load of each tab
-	const showLoading = (activeTab === "announcements" && !announcementsData && (announcementsLoading || announcementsFetching)) ||
-		(activeTab === "policies" && !policiesData && (policiesLoading || policiesFetching));
-
-	// Show cached data while fetching new data to prevent glitch
-	const isTransitioning = (announcementsFetching && activeTab === "announcements" && !announcementsPlaceholder) ||
-		(policiesFetching && activeTab === "policies" && !policiesPlaceholder);
+	const showLoading =
+		(activeTab === "announcements" &&
+			!announcementsData &&
+			(announcementsLoading || announcementsFetching)) ||
+		(activeTab === "policies" &&
+			!policiesData &&
+			(policiesLoading || policiesFetching));
 
 	return (
 		<div className="min-h-screen bg-[#F8F8F8]">
 			<PageHeader
 				title="Company Hub"
 				crumbs={[
-					{ label: "Pages", href:'#' },
+					{ label: "Pages", href: "#" },
 					{ label: "Company Hub", href: ROUTES.DASHBOARD.COMPANY_HUB },
 				]}
 				tabs={[

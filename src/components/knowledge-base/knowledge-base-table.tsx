@@ -2,6 +2,7 @@
 
 import * as React from "react";
 import { ColumnDef } from "@tanstack/react-table";
+import type { SortingState } from "@tanstack/react-table";
 import { CardTable } from "@/components/common/card-table/card-table";
 import { CardTableColumnHeader } from "@/components/common/card-table/card-table-column-header";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -30,7 +31,7 @@ type Props = {
 	viewMoreHref?: string;
 	limit?: number;
 	showToolbar?: boolean;
-	baseHref?: string;
+	// baseHref?: string; // Removed unused prop
 	className?: string;
 	onRowClick?: (row: KnowledgeBaseRow) => void; // Added onRowClick handler
 	pagination?: {
@@ -53,7 +54,7 @@ export function KnowledgeBaseTable({
 	viewMoreHref,
 	limit,
 	showToolbar = true,
-	baseHref = "/knowledge-base",
+	// baseHref = "/knowledge-base", // Removed unused prop
 	className,
 	onRowClick,
 	pagination,
@@ -64,9 +65,14 @@ export function KnowledgeBaseTable({
 	const displayTitle = title;
 
 	const isControlled = data !== undefined;
-	const [sorting, setSorting] = React.useState<any[]>([
+	const [sorting, setSorting] = React.useState<SortingState>([
 		{ id: "folder", desc: false },
 	]);
+
+	// Handler for dropdown sort change (always ascending)
+	const handleSortChange = (v: string) => {
+		setSorting([{ id: v, desc: false }]);
+	};
 
 	// Use TanStack Table's sorting model to sort data
 	const sortedData = React.useMemo(() => {
@@ -225,7 +231,7 @@ export function KnowledgeBaseTable({
 						{ label: "Date Created", value: "dateCreated" },
 					]}
 					activeSort={sorting[0]?.id || "folder"}
-					onSortChange={(v) => setSorting([{ id: v, desc: false }])}
+					onSortChange={handleSortChange}
 					hasFilter={false}
 					className="flex sm:flex-col sm:items-start"
 					placeholder="Search folders and files..."

@@ -66,8 +66,8 @@ export default function TaskChecklistDetails({
 					item.status === "to_do"
 						? "todo"
 						: item.status === "in_progress"
-							? "inprogress"
-							: "done";
+						? "inprogress"
+						: "done";
 				return {
 					id: item.id.toString(),
 					name: item.attachment_details.title,
@@ -86,7 +86,7 @@ export default function TaskChecklistDetails({
 					files: item.attachment_details.files,
 				};
 			});
-			
+
 			setKanbanTasks(newTasks);
 			// Only initialize the ref if it's empty (first load)
 			// Deep clone to prevent mutation issues
@@ -105,8 +105,9 @@ export default function TaskChecklistDetails({
 		},
 		{
 			id: "inprogress",
-			name: `In progress (${tasks.filter((t) => t.column === "inprogress").length
-				})`,
+			name: `In progress (${
+				tasks.filter((t) => t.column === "inprogress").length
+			})`,
 		},
 		{
 			id: "done",
@@ -182,15 +183,11 @@ export default function TaskChecklistDetails({
 								const currentTaskMap = new Map(
 									updatedTasks.map((task) => [task.id, task])
 								);
-								let changeDetected = false;
 								for (const [id, currentTask] of currentTaskMap) {
 									const previousTask = previousTaskMap.get(id);
 
 									if (previousTask) {
-
 										if (previousTask.column !== currentTask.column) {
-											changeDetected = true;
-
 											let newStatus: "to_do" | "in_progress" | "done" = "to_do";
 											if (currentTask.column === "inprogress") {
 												newStatus = "in_progress";
@@ -200,13 +197,11 @@ export default function TaskChecklistDetails({
 											const taskId = parseInt(id);
 											updateAttachmentStatus(taskId, { status: newStatus })
 												.then(() => {
-
 													// Only update the ref after successful API call
 													// Deep clone to prevent mutation issues
 													prevKanbanTasksRef.current = JSON.parse(
 														JSON.stringify(updatedTasks)
 													);
-
 												})
 												.catch(() => {
 													toast.error("Failed to update status");
@@ -226,11 +221,11 @@ export default function TaskChecklistDetails({
 									className={cn(
 										"rounded-xl px-2 py-3 h-full flex flex-col",
 										column.id === "todo" &&
-										"border-2 border-dashed border-[#E5004E] bg-[#E5004E]/10",
+											"border-2 border-dashed border-[#E5004E] bg-[#E5004E]/10",
 										column.id === "inprogress" &&
-										"border-2 border-dashed border-[#888DA7]/20 bg-white",
+											"border-2 border-dashed border-[#888DA7]/20 bg-white",
 										column.id === "done" &&
-										"border-2 border-dashed border-[#888DA7]/20 bg-white"
+											"border-2 border-dashed border-[#888DA7]/20 bg-white"
 									)}>
 									<KanbanHeader className="text-sm sm:text-base font-semibold text-[#1C1D22]/60 mb-3 sm:mb-4 border-none">
 										{column.name}
@@ -282,8 +277,8 @@ export default function TaskChecklistDetails({
 																{task.column === "todo"
 																	? "To do"
 																	: task.column === "inprogress"
-																		? "Progress"
-																		: "Done"}
+																	? "Progress"
+																	: "Done"}
 															</span>
 														</div>
 
@@ -294,7 +289,7 @@ export default function TaskChecklistDetails({
 																	"h-1.5 rounded-full transition-[width]",
 																	task.column === "todo" && "bg-transparent",
 																	task.column === "inprogress" &&
-																	"bg-[#FFA048]",
+																		"bg-[#FFA048]",
 																	task.column === "done" && "bg-[#78D700]"
 																)}
 																style={{
@@ -302,8 +297,8 @@ export default function TaskChecklistDetails({
 																		task.column === "done"
 																			? "100%"
 																			: task.column === "inprogress"
-																				? "60%"
-																				: "0%",
+																			? "60%"
+																			: "0%",
 																}}
 															/>
 														</div>
@@ -312,11 +307,11 @@ export default function TaskChecklistDetails({
 															className={cn(
 																"w-[108px] h-[28px] flex items-center justify-center text-[11px] sm:text-xs font-medium rounded-full",
 																task.column === "todo" &&
-																"text-[#FF7979]  bg-[#FF7979]/10",
+																	"text-[#FF7979]  bg-[#FF7979]/10",
 																task.column === "inprogress" &&
-																"text-[#FFA048] bg-[#FFA048]/10",
+																	"text-[#FFA048] bg-[#FFA048]/10",
 																task.column === "done" &&
-																"text-[#888DA7] bg-[#888DA7]/10"
+																	"text-[#888DA7] bg-[#888DA7]/10"
 															)}>
 															{(task as Task).date}
 														</div>

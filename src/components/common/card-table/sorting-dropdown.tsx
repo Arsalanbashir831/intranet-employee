@@ -6,7 +6,7 @@ import {
 	DropdownMenuTrigger,
 	DropdownMenuLabel,
 } from "@/components/ui/dropdown-menu";
-import { ChevronDown, ListFilter, SlidersHorizontal } from "lucide-react";
+import { ChevronDown, ListFilter } from "lucide-react";
 
 export function SortingDropdown({
 	sortOptions,

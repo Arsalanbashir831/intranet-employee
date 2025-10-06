@@ -23,40 +23,40 @@ export default function Home() {
 		pageSize: 5,
 	});
 	const [searchTerm, setSearchTerm] = useState<string>("");
-	
+
 	// Debugging: Log the search term to see if it's being maintained correctly
-	console.log('Home page searchTerm:', searchTerm);
-	
+	console.log("Home page searchTerm:", searchTerm);
+
 	const { data, isLoading, isError } = useKnowledgeFolders(
 		pageIndexToPageNumber(pagination.pageIndex),
 		pagination.pageSize,
 		searchTerm
 	);
-	
+
 	// Convert API folder data to table row format
 	const convertFolderToRow = (folder: FolderTreeItem): KnowledgeBaseRow => ({
 		id: folder.id.toString(),
 		folder: folder.name,
 		createdByName: "Cartwright King",
 		createdByAvatar: "/images/logo-circle.png",
-		dateCreated: new Date(folder.created_at).toISOString().split('T')[0],
+		dateCreated: new Date(folder.created_at).toISOString().split("T")[0],
 		type: "folder",
 	});
-	
+
 	// Transform API data to table rows
 	const tableData = useMemo(() => {
 		return data?.folders?.results?.map(convertFolderToRow) || [];
 	}, [data]);
-	
+
 	const handlePaginationChange = (newPagination: PaginationState) => {
 		setPagination(newPagination);
 	};
 
 	const handleSearch = (term: string) => {
-		console.log('Home page handleSearch called with:', term);
+		console.log("Home page handleSearch called with:", term);
 		setSearchTerm(term);
 		// Reset to first page when searching
-		setPagination(prev => ({ ...prev, pageIndex: 0 }));
+		setPagination((prev) => ({ ...prev, pageIndex: 0 }));
 	};
 
 	return (
@@ -65,14 +65,13 @@ export default function Home() {
 			<PageHeader
 				title="Home"
 				crumbs={[
-					{ label: "Pages", href:'#' },
+					{ label: "Pages", href: "#" },
 					{ label: "Home", href: ROUTES.DASHBOARD.HOME },
 				]}
 			/>
 
 			{/* one gutter to rule them all */}
-			<main
-				className=" mx-auto w-full px-4 sm:px-6 md:px-8 py-6 sm:py-8 lg:py-10 [--gap:1rem] sm:[--gap:1.125rem] lg:[--gap:1.25rem] max-w-[110rem] min-[2560px]:max-w-[140rem] space-y-[calc(var(--gap)*1.25)]">
+			<main className=" mx-auto w-full px-4 sm:px-6 md:px-8 py-6 sm:py-8 lg:py-10 [--gap:1rem] sm:[--gap:1.125rem] lg:[--gap:1.25rem] max-w-[110rem] min-[2560px]:max-w-[140rem] space-y-[calc(var(--gap)*1.25)]">
 				{/* ============ Announcements (desktop = horizontal scroll) ============ */}
 				<LatestAnnouncements />
 
@@ -124,21 +123,24 @@ export default function Home() {
 												<div className="h-6 bg-gray-200 rounded w-1/4"></div>
 												<div className="space-y-2">
 													{Array.from({ length: 5 }).map((_, i) => (
-														<div key={i} className="h-12 bg-gray-100 rounded"></div>
+														<div
+															key={i}
+															className="h-12 bg-gray-100 rounded"></div>
 													))}
 												</div>
 											</div>
 										</div>
 									) : isError ? (
 										<div className="bg-[#F9FFFF] p-4 sm:p-5 md:p-5 rounded-xl">
-											<div className="text-red-500">Failed to load knowledge base data</div>
+											<div className="text-red-500">
+												Failed to load knowledge base data
+											</div>
 										</div>
 									) : (
 										<KnowledgeBaseTable
 											data={tableData}
 											showToolbar={true}
 											viewMoreHref="/knowledge-base"
-											baseHref="/knowledge-base"
 											className="bg-[#F9FFFF] gap-0 w-full"
 											pagination={{
 												pageIndex: pagination.pageIndex,

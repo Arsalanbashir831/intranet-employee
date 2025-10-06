@@ -30,7 +30,8 @@ function convertFolderToRow(folder: FolderTreeItem): KnowledgeBaseRow {
 		type: "folder",
 	};
 }
-function convertFileToRow(file: any): KnowledgeBaseRow {
+import type { FolderTreeFile } from "@/services/knowledge-folders";
+function convertFileToRow(file: FolderTreeFile): KnowledgeBaseRow {
 	return {
 		id: String(file.id),
 		folder: file.name,
@@ -82,7 +83,7 @@ export function KnowledgeBaseFolderView({
 				} else {
 					setFolderTree(tree as FolderTreeItem);
 				}
-			} catch (err) {
+			} catch {
 				setError("Failed to load folder contents");
 				setFolderTree(null);
 			} finally {
