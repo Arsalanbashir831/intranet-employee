@@ -100,10 +100,10 @@ export function ResetPassword() {
 			<div className="flex-1 flex items-center justify-center px-4 sm:px-8">
 				<div className="w-full max-w-md space-y-6 py-8 md:py-0 text-center">
 					<h1 className="text-3xl md:text-5xl font-semibold text-gray-900 mb-6">
-						Invalid OTP
+						Invalid Reset Link
 					</h1>
 					<p className="text-gray-600 mb-6">
-						The OTP is invalid or has expired. Please request a new password reset.
+						The password reset link is invalid or has expired. Please request a new password reset.
 					</p>
 					<Link href={ROUTES.AUTH.FORGOT_PASSWORD}>
 						<Button className="w-full h-12 mb-2 bg-[#E5004E] hover:bg-pink-300 text-white rounded-full font-medium text-base">

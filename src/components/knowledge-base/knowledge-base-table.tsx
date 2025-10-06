@@ -39,10 +39,12 @@ type Props = {
 		totalCount: number;
 		onPaginationChange: (pagination: PaginationState) => void;
 	};
+	onSearch?: (searchTerm: string) => void; // Added search handler
+	searchTerm?: string; // Added search term prop
 };
 
 /* --------------- Demo rows --------------- */
-const defaultRows: KnowledgeBaseRow[] =[];
+const defaultRows: KnowledgeBaseRow[] = [];
 
 /* --------------- Component --------------- */
 export function KnowledgeBaseTable({
@@ -55,32 +57,39 @@ export function KnowledgeBaseTable({
 	className,
 	onRowClick,
 	pagination,
+	onSearch,
+	searchTerm = "",
 }: Props) {
 	// Use the provided title prop directly
 	const displayTitle = title;
 
 	const isControlled = data !== undefined;
-	const [sortedBy, setSortedBy] = React.useState<string>("folder");
-	const [internalData, setInternalData] = React.useState<KnowledgeBaseRow[]>(
-		isControlled ? data! : defaultRows
-	);
+	const [sorting, setSorting] = React.useState<any[]>([
+		{ id: "folder", desc: false },
+	]);
 
-	React.useEffect(() => {
-		if (isControlled) {
-			setInternalData(data!);
-			return;
-		}
-		const copy = [...defaultRows];
-		copy.sort((a, b) => {
-			const key = sortedBy as keyof KnowledgeBaseRow;
-			const av = (a[key] ?? "") as string;
-			const bv = (b[key] ?? "") as string;
-			return String(av).localeCompare(String(bv));
+	// Use TanStack Table's sorting model to sort data
+	const sortedData = React.useMemo(() => {
+		const arr = isControlled ? [...data!] : [...defaultRows];
+		if (sorting.length === 0) return arr;
+		const { id, desc } = sorting[0];
+		const sortKey = id as keyof KnowledgeBaseRow;
+		arr.sort((a, b) => {
+			const av = (a[sortKey] ?? "") as string;
+			const bv = (b[sortKey] ?? "") as string;
+			const cmp = String(av).localeCompare(String(bv));
+			return desc ? -cmp : cmp;
 		});
-		setInternalData(copy);
-	}, [sortedBy, data, isControlled]);
+		return arr;
+	}, [data, isControlled, sorting]);
 
-	const tableData = limit ? internalData.slice(0, limit) : internalData;
+	const tableData = limit ? sortedData.slice(0, limit) : sortedData;
+
+	const handleSearchChange = (value: string) => {
+		if (onSearch) {
+			onSearch(value);
+		}
+	};
 
 	const columns: ColumnDef<KnowledgeBaseRow>[] = [
 		{
@@ -92,19 +101,18 @@ export function KnowledgeBaseTable({
 				const isFolder = row.original.type === "folder";
 				const Icon = isFolder ? FolderIcon : FileIcon;
 				const iconColor = isFolder ? "text-[#667085]" : "text-[#E5004E]";
-				
+
 				// Handle row click if provided
 				const handleClick = () => {
 					if (onRowClick) {
 						onRowClick(row.original);
 					}
 				};
-				
+
 				return (
-					<div 
+					<div
 						className="flex items-center gap-2 min-w-0 cursor-pointer"
-						onClick={handleClick}
-					>
+						onClick={handleClick}>
 						<Icon className={`size-4 sm:size-5 shrink-0 ${iconColor}`} />
 						<span
 							className="text-sm sm:text-[15px] text-[#1F2937] leading-none hover:underline hover:text-[#E5004E] truncate"
@@ -123,7 +131,7 @@ export function KnowledgeBaseTable({
 				</div>
 			),
 			cell: ({ row }) => {
-				const name = row.original.createdByName;
+				const name = row.original.createdByName || "Cartwright King";
 				return (
 					<div className="hidden sm:flex items-center gap-2">
 						<Avatar className="h-6 w-6">
@@ -150,11 +158,25 @@ export function KnowledgeBaseTable({
 					<CardTableColumnHeader column={column} title="Date Created" />
 				</div>
 			),
-			cell: ({ getValue }) => (
-				<span className="hidden md:inline text-sm text-[#667085] leading-none">
-					{String(getValue())}
-				</span>
-			),
+			cell: ({ getValue }) => {
+				const raw = getValue() as string;
+				let formatted = raw;
+				if (raw) {
+					const date = new Date(raw);
+					if (!isNaN(date.getTime())) {
+						// Format as YYYY-MM-DD
+						const year = date.getFullYear();
+						const month = String(date.getMonth() + 1).padStart(2, "0");
+						const day = String(date.getDate()).padStart(2, "0");
+						formatted = `${year}-${month}-${day}`;
+					}
+				}
+				return (
+					<span className="hidden md:inline text-sm text-[#667085] leading-none">
+						{formatted}
+					</span>
+				);
+			},
 		},
 		{
 			id: "actions",
@@ -165,7 +187,7 @@ export function KnowledgeBaseTable({
 			),
 			cell: ({ row }) => {
 				const isFolder = row.original.type === "folder";
-				
+
 				// Handle action click
 				const handleActionClick = (e: React.MouseEvent) => {
 					e.stopPropagation(); // Prevent row click event
@@ -173,7 +195,7 @@ export function KnowledgeBaseTable({
 						onRowClick(row.original);
 					}
 				};
-				
+
 				return (
 					<button
 						onClick={handleActionClick}
@@ -195,16 +217,18 @@ export function KnowledgeBaseTable({
 			{showToolbar ? (
 				<CardTableToolbar
 					title={displayTitle}
-					onSearchChange={() => {}}
+					onSearchChange={handleSearchChange}
+					searchValue={searchTerm}
 					sortOptions={[
 						{ label: "Name", value: "folder" },
 						{ label: "Created By", value: "createdByName" },
 						{ label: "Date Created", value: "dateCreated" },
 					]}
-					activeSort={sortedBy}
-					onSortChange={(v) => setSortedBy(v)}
-					onFilterClick={() => {}}
+					activeSort={sorting[0]?.id || "folder"}
+					onSortChange={(v) => setSorting([{ id: v, desc: false }])}
+					hasFilter={false}
 					className="flex sm:flex-col sm:items-start"
+					placeholder="Search folders and files..."
 				/>
 			) : (
 				<div className="mb-3 sm:mb-4 flex items-center justify-between">
@@ -222,30 +246,35 @@ export function KnowledgeBaseTable({
 			<div className="overflow-y-auto pr-2 pb-2">
 				{tableData.length === 0 ? (
 					<div className="text-center py-8 text-gray-500">
-						No items found
+						{searchTerm ? "No items match your search" : "No items found"}
 					</div>
 				) : (
 					<CardTable<KnowledgeBaseRow, unknown>
 						columns={columns}
 						data={tableData}
 						headerClassName="
-            grid-cols-[1fr]
-            sm:grid-cols-[1.1fr_0.9fr]
-            md:grid-cols-[1.2fr_1fr_0.9fr_0.7fr]
-          "
-						rowClassName='hover:bg-[#FAFAFB] grid-cols-[1fr] sm:grid-cols-[1.1fr_0.9fr] md:grid-cols-[1.2fr_1fr_0.9fr_0.7fr] cursor-pointer'
-          
-						onRowClick={onRowClick ? (row) => onRowClick(row.original) : undefined}
+			grid-cols-[1fr]
+			sm:grid-cols-[1.1fr_0.9fr]
+			md:grid-cols-[1.2fr_1fr_0.9fr_0.7fr]
+		  "
+						rowClassName="hover:bg-[#FAFAFB] grid-cols-[1fr] sm:grid-cols-[1.1fr_0.9fr] md:grid-cols-[1.2fr_1fr_0.9fr_0.7fr] cursor-pointer"
+						onRowClick={
+							onRowClick ? (row) => onRowClick(row.original) : undefined
+						}
+						sorting={sorting}
+						onSortingChange={setSorting}
 						footer={(table) =>
 							pagination ? (
-								<CardTablePagination 
+								<CardTablePagination
 									table={table}
 									pageIndex={pagination.pageIndex}
 									pageSize={pagination.pageSize}
 									totalCount={pagination.totalCount}
 									onPaginationChange={pagination.onPaginationChange}
 								/>
-							) : limit ? null : <CardTablePagination table={table} />
+							) : limit ? null : (
+								<CardTablePagination table={table} />
+							)
 						}
 					/>
 				)}

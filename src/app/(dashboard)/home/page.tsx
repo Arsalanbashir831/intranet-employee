@@ -12,7 +12,7 @@ import KnowledgeBaseTable from "@/components/knowledge-base/knowledge-base-table
 import ContactSection from "@/components/common/contact-section";
 import { LatestAnnouncements } from "@/components/dashboard/latest-announcements";
 import { useKnowledgeFolders } from "@/hooks/queries/use-knowledge-folders";
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { PaginationState, pageIndexToPageNumber } from "@/lib/pagination-utils";
 import { KnowledgeBaseRow } from "@/components/knowledge-base/knowledge-base-table";
 import { FolderTreeItem } from "@/services/knowledge-folders";
@@ -22,10 +22,15 @@ export default function Home() {
 		pageIndex: 0,
 		pageSize: 5,
 	});
+	const [searchTerm, setSearchTerm] = useState<string>("");
+	
+	// Debugging: Log the search term to see if it's being maintained correctly
+	console.log('Home page searchTerm:', searchTerm);
 	
 	const { data, isLoading, isError } = useKnowledgeFolders(
 		pageIndexToPageNumber(pagination.pageIndex),
-		pagination.pageSize
+		pagination.pageSize,
+		searchTerm
 	);
 	
 	// Convert API folder data to table row format
@@ -39,10 +44,19 @@ export default function Home() {
 	});
 	
 	// Transform API data to table rows
-	const tableData = data?.folders?.results?.map(convertFolderToRow) || [];
+	const tableData = useMemo(() => {
+		return data?.folders?.results?.map(convertFolderToRow) || [];
+	}, [data]);
 	
 	const handlePaginationChange = (newPagination: PaginationState) => {
 		setPagination(newPagination);
+	};
+
+	const handleSearch = (term: string) => {
+		console.log('Home page handleSearch called with:', term);
+		setSearchTerm(term);
+		// Reset to first page when searching
+		setPagination(prev => ({ ...prev, pageIndex: 0 }));
 	};
 
 	return (
@@ -122,7 +136,7 @@ export default function Home() {
 									) : (
 										<KnowledgeBaseTable
 											data={tableData}
-											showToolbar={false}
+											showToolbar={true}
 											viewMoreHref="/knowledge-base"
 											baseHref="/knowledge-base"
 											className="bg-[#F9FFFF] gap-0 w-full"
@@ -132,6 +146,8 @@ export default function Home() {
 												totalCount: data?.folders?.count || 0,
 												onPaginationChange: handlePaginationChange,
 											}}
+											onSearch={handleSearch}
+											searchTerm={searchTerm}
 										/>
 									)}
 								</div>

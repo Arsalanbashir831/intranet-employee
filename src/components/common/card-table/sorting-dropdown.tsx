@@ -6,7 +6,7 @@ import {
 	DropdownMenuTrigger,
 	DropdownMenuLabel,
 } from "@/components/ui/dropdown-menu";
-import { ChevronDown, SlidersHorizontal } from "lucide-react";
+import { ChevronDown, ListFilter, SlidersHorizontal } from "lucide-react";
 
 export function SortingDropdown({
 	sortOptions,
@@ -20,8 +20,8 @@ export function SortingDropdown({
 	return (
 		<DropdownMenu>
 			<DropdownMenuTrigger id="dropdown-trigger-sorting" asChild>
-				<Button variant="outline" className="gap-1">
-					<SlidersHorizontal className="size-4" /> Sort By
+				<Button variant="outline" className="gap-1 rounded-[4px] border-black">
+					<ListFilter className="size-3.5 mr-1" /> Sort By
 					<ChevronDown className="size-4" />
 				</Button>
 			</DropdownMenuTrigger>

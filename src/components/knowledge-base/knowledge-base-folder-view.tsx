@@ -1,35 +1,45 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { KnowledgeBaseTable } from "@/components/knowledge-base/knowledge-base-table";
-import { PageHeader } from "@/components/common/page-header";
-import { ROUTES } from "@/constants/routes";
-import { KnowledgeBaseRow } from "@/components/knowledge-base/knowledge-base-table";
-import { getFolderTree } from "@/services/knowledge-folders";
-import { useAuth } from "@/contexts/auth-context";
-import { FolderTreeItem, FolderTreeFile } from "@/services/knowledge-folders";
+import React, { useState, useEffect, useMemo } from "react";
 import { useRouter } from "next/navigation";
+import { useAuth } from "@/contexts/auth-context";
+import { getFolderTree, FolderTreeItem } from "@/services/knowledge-folders";
+import { ROUTES } from "@/constants/routes";
+import KnowledgeBaseTable, { KnowledgeBaseRow } from "./knowledge-base-table";
+import { PageHeader } from "../common/page-header";
 
-// Convert API folder data to table row format
-const convertFolderToRow = (folder: FolderTreeItem): KnowledgeBaseRow => ({
-	id: folder.id.toString(),
-	folder: folder.name,
-	createdByName: "Cartwright King",
-	createdByAvatar: "/images/logo-circle.png",
-	dateCreated: new Date(folder.created_at).toISOString().split('T')[0],
-	type: "folder",
-});
-
-// Convert API file data to table row format
-const convertFileToRow = (file: FolderTreeFile): KnowledgeBaseRow => ({
-	id: file.id.toString(),
-	folder: file.name,
-	createdByName: "Cartwright King",
-	createdByAvatar: "/images/logo-circle.png",
-	dateCreated: new Date(file.uploaded_at).toISOString().split('T')[0],
-	type: "file",
-	fileUrl: file.file, // Add file URL for downloading
-});
+// Utility functions for filtering and converting folder/file to row
+function filterFolderContents(
+	folder: FolderTreeItem,
+	searchTerm: string
+): FolderTreeItem {
+	if (!searchTerm) return folder;
+	const lower = searchTerm.toLowerCase();
+	return {
+		...folder,
+		folders: folder.folders.filter((f) => f.name.toLowerCase().includes(lower)),
+		files: folder.files.filter((f) => f.name.toLowerCase().includes(lower)),
+	};
+}
+function convertFolderToRow(folder: FolderTreeItem): KnowledgeBaseRow {
+	return {
+		id: String(folder.id),
+		folder: folder.name,
+		createdByName: "",
+		dateCreated: folder.created_at,
+		type: "folder",
+	};
+}
+function convertFileToRow(file: any): KnowledgeBaseRow {
+	return {
+		id: String(file.id),
+		folder: file.name,
+		createdByName: "",
+		dateCreated: file.uploaded_at || "",
+		type: "file",
+		fileUrl: file.file_url,
+	};
+}
 
 export function KnowledgeBaseFolderView({
 	folderPath,
@@ -38,55 +48,23 @@ export function KnowledgeBaseFolderView({
 }) {
 	const { user } = useAuth();
 	const router = useRouter();
-	const [data, setData] = useState<KnowledgeBaseRow[]>([]);
+	const [folderTree, setFolderTree] = useState<FolderTreeItem | null>(null);
 	const [loading, setLoading] = useState(true);
 	const [error, setError] = useState<string | null>(null);
+	const [searchTerm, setSearchTerm] = useState<string>("");
 
 	useEffect(() => {
 		const fetchData = async () => {
 			setLoading(true);
 			setError(null);
-
 			try {
-				// Get folder tree
-				const employeeId = user?.employeeId ? String(user.employeeId) : undefined;
-				const folderTree = await getFolderTree(employeeId);
-
-				// Navigate through the folder path to find the current folder
-				const currentFolders = folderTree?.folders || [];
-				let targetFolder = null;
-				let folderName = "Knowledge Base";
-
-				// If we have a folder path, navigate through it
-				if (folderPath.length > 0) {
-					let foundFolder = null;
-
-					// Recursive function to find folder by path
-					const findFolderByPath = (folders: FolderTreeItem[], path: string[], depth: number): FolderTreeItem | null => {
-						if (depth >= path.length) return null;
-
-						const folderName = path[depth];
-						for (const folder of folders) {
-							if (folder.name === folderName) {
-								if (depth === path.length - 1) {
-									// Found the target folder
-									return folder;
-								} else {
-									// Continue searching in subfolders
-									const result = findFolderByPath(folder.folders, path, depth + 1);
-									if (result) return result;
-								}
-							}
-						}
-						return null;
-					};
-
-					foundFolder = findFolderByPath(currentFolders, folderPath, 0);
-					targetFolder = foundFolder;
-					folderName = folderPath.join(" / ");
-				} else {
-					// Root level - show all top-level folders
-					targetFolder = {
+				const employeeId = user?.employeeId
+					? String(user.employeeId)
+					: undefined;
+				const tree = await getFolderTree(employeeId);
+				// If API returns { folders: FolderTreeItem[] }, use the first folder or wrap as needed
+				if (Array.isArray(tree.folders)) {
+					setFolderTree({
 						id: 0,
 						name: "Root",
 						description: "",
@@ -96,44 +74,93 @@ export function KnowledgeBaseFolderView({
 						effective_permissions: {
 							branches: [],
 							departments: [],
-							employees: []
+							employees: [],
 						},
 						files: [],
-						folders: currentFolders
-					};
-				}
-
-				if (targetFolder) {
-					// Combine files and subfolders into rows
-					const folderRows = targetFolder.folders?.map(convertFolderToRow) || [];
-					const fileRows = targetFolder.files?.map(convertFileToRow) || [];
-
-					setData([...folderRows, ...fileRows]);
+						folders: tree.folders,
+					});
 				} else {
-					// If folder not found, show empty data
-					setData([]);
+					setFolderTree(tree as FolderTreeItem);
 				}
 			} catch (err) {
-				console.error("Error fetching folder contents:", err);
 				setError("Failed to load folder contents");
-				setData([]);
+				setFolderTree(null);
 			} finally {
 				setLoading(false);
 			}
 		};
-
 		fetchData();
-	}, [folderPath, user?.employeeId]);
+	}, [user?.employeeId]);
+
+	const targetFolder = useMemo(() => {
+		if (!folderTree) return null;
+		const currentFolders = folderTree.folders || [];
+		if (folderPath.length === 0) {
+			return {
+				id: 0,
+				name: "Root",
+				description: "",
+				parent: null,
+				created_at: new Date().toISOString(),
+				inherits_parent_permissions: true,
+				effective_permissions: {
+					branches: [],
+					departments: [],
+					employees: [],
+				},
+				files: [],
+				folders: currentFolders,
+			};
+		}
+		const findFolderByPath = (
+			folders: FolderTreeItem[],
+			path: string[],
+			depth: number
+		): FolderTreeItem | null => {
+			if (depth >= path.length) return null;
+			const folderName = path[depth];
+			for (const folder of folders) {
+				if (folder.name === folderName) {
+					if (depth === path.length - 1) {
+						return folder;
+					} else {
+						const result = findFolderByPath(folder.folders, path, depth + 1);
+						if (result) return result;
+					}
+				}
+			}
+			return null;
+		};
+		return findFolderByPath(currentFolders, folderPath, 0);
+	}, [folderTree, folderPath]);
+
+	const filteredFolder = useMemo(() => {
+		if (!targetFolder) return null;
+		return filterFolderContents(targetFolder, searchTerm);
+	}, [targetFolder, searchTerm]);
+
+	const data = useMemo(() => {
+		if (!filteredFolder) return [];
+		const folderRows = filteredFolder.folders?.map(convertFolderToRow) || [];
+		const fileRows = filteredFolder.files?.map(convertFileToRow) || [];
+		return [...folderRows, ...fileRows];
+	}, [filteredFolder]);
 
 	const handleRowClick = (row: KnowledgeBaseRow) => {
 		if (row.type === "folder") {
-			// Navigate to the folder
 			const newPath = [...folderPath, row.folder];
-			router.push(`${ROUTES.DASHBOARD.KNOWLEDGE_BASE}/${newPath.map(encodeURIComponent).join("/")}`);
+			router.push(
+				`${ROUTES.DASHBOARD.KNOWLEDGE_BASE}/${newPath
+					.map(encodeURIComponent)
+					.join("/")}`
+			);
 		} else if (row.type === "file" && row.fileUrl) {
-			// Download the file
 			window.open(row.fileUrl, "_blank");
 		}
+	};
+
+	const handleSearch = (term: string) => {
+		setSearchTerm(term);
 	};
 
 	if (loading) {
@@ -142,7 +169,7 @@ export function KnowledgeBaseFolderView({
 				<PageHeader
 					title="Knowledge Base"
 					crumbs={[
-						{ label: "Pages", href: '#' },
+						{ label: "Pages", href: "#" },
 						{ label: "Knowledge Base", href: ROUTES.DASHBOARD.KNOWLEDGE_BASE },
 					]}
 				/>
@@ -166,7 +193,7 @@ export function KnowledgeBaseFolderView({
 				<PageHeader
 					title="Knowledge Base"
 					crumbs={[
-						{ label: "Pages", href: '#' },
+						{ label: "Pages", href: "#" },
 						{ label: "Knowledge Base", href: ROUTES.DASHBOARD.KNOWLEDGE_BASE },
 					]}
 				/>
@@ -179,31 +206,35 @@ export function KnowledgeBaseFolderView({
 
 	// Build breadcrumbs
 	const crumbs = [
-		{ label: "Pages", href: '#' },
+		{ label: "Pages", href: "#" },
 		{ label: "Knowledge Base", href: ROUTES.DASHBOARD.KNOWLEDGE_BASE },
 	];
-
 	folderPath.forEach((folder, index) => {
 		const pathToThisFolder = folderPath.slice(0, index + 1);
-		// Decode URI components to handle spaces and special characters
 		const decodedFolderName = decodeURIComponent(folder);
 		crumbs.push({
 			label: decodedFolderName,
-			href: `${ROUTES.DASHBOARD.KNOWLEDGE_BASE}/${pathToThisFolder.map(encodeURIComponent).join("/")}`
+			href: `${ROUTES.DASHBOARD.KNOWLEDGE_BASE}/${pathToThisFolder
+				.map(encodeURIComponent)
+				.join("/")}`,
 		});
 	});
 
 	return (
 		<div>
-			<PageHeader
-				title="Knowledge Base"
-				crumbs={crumbs}
-			/>
-			<div className="p-4 sm:p-8 lg:p-6">
+			<PageHeader title="Knowledge Base" crumbs={crumbs} />
+			<div className="">
 				<KnowledgeBaseTable
 					data={data}
-					title={folderPath.length > 0 ? folderPath[folderPath.length - 1] : "Knowledge Base"}
+					title={
+						folderPath.length > 0
+							? folderPath[folderPath.length - 1]
+							: "Knowledge Base"
+					}
 					onRowClick={handleRowClick}
+					onSearch={handleSearch}
+					searchTerm={searchTerm}
+					showToolbar={true}
 				/>
 			</div>
 		</div>

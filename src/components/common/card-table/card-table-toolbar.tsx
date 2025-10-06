@@ -10,9 +10,11 @@ import { SortingDropdown } from "./sorting-dropdown";
 export type CardTableToolbarProps = {
 	title: string;
 	placeholder?: string;
+	searchValue?: string;
 	onSearchChange?: (value: string) => void;
 	onSortChange?: (value: string) => void;
 	onFilterClick?: () => void;
+	hasFilter?: boolean;
 	className?: string;
 	sortOptions?: { label: string; value: string }[];
 	activeSort?: string;
@@ -22,11 +24,13 @@ export type CardTableToolbarProps = {
 export function CardTableToolbar({
 	title,
 	placeholder = "Search",
+	searchValue,
 	onSearchChange,
 	onSortChange,
 	onFilterClick,
+	hasFilter = true,
 	className,
-	sortOptions = [{ label: "Name", value: "name" }],
+	sortOptions = [{ label: "Name", value: "folder" }],
 	activeSort,
 	accessControl,
 }: CardTableToolbarProps) {
@@ -41,6 +45,7 @@ export function CardTableToolbar({
 			<div className="flex flex-col gap-3 sm:flex-row sm:items-center">
 				<TableSearch
 					placeholder={placeholder ?? "Search"}
+					value={searchValue}
 					onChange={onSearchChange ?? (() => {})}
 				/>
 
@@ -48,16 +53,18 @@ export function CardTableToolbar({
 
 				<SortingDropdown
 					sortOptions={sortOptions}
-					activeSort={activeSort ?? "name"}
+					activeSort={activeSort ?? "folder"}
 					onSortChange={onSortChange ?? (() => {})}
 				/>
 
-				<Button
-					variant="outline"
-					className="gap-1"
-					onClick={onFilterClick ?? (() => {})}>
-					<Filter className="size-4" /> Filter
-				</Button>
+				{hasFilter && (
+					<Button
+						variant="outline"
+						className="gap-1"
+						onClick={onFilterClick ?? (() => {})}>
+						<Filter className="size-4" /> Filter
+					</Button>
+				)}
 			</div>
 		</div>
 	);
