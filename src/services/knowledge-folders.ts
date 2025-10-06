@@ -1,11 +1,33 @@
 import apiCaller from "@/lib/api-caller";
 import { API_ROUTES } from "@/constants/api-routes";
-import { components } from "@/types/api";
 
-// Types
-export type KnowledgeFolder = components["schemas"]["KnowledgeFolder"];
-export type PaginatedKnowledgeFolderList = components["schemas"]["PaginatedKnowledgeFolderList"];
-export type PatchedKnowledgeFolder = components["schemas"]["PatchedKnowledgeFolder"];
+// Define missing types
+export type KnowledgeFolder = {
+  id: number;
+  name: string;
+  description: string;
+  parent: number | null;
+  created_at: string;
+  updated_at: string;
+  inherits_parent_permissions: boolean;
+  permitted_branches: number[];
+  permitted_departments: number[];
+  permitted_employees: number[];
+  effective_permissions: {
+    branches: number[];
+    departments: number[];
+    employees: number[];
+  };
+};
+
+export type PaginatedKnowledgeFolderList = {
+  count: number;
+  next: string | null;
+  previous: string | null;
+  results: KnowledgeFolder[];
+};
+
+export type PatchedKnowledgeFolder = Partial<KnowledgeFolder>;
 
 export type FolderListParams = {
   page?: number;
@@ -75,6 +97,7 @@ export type FolderTreeItem = {
   description: string;
   parent: number | null;
   inherits_parent_permissions: boolean;
+  created_at: string;
   effective_permissions: {
     branches: number[];
     departments: number[];
@@ -175,80 +198,4 @@ export async function getFolderTree(employeeId?: number | string) {
   
   const res = await apiCaller<FolderTreeResponse>(url, "GET");
   return res.data;
-}
-
-export async function createFolder(payload: FolderCreateRequest): Promise<FolderCreateResponse> {
-  // Convert arrays to string arrays for API compatibility
-  const apiPayload = {
-    ...payload,
-    permitted_branches: payload.permitted_branches?.map(String),
-    permitted_departments: payload.permitted_departments?.map(String),
-    permitted_employees: payload.permitted_employees?.map(String),
-  };
-  
-  const res = await apiCaller<KnowledgeFolder>(
-    API_ROUTES.KNOWLEDGE_BASE.FOLDERS.CREATE, 
-    "POST", 
-    apiPayload, 
-    {}, 
-    "json"
-  );
-  return {
-    folder: res.data!
-  };
-}
-
-export async function updateFolder(id: number | string, payload: FolderUpdateRequest): Promise<FolderUpdateResponse> {
-  // Convert arrays to string arrays for API compatibility
-  const apiPayload = {
-    ...payload,
-    permitted_branches: payload.permitted_branches?.map(String),
-    permitted_departments: payload.permitted_departments?.map(String),
-    permitted_employees: payload.permitted_employees?.map(String),
-  };
-  
-  const res = await apiCaller<KnowledgeFolder>(
-    API_ROUTES.KNOWLEDGE_BASE.FOLDERS.UPDATE(id), 
-    "PUT", 
-    apiPayload, 
-    {}, 
-    "json"
-  );
-  return {
-    folder: res.data!
-  };
-}
-
-export async function patchFolder(id: number | string, payload: FolderPatchRequest): Promise<FolderUpdateResponse> {
-  // Create a clean payload for patching, excluding readonly fields
-  const {
-    id: _id, // exclude id
-    created_at: _created_at,
-    updated_at: _updated_at,
-    effective_permissions: _effective_permissions,
-    ...patchData
-  } = payload;
-  
-  // Handle array conversions if present
-  const apiPayload = {
-    ...patchData,
-    permitted_branches: patchData.permitted_branches?.map(String),
-    permitted_departments: patchData.permitted_departments?.map(String), 
-    permitted_employees: patchData.permitted_employees?.map(String),
-  };
-  
-  const res = await apiCaller<KnowledgeFolder>(
-    API_ROUTES.KNOWLEDGE_BASE.FOLDERS.UPDATE(id), 
-    "PATCH", 
-    apiPayload, 
-    {}, 
-    "json"
-  );
-  return {
-    folder: res.data!
-  };
-}
-
-export async function deleteFolder(id: number | string): Promise<void> {
-  await apiCaller<void>(API_ROUTES.KNOWLEDGE_BASE.FOLDERS.DELETE(id), "DELETE");
 }

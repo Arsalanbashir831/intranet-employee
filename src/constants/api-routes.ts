@@ -19,13 +19,7 @@ export const API_ROUTES = {
     },
     KNOWLEDGE_BASE: {
         FOLDERS: {
-            LIST: "/knowledge/folders/",
-            DETAIL: (id: number | string) => `/knowledge/folders/${id}/`,
-            FOLDER_TREE: "/knowledge/folders/tree/",
-        },
-        FILES: {
-            LIST: "/knowledge/files/",
-            DETAIL: (id: number | string) => `/knowledge/files/${id}/`,
+           FOLDER_TREE: "/knowledge/folders/tree/",
         },
         ANNOUNCEMENTS: {
             LIST: "/knowledge/announcements/",

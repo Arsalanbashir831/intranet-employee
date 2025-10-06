@@ -1,8 +1,6 @@
-// components/knowledge-base/knowledge-base-table.tsx
 "use client";
 
 import * as React from "react";
-import { usePathname } from "next/navigation";
 import { ColumnDef } from "@tanstack/react-table";
 import { CardTable } from "@/components/common/card-table/card-table";
 import { CardTableColumnHeader } from "@/components/common/card-table/card-table-column-header";
@@ -10,7 +8,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Card } from "@/components/ui/card";
 import { CardTableToolbar } from "@/components/common/card-table/card-table-toolbar";
 import { CardTablePagination } from "@/components/common/card-table/card-table-pagination";
-import { FolderIcon } from "lucide-react";
+import { FolderIcon, FileIcon } from "lucide-react";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 
@@ -21,6 +19,8 @@ export type KnowledgeBaseRow = {
 	createdByName: string;
 	createdByAvatar?: string;
 	dateCreated: string; // YYYY-MM-DD
+	type?: "folder" | "file"; // Added type to distinguish between folders and files
+	fileUrl?: string; // Added file URL for downloading files
 };
 
 type Props = {
@@ -31,35 +31,11 @@ type Props = {
 	showToolbar?: boolean;
 	baseHref?: string;
 	className?: string;
+	onRowClick?: (row: KnowledgeBaseRow) => void; // Added onRowClick handler
 };
 
 /* --------------- Demo rows --------------- */
-const defaultRows: KnowledgeBaseRow[] = [
-	{
-		id: "1",
-		folder: "Folder 1",
-		createdByName: "Cartwright King",
-		dateCreated: "2024-07-26",
-	},
-	{
-		id: "2",
-		folder: "Folder 1",
-		createdByName: "Cartwright King",
-		dateCreated: "2024-07-26",
-	},
-	{
-		id: "3",
-		folder: "Folder 1",
-		createdByName: "Cartwright King",
-		dateCreated: "2024-07-26",
-	},
-	{
-		id: "4",
-		folder: "Folder 1",
-		createdByName: "Cartwright King",
-		dateCreated: "2024-07-26",
-	},
-];
+const defaultRows: KnowledgeBaseRow[] =[];
 
 /* --------------- Component --------------- */
 export function KnowledgeBaseTable({
@@ -68,38 +44,11 @@ export function KnowledgeBaseTable({
 	viewMoreHref,
 	limit,
 	showToolbar = true,
-	baseHref = "/knowledge-base",
 	className,
+	onRowClick,
 }: Props) {
-	const pathname = usePathname();
-
-	// Read first segment after baseHref and format it as "Folder 1"
-	const currentFolder = React.useMemo(() => {
-		if (!pathname) return undefined;
-
-		const base = baseHref.replace(/\/+$/, "");
-		const path = pathname.replace(/\/+$/, "");
-		if (!path.startsWith(base)) return undefined;
-
-		const rest = path.slice(base.length).replace(/^\/+/, "");
-		const seg = rest.split("/")[0] || "";
-		if (!seg) return undefined;
-
-		// Try URL decode; then normalize common separators to spaces
-		try {
-			const decoded = decodeURIComponent(seg);
-			return decoded.replace(/[-_]+/g, " ").replace(/\s+/g, " ").trim();
-		} catch {
-			return seg
-				.replace(/%20|#20/gi, " ")
-				.replace(/[-_]+/g, " ")
-				.replace(/\s+/g, " ")
-				.trim();
-		}
-	}, [pathname, baseHref]);
-
-	// If we're inside a folder, show exactly that name, otherwise the default title
-	const displayTitle = currentFolder ?? title;
+	// Use the provided title prop directly
+	const displayTitle = title;
 
 	const isControlled = data !== undefined;
 	const [sortedBy, setSortedBy] = React.useState<string>("folder");
@@ -128,19 +77,34 @@ export function KnowledgeBaseTable({
 		{
 			accessorKey: "folder",
 			header: ({ column }) => (
-				<CardTableColumnHeader column={column} title="Folder" />
+				<CardTableColumnHeader column={column} title="Name" />
 			),
-			cell: ({ row }) => (
-				<div className="flex items-center gap-2 min-w-0">
-					<FolderIcon className="size-4 sm:size-5 text-[#667085] shrink-0" />
-					<Link
-						href={`${baseHref}/${encodeURIComponent(row.original.folder)}`}
-						className="text-sm sm:text-[15px] text-[#1F2937] leading-none hover:underline hover:text-[#E5004E] truncate"
-						title={row.original.folder}>
-						{row.original.folder}
-					</Link>
-				</div>
-			),
+			cell: ({ row }) => {
+				const isFolder = row.original.type === "folder";
+				const Icon = isFolder ? FolderIcon : FileIcon;
+				const iconColor = isFolder ? "text-[#667085]" : "text-[#E5004E]";
+				
+				// Handle row click if provided
+				const handleClick = () => {
+					if (onRowClick) {
+						onRowClick(row.original);
+					}
+				};
+				
+				return (
+					<div 
+						className="flex items-center gap-2 min-w-0 cursor-pointer"
+						onClick={handleClick}
+					>
+						<Icon className={`size-4 sm:size-5 shrink-0 ${iconColor}`} />
+						<span
+							className="text-sm sm:text-[15px] text-[#1F2937] leading-none hover:underline hover:text-[#E5004E] truncate"
+							title={row.original.folder}>
+							{row.original.folder}
+						</span>
+					</div>
+				);
+			},
 		},
 		{
 			accessorKey: "createdByName",
@@ -191,15 +155,22 @@ export function KnowledgeBaseTable({
 				</span>
 			),
 			cell: ({ row }) => {
-				const href = `${baseHref}/${encodeURIComponent(row.original.folder)}`;
-				const isOnKnowledgeBasePage = pathname === baseHref; // exact match
-
+				const isFolder = row.original.type === "folder";
+				
+				// Handle action click
+				const handleActionClick = (e: React.MouseEvent) => {
+					e.stopPropagation(); // Prevent row click event
+					if (onRowClick) {
+						onRowClick(row.original);
+					}
+				};
+				
 				return (
-					<Link
-						href={href}
-						className="hidden md:inline text-[#D64575] text-sm font-medium underline leading-none">
-						{isOnKnowledgeBasePage ? "Download" : "See Details"}
-					</Link>
+					<button
+						onClick={handleActionClick}
+						className="hidden md:inline text-[#D64575] text-sm font-medium underline leading-none bg-transparent border-0 cursor-pointer">
+						{isFolder ? "Open" : "Download"}
+					</button>
 				);
 			},
 		},
@@ -217,7 +188,7 @@ export function KnowledgeBaseTable({
 					title={displayTitle}
 					onSearchChange={() => {}}
 					sortOptions={[
-						{ label: "Folder", value: "folder" },
+						{ label: "Name", value: "folder" },
 						{ label: "Created By", value: "createdByName" },
 						{ label: "Date Created", value: "dateCreated" },
 					]}
@@ -248,12 +219,9 @@ export function KnowledgeBaseTable({
             sm:grid-cols-[1.1fr_0.9fr]
             md:grid-cols-[1.2fr_1fr_0.9fr_0.7fr]
           "
-					rowClassName={() => `
-            hover:bg-[#FAFAFB]
-            grid-cols-[1fr]
-            sm:grid-cols-[1.1fr_0.9fr]
-            md:grid-cols-[1.2fr_1fr_0.9fr_0.7fr]
-          `}
+					rowClassName='hover:bg-[#FAFAFB] grid-cols-[1fr] sm:grid-cols-[1.1fr_0.9fr] md:grid-cols-[1.2fr_1fr_0.9fr_0.7fr] cursor-pointer'
+          
+					onRowClick={onRowClick ? (row) => onRowClick(row.original) : undefined}
 					footer={(table) =>
 						limit ? null : <CardTablePagination table={table} />
 					}

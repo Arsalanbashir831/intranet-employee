@@ -18,7 +18,7 @@ import {
 } from "@/components/ui/select";
 import { TableSearch } from "@/components/common/card-table/table-search";
 import { CardTablePagination } from "@/components/common/card-table/card-table-pagination";
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import { useAuth } from "@/contexts/auth-context";
 import { useBranchDepartmentEmployees } from "@/hooks/queries/use-departments";
 

@@ -20,7 +20,7 @@ type CardTableProps<TData, TValue> = {
 	className?: string;
 	toolbar?: React.ReactNode;
 	footer?: (table: ReturnType<typeof useReactTable<TData>>) => React.ReactNode;
-	rowClassName?: (row: TData) => string | undefined;
+	rowClassName?: string;
 	sorting?: SortingState;
 	onSortingChange?: (state: SortingState) => void;
 	headerClassName?: string;
@@ -103,7 +103,7 @@ export function CardTable<TData, TValue>({
 									key={row.id}
 									className={cn(
 										"group grid grid-cols-4 items-center gap-3 rounded-lg border border-[#E4E4E4] bg-white px-4 py-3",
-										rowClassName?.(row.original)
+										rowClassName
 									)}
 									onClick={onRowClick ? () => onRowClick(row) : undefined}
 									role={onRowClick ? "button" : undefined}

@@ -4,16 +4,12 @@
 import BannerSection from "@/components/common/banner-section";
 import { PageHeader } from "@/components/common/page-header";
 import { ROUTES } from "@/constants/routes";
-import FeatureCard from "@/components/common/feature-card";
 import Checklist from "@/components/common/checklist";
 import QuickAccess from "@/components/common/quick-access";
 import TeamSection from "@/components/teams/team-section";
 import RecentPolicies from "@/components/common/recent-policies";
 import KnowledgeBaseTable from "@/components/knowledge-base/knowledge-base-table";
-import { ArrowRight } from "lucide-react";
-import Link from "next/link";
 import ContactSection from "@/components/common/contact-section";
-import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { LatestAnnouncements } from "@/components/dashboard/latest-announcements";
 
 

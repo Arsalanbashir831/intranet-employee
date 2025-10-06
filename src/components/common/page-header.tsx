@@ -67,9 +67,6 @@ export function PageHeader(props: PageHeaderProps) {
 	const [internalTab, setInternalTab] = React.useState(safeInitial);
 	const currentValue = activeTab ?? internalTab;
 
-	// smooth non-blocking URL updates
-	const [isPending, startTransition] = React.useTransition();
-
 	// sync FROM URL -> internal, only when value truly changed and uncontrolled
 	React.useEffect(() => {
 		if (!syncTabWithQuery || activeTab !== undefined) return;
@@ -85,11 +82,9 @@ export function PageHeader(props: PageHeaderProps) {
 		}
 		onTabChange?.(value);
 		if (syncTabWithQuery) {
-			startTransition(() => {
-				const qs = new URLSearchParams(search.toString());
-				qs.set(queryKey, value);
-				router.replace(`${pathname}?${qs.toString()}`, { scroll: false });
-			});
+			const qs = new URLSearchParams(search.toString());
+			qs.set(queryKey, value);
+			router.replace(`${pathname}?${qs.toString()}`, { scroll: false });
 		}
 		requestAnimationFrame(() => {
 			const el = document.querySelector<HTMLButtonElement>(

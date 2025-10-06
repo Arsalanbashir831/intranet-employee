@@ -6,11 +6,21 @@ import { useLatestAnnouncements } from "@/hooks/queries/use-announcements";
 import { useAuth } from "@/contexts/auth-context";
 import { useEffect, useState } from "react";
 import { ROUTES } from "@/constants/routes";
+import { Announcement } from "@/services/announcements";
+
+// Define the card type
+type AnnouncementCard = {
+  id: string;
+  image: string;
+  title: string;
+  description: string;
+  badgeLines: [string, string, string];
+};
 
 export const LatestAnnouncements = () => {
     const { user } = useAuth();
     const { data, isLoading, isError } = useLatestAnnouncements(user?.employeeId || 0, 5);
-    const [cards, setCards] = useState<any[]>([]);
+    const [cards, setCards] = useState<AnnouncementCard[]>([]);
 
     useEffect(() => {
         if (data?.announcements?.results) {
