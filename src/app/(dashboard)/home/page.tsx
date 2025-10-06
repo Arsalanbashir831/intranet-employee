@@ -140,8 +140,8 @@ export default function Home() {
 										<KnowledgeBaseTable
 											data={tableData}
 											showToolbar={true}
-											viewMoreHref="/knowledge-base"
-											className="bg-[#F9FFFF] gap-0 w-full"
+											viewMoreHref={ROUTES.DASHBOARD.KNOWLEDGE_BASE}
+											className="bg-[#F9FFFF] w-full"
 											pagination={{
 												pageIndex: pagination.pageIndex,
 												pageSize: pagination.pageSize,

@@ -31,7 +31,6 @@ type Props = {
 	viewMoreHref?: string;
 	limit?: number;
 	showToolbar?: boolean;
-	// baseHref?: string; // Removed unused prop
 	className?: string;
 	onRowClick?: (row: KnowledgeBaseRow) => void; // Added onRowClick handler
 	pagination?: {
@@ -54,7 +53,6 @@ export function KnowledgeBaseTable({
 	viewMoreHref,
 	limit,
 	showToolbar = true,
-	// baseHref = "/knowledge-base", // Removed unused prop
 	className,
 	onRowClick,
 	pagination,

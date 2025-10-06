@@ -224,7 +224,7 @@ export function KnowledgeBaseFolderView({
 	return (
 		<div>
 			<PageHeader title="Knowledge Base" crumbs={crumbs} />
-			<div className="">
+			<div className="mx-auto w-full px-4 sm:px-6 md:px-8 py-6 sm:py-8 lg:py-10">
 				<KnowledgeBaseTable
 					data={data}
 					title={
