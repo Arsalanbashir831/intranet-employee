@@ -50,7 +50,7 @@ export default function ContactSection() {
 				<div
 					className="
             flex items-center justify-center
-            gap-2 sm:gap-3 md:gap-4   /* reduced gaps */
+            gap-4
             overflow-x-auto
           ">
 					{socialLinks.map((link) => (
@@ -60,17 +60,17 @@ export default function ContactSection() {
 							target="_blank"
 							rel="noopener noreferrer"
 							className="
-                flex items-center justify-center
+                shrink-0 snap-start
+                size-12 sm:size-12 flex items-center justify-center
                 w-8 h-8 sm:w-9 sm:h-9 md:w-10 md:h-10
                 rounded-full hover:opacity-80 transition
-                shrink-0
               ">
 							<Image
 								src={link.icon}
 								alt={`${link.name} icon`}
 								width={32}
 								height={32}
-								className="object-contain w-4 h-4 sm:w-6 sm:h-6 md:w-10 md:h-10"
+								className="(max-width: 768px) 48px"
 							/>
 						</Link>
 					))}

@@ -130,14 +130,12 @@ export function KnowledgeBaseTable({
 		{
 			accessorKey: "createdByName",
 			header: ({ column }) => (
-				<div className="hidden sm:block">
-					<CardTableColumnHeader column={column} title="Created By" />
-				</div>
+				<CardTableColumnHeader column={column} title="Created By" />
 			),
 			cell: ({ row }) => {
 				const name = row.original.createdByName || "Cartwright King";
 				return (
-					<div className="hidden sm:flex items-center gap-2">
+					<div className="flex items-center gap-2">
 						<Avatar className="h-6 w-6">
 							<AvatarImage
 								src={row.original.createdByAvatar || "/images/logo-circle.png"}
@@ -158,9 +156,7 @@ export function KnowledgeBaseTable({
 		{
 			accessorKey: "dateCreated",
 			header: ({ column }) => (
-				<div className="hidden md:block">
-					<CardTableColumnHeader column={column} title="Date Created" />
-				</div>
+				<CardTableColumnHeader column={column} title="Date Created" />
 			),
 			cell: ({ getValue }) => {
 				const raw = getValue() as string;
@@ -176,36 +172,9 @@ export function KnowledgeBaseTable({
 					}
 				}
 				return (
-					<span className="hidden md:inline text-sm text-[#667085] leading-none">
+					<span className="text-sm text-[#667085] leading-none">
 						{formatted}
 					</span>
-				);
-			},
-		},
-		{
-			id: "actions",
-			header: () => (
-				<span className="hidden md:inline text-sm font-medium text-[#727272]">
-					Action
-				</span>
-			),
-			cell: ({ row }) => {
-				const isFolder = row.original.type === "folder";
-
-				// Handle action click
-				const handleActionClick = (e: React.MouseEvent) => {
-					e.stopPropagation(); // Prevent row click event
-					if (onRowClick) {
-						onRowClick(row.original);
-					}
-				};
-
-				return (
-					<button
-						onClick={handleActionClick}
-						className="hidden md:inline text-[#D64575] text-sm font-medium underline leading-none bg-transparent border-0 cursor-pointer">
-						{isFolder ? "Open" : "Download"}
-					</button>
 				);
 			},
 		},
@@ -247,40 +216,38 @@ export function KnowledgeBaseTable({
 				</div>
 			)}
 
-			<div className="overflow-y-auto pr-2 pb-2">
+			<div className="overflow-x-auto max-w-full pr-2 pb-2">
 				{tableData.length === 0 ? (
 					<div className="text-center py-8 text-gray-500">
 						{searchTerm ? "No items match your search" : "No items found"}
 					</div>
 				) : (
-					<CardTable<KnowledgeBaseRow, unknown>
-						columns={columns}
-						data={tableData}
-						headerClassName="
-			grid-cols-[1fr]
-			sm:grid-cols-[1.1fr_0.9fr]
-			md:grid-cols-[1.2fr_1fr_0.9fr_0.7fr]
-		  "
-						rowClassName="hover:bg-[#FAFAFB] grid-cols-[1fr] sm:grid-cols-[1.1fr_0.9fr] md:grid-cols-[1.2fr_1fr_0.9fr_0.7fr] cursor-pointer"
-						onRowClick={
-							onRowClick ? (row) => onRowClick(row.original) : undefined
-						}
-						sorting={sorting}
-						onSortingChange={setSorting}
-						footer={(table) =>
-							pagination ? (
-								<CardTablePagination
-									table={table}
-									pageIndex={pagination.pageIndex}
-									pageSize={pagination.pageSize}
-									totalCount={pagination.totalCount}
-									onPaginationChange={pagination.onPaginationChange}
-								/>
-							) : limit ? null : (
-								<CardTablePagination table={table} />
-							)
-						}
-					/>
+					<div className="w-max min-w-full">
+						<CardTable<KnowledgeBaseRow, unknown>
+							columns={columns}
+							data={tableData}
+							headerClassName="grid-cols-[1.2fr_1fr_0.9fr]"
+							rowClassName="hover:bg-[#FAFAFB] grid-cols-[1.2fr_1fr_0.9fr] cursor-pointer"
+							onRowClick={
+								onRowClick ? (row) => onRowClick(row.original) : undefined
+							}
+							sorting={sorting}
+							onSortingChange={setSorting}
+							footer={(table) =>
+								pagination ? (
+									<CardTablePagination
+										table={table}
+										pageIndex={pagination.pageIndex}
+										pageSize={pagination.pageSize}
+										totalCount={pagination.totalCount}
+										onPaginationChange={pagination.onPaginationChange}
+									/>
+								) : limit ? null : (
+									<CardTablePagination table={table} />
+								)
+							}
+						/>
+					</div>
 				)}
 			</div>
 		</Card>

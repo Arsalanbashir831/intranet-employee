@@ -274,7 +274,7 @@ export default function CompanyHub() {
 											title={item.title}
 											description={item.description}
 											className="w-full"
-											imgClassName="object-cover"
+											imgClassName="object-contain"
 										/>
 									)
 								)

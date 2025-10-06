@@ -322,7 +322,7 @@ export default function TaskChecklistDetails({
 									</KanbanCards>
 
 									{column.id === "done" && (
-										<div className="mt-3 sm:mt-4 flex-1 flex items-center justify-center">
+										<div className="mt-4 flex items-center justify-center">
 											<div className="w-full h-[120px] sm:h-[150px] flex items-center justify-center border-2 border-dashed border-[#888DA7]/50 text-[#888DA7] text-xs sm:text-sm rounded-lg">
 												Drag your task here...
 											</div>

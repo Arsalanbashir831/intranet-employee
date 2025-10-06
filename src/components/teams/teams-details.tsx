@@ -49,8 +49,8 @@ const data: Employee = {
 	manager: {
 		name: "John Manager",
 		role: "Senior Manager",
-		profileImage: "https://via.placeholder.com/150"
-	}
+		profileImage: "https://via.placeholder.com/150",
+	},
 };
 
 export function TeamsDetailsCard({ employee }: EmployeeProfileCardProps) {
@@ -81,15 +81,10 @@ export function TeamsDetailsCard({ employee }: EmployeeProfileCardProps) {
 			{/* Page rails (no touching page edges) */}
 			<main className="mx-auto w-full px-4 sm:px-6 md:px-4">
 				<Card className="bg-white border-none rounded-2xl shadow-[0_8px_30px_rgba(0,0,0,0.06)] p-4 sm:p-6 lg:p-5">
-					{/* Slug Header */}
-					<h2 className="text-lg sm:text-xl font-semibold text-gray-800 mb-4 sm:mb-6">
-						My Team
-					</h2>
-
 					{/* Profile Header Section */}
-					<section className="flex flex-col md:flex-row items-start gap-5 sm:gap-6 border-b border-[#E5E7EB] pb-5 sm:pb-6">
+					<section className="flex flex-col md:flex-row item-center md:items-start gap-5 sm:gap-6 border-b border-[#E5E7EB] pb-5 sm:pb-6">
 						{/* Profile Picture */}
-						<div className="relative">
+						<div className="relative mx-auto">
 							<Avatar className="size-24 sm:size-28 md:size-32 lg:size-36">
 								<AvatarImage src={resolved.profileImage} alt={resolved.name} />
 								<AvatarFallback className="bg-gray-100 text-gray-600 font-semibold">
@@ -102,14 +97,14 @@ export function TeamsDetailsCard({ employee }: EmployeeProfileCardProps) {
 						</div>
 
 						{/* Info + Bio */}
-						<div className="flex-1 w-full grid gap-4 md:gap-5 md:grid-cols-[minmax(160px,220px)_1fr]">
+						<div className="flex-1 w-full grid gap-4 md:gap-5 md:grid-cols-[minmax(160px,220px)_1fr] items-center justify-items-center md:justify-items-start md:items-start  text-center md:text-left ">
 							{/* Left: status/name/role */}
 							<div>
 								<Badge className="bg-[#1A9882] text-white rounded-full px-3 py-1 text-xs sm:text-sm">
 									{resolved.status}
 								</Badge>
 
-								<h1 className="mt-2 text-base sm:text-lg font-semibold text-[#1D1F2C]">
+								<h1 className="mt-2text-base sm:text-lg font-semibold text-[#1D1F2C]">
 									{resolved.name}
 								</h1>
 								<p className="text-sm text-[#667085]">{resolved.role}</p>
@@ -118,7 +113,10 @@ export function TeamsDetailsCard({ employee }: EmployeeProfileCardProps) {
 							{/* Right: Bio */}
 							<div className="min-w-0">
 								{resolved.bio && resolved.bio !== "null" ? (
-									<div className="text-sm sm:text-[15px] text-[#535862] leading-relaxed" dangerouslySetInnerHTML={{ __html: resolved.education }}/>
+									<div
+										className="text-sm sm:text-[15px] text-[#535862] leading-relaxed"
+										dangerouslySetInnerHTML={{ __html: resolved.education }}
+									/>
 								) : (
 									<p className="text-sm sm:text-[15px] text-[#535862] leading-relaxed">
 										No bio available

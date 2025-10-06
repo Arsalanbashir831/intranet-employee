@@ -178,7 +178,7 @@ export default function OrgChartDirectoryPage() {
 					</h1>
 
 					{/* Controls row */}
-					<div className="mt-4 flex flex-col gap-0 md:flex-row md:items-center">
+					<div className="mt-4 flex flex-col gap-2 md:gap-0 md:flex-row md:items-center">
 						<div className="flex-1 max-w-sm">
 							<TableSearch
 								placeholder="Search by Name"
@@ -190,7 +190,10 @@ export default function OrgChartDirectoryPage() {
 							/>
 						</div>
 						<div className="flex flex-wrap gap-3 items-center">
-							<Button variant="outline" onClick={() => setIsFilterOpen(true)}>
+							<Button
+								variant="outline"
+								className="w-full"
+								onClick={() => setIsFilterOpen(true)}>
 								Filters
 							</Button>
 						</div>
