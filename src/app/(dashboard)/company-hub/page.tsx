@@ -5,6 +5,7 @@ import FeatureCard from "@/components/common/feature-card";
 import { ROUTES } from "@/constants/routes";
 
 import { useState, useMemo, useEffect } from "react";
+import { useDebounce } from "@/hooks/use-debounce";
 import {
 	createColumnHelper,
 	getCoreRowModel,
@@ -67,74 +68,82 @@ export default function CompanyHub() {
 	}, [search, activeTab]);
 
 	const [query, setQuery] = useState("");
+	const debouncedQuery = useDebounce(query, 400);
 	const [page, setPage] = useState(1);
+	const [sort, setSort] = useState<string>("title");
 
 	// Figma-like: 4 across on xl; 2 across on lg; 1 on small → page size 8 (2 rows of 4)
 	const pageSize = 8;
 
-	// Fetch announcements data with caching
+	// Fetch announcements data (no server-side sorting)
 	const {
 		data: announcementsData,
 		isLoading: announcementsLoading,
 		isFetching: announcementsFetching,
 	} = useAnnouncements(
-		user?.employeeId
-			? {
-					type: "announcement",
-					employee_id: user.employeeId,
-			  }
-			: undefined,
+		{
+			...(user?.employeeId ? { employee_id: user.employeeId } : {}),
+			type: "announcement",
+			search: debouncedQuery.trim() ? debouncedQuery.trim() : "",
+		},
 		{ page, pageSize }
 	);
 
-	// Fetch policies data with caching
+	// Fetch policies data (no server-side sorting)
 	const {
 		data: policiesData,
 		isLoading: policiesLoading,
 		isFetching: policiesFetching,
 	} = useAnnouncements(
-		user?.employeeId
-			? {
-					type: "policy",
-					employee_id: user.employeeId,
-			  }
-			: undefined,
+		{
+			...(user?.employeeId ? { employee_id: user.employeeId } : {}),
+			type: "policy",
+			search: debouncedQuery.trim() ? debouncedQuery.trim() : "",
+		},
 		{ page, pageSize }
 	);
 
-	const dataSource: CompanyHubItem[] =
-		activeTab === "announcements"
-			? (announcementsData?.announcements.results.map((announcement) => ({
-					id: announcement.id.toString(),
-					title: announcement.title,
-					description:
-						announcement.body.replace(/<[^>]*>/g, "").substring(0, 100) + "...",
-					image:
-						announcement.attachments.length > 0
-							? announcement.attachments[0].file_url
-							: "/images/office-work.png",
-					badgeLines: [
-						new Date(announcement.created_at).getDate().toString(),
-						new Date(announcement.created_at).toLocaleString("default", {
-							month: "short",
-						}),
-						new Date(announcement.created_at).getFullYear().toString(),
-					] as [string, string, string],
-					createdAt: announcement.created_at,
-			  })) as Announcement[]) || []
-			: (policiesData?.announcements.results.map((policy) => ({
-					id: policy.id.toString(),
-					title: policy.title,
-					description:
-						policy.body.replace(/<[^>]*>/g, "").substring(0, 100) + "...",
-			  })) as Policy[]) || [];
+	// Build dataSource and sort client-side
+	let dataSource: CompanyHubItem[] = [];
+	if (activeTab === "announcements") {
+		dataSource =
+			(announcementsData?.announcements.results.map((announcement) => ({
+				id: announcement.id.toString(),
+				title: announcement.title,
+				description:
+					announcement.body.replace(/<[^>]*>/g, "").substring(0, 100) + "...",
+				image:
+					announcement.attachments.length > 0
+						? announcement.attachments[0].file_url
+						: "/images/office-work.png",
+				badgeLines: [
+					new Date(announcement.created_at).getDate().toString(),
+					new Date(announcement.created_at).toLocaleString("default", {
+						month: "short",
+					}),
+					new Date(announcement.created_at).getFullYear().toString(),
+				] as [string, string, string],
+				createdAt: announcement.created_at,
+			})) as Announcement[]) || [];
+	} else {
+		dataSource =
+			(policiesData?.announcements.results.map((policy) => ({
+				id: policy.id.toString(),
+				title: policy.title,
+				description:
+					policy.body.replace(/<[^>]*>/g, "").substring(0, 100) + "...",
+			})) as Policy[]) || [];
+	}
 
-	const filtered = useMemo(() => {
-		const q = query.trim().toLowerCase();
-		return q
-			? dataSource.filter((a) => a.title.toLowerCase().includes(q))
-			: dataSource;
-	}, [query, dataSource]);
+	// Client-side sorting
+	const sortKey = sort === "created_at" ? "createdAt" : "title";
+	const sorted = [...dataSource].sort((a, b) => {
+		const av = (a as any)[sortKey] ?? "";
+		const bv = (b as any)[sortKey] ?? "";
+		return String(av).localeCompare(String(bv));
+	});
+
+	const filtered = sorted;
 
 	const announcementsCount = announcementsData?.announcements.count || 0;
 	const policiesCount = policiesData?.announcements.count || 0;
@@ -175,7 +184,10 @@ export default function CompanyHub() {
 		setQuery(value);
 		setPage(1);
 	};
-	const handleSortChange = () => setPage(1);
+	const handleSortChange = (value: string) => {
+		setSort(value);
+		setPage(1);
+	};
 
 	const handleTabChange = (tabKey: string) => {
 		const t = tabKey as "announcements" | "policies";
@@ -224,13 +236,15 @@ export default function CompanyHub() {
 								activeTab === "announcements" ? "Announcements" : "Policies"
 							}
 							placeholder="Search"
+							searchValue={query}
 							onSearchChange={handleSearchChange}
 							onSortChange={handleSortChange}
 							sortOptions={[
 								{ label: "Title", value: "title" },
-								{ label: "Date", value: "date" },
+								{ label: "Date", value: "created_at" },
 							]}
-							activeSort="title"
+							hasFilter={false}
+							activeSort={sort}
 							className="flex sm:flex-col sm:items-start"
 						/>
 

@@ -2,21 +2,21 @@ import { Button } from "@/components/ui/button";
 import {
 	DropdownMenu,
 	DropdownMenuContent,
-	DropdownMenuCheckboxItem,
+	DropdownMenuRadioGroup,
+	DropdownMenuRadioItem,
 	DropdownMenuTrigger,
 	DropdownMenuLabel,
 } from "@/components/ui/dropdown-menu";
 import { ChevronDown, ListFilter } from "lucide-react";
 
-export function SortingDropdown({
-	sortOptions,
-	activeSort,
-	onSortChange,
-}: {
+type SortingDropdownProps = {
 	sortOptions: { label: string; value: string }[];
 	activeSort: string;
 	onSortChange: (value: string) => void;
-}) {
+};
+
+export function SortingDropdown(props: SortingDropdownProps) {
+	const { sortOptions, activeSort, onSortChange } = props;
 	return (
 		<DropdownMenu>
 			<DropdownMenuTrigger id="dropdown-trigger-sorting" asChild>
@@ -27,15 +27,18 @@ export function SortingDropdown({
 			</DropdownMenuTrigger>
 			<DropdownMenuContent align="end" className="w-56">
 				{sortOptions && sortOptions.length > 0 ? (
-					sortOptions.map((opt) => (
-						<DropdownMenuCheckboxItem
-							key={opt.value}
-							checked={activeSort === opt.value}
-							onCheckedChange={() => onSortChange?.(opt.value)}
-							className="py-2 text-[15px]">
-							{opt.label}
-						</DropdownMenuCheckboxItem>
-					))
+					<DropdownMenuRadioGroup
+						value={activeSort}
+						onValueChange={onSortChange}>
+						{sortOptions.map((opt) => (
+							<DropdownMenuRadioItem
+								key={opt.value}
+								value={opt.value}
+								className="py-2 text-[15px]">
+								{opt.label}
+							</DropdownMenuRadioItem>
+						))}
+					</DropdownMenuRadioGroup>
 				) : (
 					<DropdownMenuLabel className="text-sm text-muted-foreground">
 						No sort options
