@@ -2,14 +2,40 @@
 
 import { Card, CardContent } from "@/components/ui/card";
 import Image from "next/image";
+import Link from "next/link";
 
 export default function ContactSection() {
 	const socialLinks = [
-		{ id: 1, name: "Facebook", href: "#", icon: "/logos/facebook.svg" },
-		{ id: 2, name: "Instagram", href: "#", icon: "/logos/instagram.svg" },
-		{ id: 3, name: "LinkedIn", href: "#", icon: "/logos/linkedin-blue.svg" },
-		{ id: 4, name: "X", href: "#", icon: "/logos/twitter.svg" },
-		{ id: 5, name: "Website", href: "#", icon: "/logos/website.svg" },
+		{
+			id: 1,
+			name: "Facebook",
+			href: process.env.NEXT_PUBLIC_FACEBOOK_URL || "#",
+			icon: "/logos/facebook.svg",
+		},
+		{
+			id: 2,
+			name: "Instagram",
+			href: process.env.NEXT_PUBLIC_INSTAGRAM_URL || "#",
+			icon: "/logos/instagram.svg",
+		},
+		{
+			id: 3,
+			name: "LinkedIn",
+			href: process.env.NEXT_PUBLIC_LINKEDIN_URL || "#",
+			icon: "/logos/linkedin-blue.svg",
+		},
+		{
+			id: 4,
+			name: "X",
+			href: process.env.NEXT_PUBLIC_X_URL || "#",
+			icon: "/logos/twitter.svg",
+		},
+		{
+			id: 5,
+			name: "Website",
+			href: process.env.NEXT_PUBLIC_FRONTEND_BASE_URL || "#",
+			icon: "/logos/website.svg",
+		},
 	];
 
 	return (
@@ -28,7 +54,7 @@ export default function ContactSection() {
             overflow-x-auto
           ">
 					{socialLinks.map((link) => (
-						<a
+						<Link
 							key={link.id}
 							href={link.href}
 							target="_blank"
@@ -46,7 +72,7 @@ export default function ContactSection() {
 								height={32}
 								className="object-contain w-4 h-4 sm:w-6 sm:h-6 md:w-10 md:h-10"
 							/>
-						</a>
+						</Link>
 					))}
 				</div>
 			</CardContent>

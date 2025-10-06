@@ -16,20 +16,23 @@ interface TeamMember {
 
 export default function TeamSection() {
 	const { user } = useAuth();
-	
+
 	// Fetch team members based on user's branch department, limit to 3
 	const { data, isLoading, isError } = useBranchDepartmentEmployees(
 		user?.branchDepartmentId || 0,
 		{ page: 1, pageSize: 3 }
 	);
-	
+
 	// Transform API data to match component structure
-	const teamMembers: TeamMember[] = data?.employees?.results?.slice(0, 3).map(employee => ({
-		id: employee.id,
-		name: employee.emp_name,
-		role: employee.role.toLowerCase().includes('manager') ? "Manager" : "Team",
-		image: employee.profile_picture || "/images/default-profile.png",
-	})) || [];
+	const teamMembers: TeamMember[] =
+		data?.employees?.results?.slice(0, 3).map((employee) => ({
+			id: employee.id,
+			name: employee.emp_name,
+			role: employee.role.toLowerCase().includes("manager")
+				? "Manager"
+				: "Team",
+			image: employee.profile_picture || "/images/default-profile.png",
+		})) || [];
 
 	// Show loading state
 	if (isLoading) {
@@ -39,7 +42,9 @@ export default function TeamSection() {
 					<h2 className="font-semibold text-gray-900 text-base sm:text-lg md:text-xl leading-tight">
 						My Team
 					</h2>
-					<Link href="/teams" className="underline font-medium text-[#E5004E] text-xs sm:text-sm md:text-base">
+					<Link
+						href="/teams"
+						className="underline font-medium text-[#E5004E] text-xs sm:text-sm md:text-base">
 						View More
 					</Link>
 				</div>
@@ -58,7 +63,9 @@ export default function TeamSection() {
 					<h2 className="font-semibold text-gray-900 text-base sm:text-lg md:text-xl leading-tight">
 						My Team
 					</h2>
-					<Link href="/teams" className="underline font-medium text-[#E5004E] text-xs sm:text-sm md:text-base">
+					<Link
+						href="/teams"
+						className="underline font-medium text-[#E5004E] text-xs sm:text-sm md:text-base">
 						View More
 					</Link>
 				</div>
@@ -77,7 +84,9 @@ export default function TeamSection() {
 					<h2 className="font-semibold text-gray-900 text-base sm:text-lg md:text-xl leading-tight">
 						My Team
 					</h2>
-					<Link href="/teams" className="underline font-medium text-[#E5004E] text-xs sm:text-sm md:text-base">
+					<Link
+						href="/teams"
+						className="underline font-medium text-[#E5004E] text-xs sm:text-sm md:text-base">
 						View More
 					</Link>
 				</div>
