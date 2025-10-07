@@ -20,7 +20,7 @@ export function OTPVerification() {
 	const [isVerifying, setIsVerifying] = useState(false);
 	const router = useRouter();
 	const searchParams = useSearchParams();
-	const email = searchParams.get("email") || "";
+	const email = searchParams?.get("email") || "";
 
 	const handleSubmit = async (e: React.FormEvent) => {
 		e.preventDefault();
@@ -46,6 +46,11 @@ export function OTPVerification() {
 	};
 
 	const handleResend = async () => {
+		if (!email) {
+			toast.error("Email is required to resend OTP");
+			return;
+		}
+		
 		try {
 			// Resend OTP
 			await apiCaller(API_ROUTES.AUTH.FORGOT_PASSWORD, "POST", { email });
@@ -56,6 +61,27 @@ export function OTPVerification() {
 			toast.error(errorMessage);
 		}
 	};
+
+	// Show error if email is missing
+	if (!email) {
+		return (
+			<div className="flex-1 flex items-center justify-center px-6 sm:px-8">
+				<div className="w-full max-w-md space-y-6 py-12 lg:py-0 text-center">
+					<h1 className="text-3xl sm:text-5xl font-semibold text-gray-900 mb-6">
+						Invalid Request
+					</h1>
+					<p className="text-base sm:text-lg text-gray-600 mb-6">
+						Email is required for OTP verification. Please request a new OTP.
+					</p>
+					<Link href={ROUTES.AUTH.FORGOT_PASSWORD}>
+						<Button className="w-full h-12 mb-2 bg-[#E5004E] hover:bg-pink-300 text-white rounded-full font-medium text-base">
+							Request New OTP
+						</Button>
+					</Link>
+				</div>
+			</div>
+		);
+	}
 
 	return (
 		<div className="flex-1 flex items-center justify-center px-6 sm:px-8">

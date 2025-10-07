@@ -4,35 +4,74 @@
 import BannerSection from "@/components/common/banner-section";
 import { PageHeader } from "@/components/common/page-header";
 import { ROUTES } from "@/constants/routes";
-import FeatureCard from "@/components/common/feature-card";
 import Checklist from "@/components/common/checklist";
 import QuickAccess from "@/components/common/quick-access";
 import TeamSection from "@/components/teams/team-section";
 import RecentPolicies from "@/components/common/recent-policies";
 import KnowledgeBaseTable from "@/components/knowledge-base/knowledge-base-table";
-import { ArrowRight } from "lucide-react";
-import Link from "next/link";
 import ContactSection from "@/components/common/contact-section";
-import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { LatestAnnouncements } from "@/components/dashboard/latest-announcements";
-
-
+import { useKnowledgeFolders } from "@/hooks/queries/use-knowledge-folders";
+import { useState, useMemo } from "react";
+import { PaginationState, pageIndexToPageNumber } from "@/lib/pagination-utils";
+import { KnowledgeBaseRow } from "@/components/knowledge-base/knowledge-base-table";
+import { FolderTreeItem } from "@/services/knowledge-folders";
 
 export default function Home() {
+	const [pagination, setPagination] = useState<PaginationState>({
+		pageIndex: 0,
+		pageSize: 5,
+	});
+	const [searchTerm, setSearchTerm] = useState<string>("");
+
+	// Debugging: Log the search term to see if it's being maintained correctly
+	console.log("Home page searchTerm:", searchTerm);
+
+	const { data, isLoading, isError } = useKnowledgeFolders(
+		pageIndexToPageNumber(pagination.pageIndex),
+		pagination.pageSize,
+		searchTerm
+	);
+
+	// Convert API folder data to table row format
+	const convertFolderToRow = (folder: FolderTreeItem): KnowledgeBaseRow => ({
+		id: folder.id.toString(),
+		folder: folder.name,
+		createdByName: "Cartwright King",
+		createdByAvatar: "/images/logo-circle.png",
+		dateCreated: new Date(folder.created_at).toISOString().split("T")[0],
+		type: "folder",
+	});
+
+	// Transform API data to table rows
+	const tableData = useMemo(() => {
+		return data?.folders?.results?.map(convertFolderToRow) || [];
+	}, [data]);
+
+	const handlePaginationChange = (newPagination: PaginationState) => {
+		setPagination(newPagination);
+	};
+
+	const handleSearch = (term: string) => {
+		console.log("Home page handleSearch called with:", term);
+		setSearchTerm(term);
+		// Reset to first page when searching
+		setPagination((prev) => ({ ...prev, pageIndex: 0 }));
+	};
+
 	return (
 		<div className="min-h-screen bg-[#F8F8F8]">
 			<BannerSection />
 			<PageHeader
 				title="Home"
 				crumbs={[
-					{ label: "Pages", href:'#' },
+					{ label: "Pages", href: "#" },
 					{ label: "Home", href: ROUTES.DASHBOARD.HOME },
 				]}
 			/>
 
 			{/* one gutter to rule them all */}
-			<main
-				className=" mx-auto w-full px-4 sm:px-6 md:px-8 py-6 sm:py-8 lg:py-10 [--gap:1rem] sm:[--gap:1.125rem] lg:[--gap:1.25rem] max-w-[110rem] min-[2560px]:max-w-[140rem] space-y-[calc(var(--gap)*1.25)]">
+			<main className=" mx-auto w-full px-4 sm:px-6 md:px-8 py-6 sm:py-8 lg:py-10 [--gap:1rem] sm:[--gap:1.125rem] lg:[--gap:1.25rem] max-w-[110rem] min-[2560px]:max-w-[140rem] space-y-[calc(var(--gap)*1.25)]">
 				{/* ============ Announcements (desktop = horizontal scroll) ============ */}
 				<LatestAnnouncements />
 
@@ -46,24 +85,12 @@ export default function Home() {
 							<Checklist
 								title="Task Checklist"
 								viewMoreLink="/task-checklist"
-								tasks={[
-									"Follow the instructions and report everything properly",
-									"Complete all assigned tasks on time",
-									"Attend the scheduled team meeting promptly",
-									"Update the documentation as per guidelines",
-									"Submit the weekly report before Friday",
-								]}
+								type="task"
 							/>
 							<Checklist
 								title="Training Checklist"
 								viewMoreLink="/training-checklist"
-								tasks={[
-									"Follow the instructions and report everything properly",
-									"Complete all assigned tasks on time",
-									"Attend the scheduled team meeting promptly",
-									"Update the documentation as per guidelines",
-									"Submit the weekly report before Friday",
-								]}
+								type="training"
 							/>
 							{/* keep your contact block */}
 							<div>
@@ -89,14 +116,42 @@ export default function Home() {
 
 							{/* Knowledge Base */}
 							<div className="w-full">
-								<div className="rounded-xl h-[315px] overflow-hidden">
-									<KnowledgeBaseTable
-										showToolbar={false}
-										limit={30}
-										viewMoreHref="/knowledge-base"
-										baseHref="/knowledge-base"
-										className="bg-[#F9FFFF] gap-0 w-full h-full"
-									/>
+								<div className="rounded-xl h-auto overflow-hidden">
+									{isLoading ? (
+										<div className="bg-[#F9FFFF] p-4 sm:p-5 md:p-5 rounded-xl">
+											<div className="animate-pulse space-y-3">
+												<div className="h-6 bg-gray-200 rounded w-1/4"></div>
+												<div className="space-y-2">
+													{Array.from({ length: 5 }).map((_, i) => (
+														<div
+															key={i}
+															className="h-12 bg-gray-100 rounded"></div>
+													))}
+												</div>
+											</div>
+										</div>
+									) : isError ? (
+										<div className="bg-[#F9FFFF] p-4 sm:p-5 md:p-5 rounded-xl">
+											<div className="text-red-500">
+												Failed to load knowledge base data
+											</div>
+										</div>
+									) : (
+										<KnowledgeBaseTable
+											data={tableData}
+											showToolbar={true}
+											viewMoreHref={ROUTES.DASHBOARD.KNOWLEDGE_BASE}
+											className="bg-[#F9FFFF] w-full"
+											pagination={{
+												pageIndex: pagination.pageIndex,
+												pageSize: pagination.pageSize,
+												totalCount: data?.folders?.count || 0,
+												onPaginationChange: handlePaginationChange,
+											}}
+											onSearch={handleSearch}
+											searchTerm={searchTerm}
+										/>
+									)}
 								</div>
 							</div>
 						</div>

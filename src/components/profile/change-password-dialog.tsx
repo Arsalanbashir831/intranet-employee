@@ -14,7 +14,6 @@ import { Eye, EyeOff } from "lucide-react";
 import Image from "next/image";
 import { useChangePassword } from "@/hooks/queries/use-auth";
 import { toast } from "sonner";
-import { AxiosError } from "axios";
 
 type Values = { current: string; next: string; confirm: string };
 
@@ -122,31 +121,26 @@ export function ChangePasswordDialog({
 					toast.success("Password changed successfully");
 					onOpenChange(false);
 				},
-				onError: (error: any) => {
+				onError: (error: unknown) => {
 					// Debug: Log the error object to see its structure
 					console.log("Change password error:", error);
-					console.log("Error keys:", Object.keys(error));
-					if (error?.response) {
-						console.log("Response data:", error.response.data);
-						console.log("Response keys:", Object.keys(error.response));
-					}
 					
 					// Handle API error response with multiple fallbacks
 					let errorMessage = "Failed to change password. Please try again.";
 					
 					// Check various possible error structures
-					if (error?.response?.data?.error) {
-						// Direct error message from API
-						errorMessage = error.response.data.error;
-					} else if (error?.response?.data?.detail) {
-						// Django REST framework style error
-						errorMessage = error.response.data.detail;
-					} else if (error?.message) {
+					if (error && typeof error === 'object' && 'response' in error) {
+						const axiosError = error as { response?: { data?: { error?: string; detail?: string } } };
+						if (axiosError.response?.data?.error) {
+							// Direct error message from API
+							errorMessage = axiosError.response.data.error;
+						} else if (axiosError.response?.data?.detail) {
+							// Django REST framework style error
+							errorMessage = axiosError.response.data.detail;
+						}
+					} else if (error instanceof Error) {
 						// Standard Error message
 						errorMessage = error.message;
-					} else if (typeof error?.response?.data === 'string') {
-						// Raw string response
-						errorMessage = error.response.data;
 					}
 					
 					// Display error with toast notification as per project specification

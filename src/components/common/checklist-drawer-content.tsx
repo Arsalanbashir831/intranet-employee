@@ -14,6 +14,11 @@ interface ChecklistTaskDrawerProps {
 	subtitle?: string;
 	description: string;
 	date: string;
+	files?: {
+		id: number;
+		file: string;
+		uploaded_at: string;
+	}[];
 }
 
 export default function ChecklistDrawerContent({
@@ -21,7 +26,18 @@ export default function ChecklistDrawerContent({
 	subtitle,
 	description,
 	date,
+	files = [],
 }: ChecklistTaskDrawerProps) {
+	const handleFileDownload = (fileUrl: string) => {
+		const link = document.createElement('a');
+		link.href = fileUrl;
+		link.target = '_blank';
+		link.download = '';
+		document.body.appendChild(link);
+		link.click();
+		document.body.removeChild(link);
+	};
+
 	return (
 		<SheetContent
 			side="right"
@@ -54,7 +70,7 @@ export default function ChecklistDrawerContent({
 			<div className="mb-3">
 				<p className="text-sm font-medium text-gray-400 flex items-center gap-1">
 					<Image src="/icons/todo.svg" alt="todo" width={16} height={16} />
-					To do
+					Details
 				</p>
 				<hr className="mt-2 border-3 rounded border-gray-300" />
 			</div>
@@ -64,25 +80,39 @@ export default function ChecklistDrawerContent({
 				<p className="text-sm text-gray-600 leading-relaxed">{description}</p>
 			</div>
 
-			{/* Action Button */}
-			<div className="mt-5">
-				<Button
-					variant="outline"
-					className="w-full h-14 flex items-center rounded-xl justify-start gap-2 border-gray-200">
-					<div className="bg-[#E5004E] p-2 rounded-sm flex items-center justify-center">
-						<Image
-							src="/icons/clipboard.svg"
-							alt="clipboard"
-							width={22}
-							height={22}
-						/>
+			{/* Files Section */}
+			{files.length > 0 && (
+				<div>
+					<div className="space-y-2">
+						{files.map((file) => {
+							// Extract filename from URL
+							const filename = file.file.split('/').pop() || 'File';
+							return (
+								<Button
+									key={file.id}
+									variant="outline"
+									className="w-full h-14 flex items-center rounded-xl justify-start gap-2 border-gray-200"
+									onClick={() => handleFileDownload(file.file)}>
+									<div className="bg-[#E5004E] p-2 rounded-sm flex items-center justify-center">
+										<Image
+											src="/icons/clipboard.svg"
+											alt="clipboard"
+											width={22}
+											height={22}
+										/>
+									</div>
+									<span className="text-sm text-gray-700 truncate flex-1 text-left">
+										{filename}
+									</span>
+								</Button>
+							);
+						})}
 					</div>
-					Add KB Article
-				</Button>
-			</div>
+				</div>
+			)}
 
 			{/* Date */}
-			<div className="mt-5">
+			<div>
 				<span className="inline-block text-xs font-medium text-[#FF7979] bg-[#FF7979]/10 px-3 py-1 rounded-md">
 					{date}
 				</span>

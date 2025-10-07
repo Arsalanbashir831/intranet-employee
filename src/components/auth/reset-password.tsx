@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Eye, EyeOff } from "lucide-react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { toast } from "sonner";
 import { useResetPasswordWithOTP } from "@/hooks/queries/use-auth";
@@ -19,8 +19,8 @@ export function ResetPassword() {
 	const [isSubmitting, setIsSubmitting] = useState(false);
 	const [success, setSuccess] = useState(false);
 	const searchParams = useSearchParams();
-	const email = searchParams.get("email") || "";
-	const otp = searchParams.get("otp") || "";
+	const email = searchParams?.get("email") || "";
+	const otp = searchParams?.get("otp") || "";
 	
 	const { mutate: resetPassword } = useResetPasswordWithOTP();
 
@@ -87,6 +87,27 @@ export function ResetPassword() {
 					<Link href={ROUTES.AUTH.LOGIN}>
 						<Button className="w-full h-12 mb-2 bg-[#E5004E] hover:bg-pink-300 text-white rounded-full font-medium text-base">
 							Go to Sign In
+						</Button>
+					</Link>
+				</div>
+			</div>
+		);
+	}
+
+	// Show error if email or OTP is missing
+	if (!email || !otp) {
+		return (
+			<div className="flex-1 flex items-center justify-center px-4 sm:px-8">
+				<div className="w-full max-w-md space-y-6 py-8 md:py-0 text-center">
+					<h1 className="text-3xl md:text-5xl font-semibold text-gray-900 mb-6">
+						Invalid Reset Link
+					</h1>
+					<p className="text-gray-600 mb-6">
+						The password reset link is invalid or has expired. Please request a new password reset.
+					</p>
+					<Link href={ROUTES.AUTH.FORGOT_PASSWORD}>
+						<Button className="w-full h-12 mb-2 bg-[#E5004E] hover:bg-pink-300 text-white rounded-full font-medium text-base">
+							Request New Reset Link
 						</Button>
 					</Link>
 				</div>

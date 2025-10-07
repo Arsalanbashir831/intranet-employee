@@ -20,7 +20,7 @@ export default function MobileMenu() {
 				</Button>
 			</SheetTrigger>
 			<SheetContent side="left" className="w-80 p-0">
-				<div className="bg-primary px-4 py-4 text-white">
+				<div className="bg-secondary px-4 py-4 text-white">
 					<Image src="/logo-white.svg" alt="Logo" width={118} height={46} />
 				</div>
 				<nav className="px-2 py-3">
@@ -30,7 +30,7 @@ export default function MobileMenu() {
 							href={item.href}
 							className={
 								pathname === item.href
-									? "flex items-center gap-3 rounded-md px-3 py-2 text-sm bg-primary text-white"
+									? "flex items-center gap-3 rounded-md px-3 py-2 text-sm bg-secondary text-white"
 									: "flex items-center gap-3 rounded-md px-3 py-2 text-sm text-foreground hover:bg-accent"
 							}>
 							<span

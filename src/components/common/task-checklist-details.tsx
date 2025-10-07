@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { cn } from "@/lib/utils";
 import {
 	KanbanBoard,
@@ -13,105 +13,90 @@ import {
 import Image from "next/image";
 import { Sheet } from "@/components/ui/sheet";
 import ChecklistDrawerContent from "../common/checklist-drawer-content";
+import { useAttachmentStatus } from "@/hooks/queries/use-new-hire";
+import { useAuth } from "@/contexts/auth-context";
+import { AttachmentStatusDetail } from "@/services/new-hire";
+import { updateAttachmentStatus } from "@/services/new-hire";
+import { toast } from "sonner";
 
 interface Task extends KanbanItemProps {
 	description: string;
 	date: string;
 	progress?: number;
+	attachmentId: number;
+	status: "to_do" | "in_progress" | "done";
+	detail: string; // Add the full detail from attachment_details
+	files: {
+		id: number;
+		file: string;
+		uploaded_at: string;
+	}[]; // Add the files array
 }
 
 interface TaskChecklistDetailsProps {
 	heading?: string;
+	type?: "task" | "training";
 }
 
 export default function TaskChecklistDetails({
 	heading = "Task Checklist",
+	type = "task",
 }: TaskChecklistDetailsProps) {
-	const [tasks, setTasks] = useState<Task[]>([
-		{
-			id: "1",
-			name: "Design new ui presentation",
-			description: "Dribbble marketing",
-			column: "todo",
-			date: "25 Aug 2022",
-		},
-		{
-			id: "2",
-			name: "Add more ui/ux mockups",
-			description: "Pinterest promotion",
-			column: "todo",
-			date: "25 Aug 2022",
-		},
-		{
-			id: "3",
-			name: "Create Mobile Screens",
-			description: "Pinterest promotion",
-			column: "todo",
-			date: "26 Aug 2022",
-		},
-		{
-			id: "4",
-			name: "Tweet and Promote",
-			description: "Pinterest promotion",
-			column: "todo",
-			date: "26 Aug 2022",
-		},
-		{
-			id: "5",
-			name: "Design System Update",
-			description: "Website",
-			column: "inprogress",
-			date: "12 Nov 2022",
-		},
-		{
-			id: "6",
-			name: "Create Branding Guideline",
-			description: "Website",
-			column: "inprogress",
-			date: "12 Nov 2022",
-		},
-		{
-			id: "7",
-			name: "Create Wireframe",
-			description: "Website",
-			column: "inprogress",
-			date: "12 Nov 2022",
-		},
-		{
-			id: "8",
-			name: "Create UI Kit",
-			description: "Progress",
-			column: "inprogress",
-			date: "12 Nov 2022",
-		},
-		{
-			id: "9",
-			name: "Add Product to the Market",
-			description: "Kickstarter campaign",
-			column: "done",
-			date: "6 Jan 2022",
-			progress: 100,
-		},
-		{
-			id: "10",
-			name: "Launch Product Promotion",
-			description: "Kickstarter campaign",
-			column: "done",
-			date: "6 Jan 2022",
-			progress: 100,
-		},
-		{
-			id: "11",
-			name: "Make Twitter Banner",
-			description: "Kickstarter campaign",
-			column: "done",
-			date: "6 Jan 2022",
-			progress: 100,
-		},
-	]);
-
+	const { user } = useAuth();
 	const [open, setOpen] = useState(false);
 	const [selectedTask, setSelectedTask] = useState<Task | null>(null);
+
+	// Fetch attachment status data
+	const { data, isLoading, isError } = useAttachmentStatus(
+		user?.employeeId || 0,
+		{ type }
+	);
+
+	// Local state for Kanban tasks
+	const [kanbanTasks, setKanbanTasks] = useState<Task[]>([]);
+
+	// Keep a ref to the previous kanbanTasks for comparison in onDataChange
+	const prevKanbanTasksRef = useRef<Task[]>([]);
+
+	// Update kanbanTasks when API data changes
+	useEffect(() => {
+		if (data?.results) {
+			const newTasks = data.results.map((item: AttachmentStatusDetail) => {
+				const columnValue =
+					item.status === "to_do"
+						? "todo"
+						: item.status === "in_progress"
+						? "inprogress"
+						: "done";
+				return {
+					id: item.id.toString(),
+					name: item.attachment_details.title,
+					description: item.attachment_details.detail,
+					detail: item.attachment_details.detail,
+					column: columnValue,
+					date: new Date(item.created_at)
+						.toLocaleDateString("en-GB", {
+							day: "2-digit",
+							month: "short",
+							year: "numeric",
+						})
+						.replace(" ", " "),
+					attachmentId: item.attachment,
+					status: item.status,
+					files: item.attachment_details.files,
+				};
+			});
+
+			setKanbanTasks(newTasks);
+			// Only initialize the ref if it's empty (first load)
+			// Deep clone to prevent mutation issues
+			if (prevKanbanTasksRef.current.length === 0) {
+				prevKanbanTasksRef.current = JSON.parse(JSON.stringify(newTasks));
+			}
+		}
+	}, [data]);
+
+	const tasks = kanbanTasks;
 
 	const columns = [
 		{
@@ -135,6 +120,46 @@ export default function TaskChecklistDetails({
 		setOpen(true);
 	};
 
+	// Show loading state
+	if (isLoading) {
+		return (
+			<div className="mx-auto w-full px-4 sm:px-6 md:px-8 py-6 sm:py-8 lg:py-10 min-h-screen bg-gray-100">
+				<div className="mx-auto w-full px-4 sm:px-6 md:px-8 lg:px-4 py-5 sm:py-6 min-h-[100svh] flex flex-col">
+					<div className="bg-white rounded-2xl shadow-md p-4 sm:p-6 lg:p-5 flex-1 min-h-0 flex flex-col">
+						<h1 className="text-xl font-semibold text-gray-900 mb-4 sm:mb-6">
+							{heading}
+						</h1>
+						<div className="flex justify-center items-center h-full">
+							<div className="animate-pulse text-gray-500">
+								Loading tasks...
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		);
+	}
+
+	// Show error state
+	if (isError) {
+		return (
+			<div className="mx-auto w-full px-4 sm:px-6 md:px-8 py-6 sm:py-8 lg:py-10 min-h-screen bg-gray-100">
+				<div className="mx-auto w-full px-4 sm:px-6 md:px-8 lg:px-4 py-5 sm:py-6 min-h-[100svh] flex flex-col">
+					<div className="bg-white rounded-2xl shadow-md p-4 sm:p-6 lg:p-5 flex-1 min-h-0 flex flex-col">
+						<h1 className="text-xl font-semibold text-gray-900 mb-4 sm:mb-6">
+							{heading}
+						</h1>
+						<div className="flex justify-center items-center h-full">
+							<div className="text-red-500">
+								Failed to load tasks. Please try again later.
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		);
+	}
+
 	return (
 		<div className="mx-auto w-full px-4 sm:px-6 md:px-8 py-6 sm:py-8 lg:py-10 min-h-screen bg-gray-100">
 			{/* page rails */}
@@ -148,8 +173,46 @@ export default function TaskChecklistDetails({
 					<div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-5 lg:gap-6 flex-1 min-h-0 overflow-hidden">
 						<KanbanProvider<Task>
 							columns={columns}
-							data={tasks}
-							onDataChange={(d) => setTasks(d as Task[])}
+							data={kanbanTasks}
+							onDataChange={(d) => {
+								const prevTasks = prevKanbanTasksRef.current;
+								const updatedTasks = d as Task[];
+								const previousTaskMap = new Map(
+									prevTasks.map((task) => [task.id, task])
+								);
+								const currentTaskMap = new Map(
+									updatedTasks.map((task) => [task.id, task])
+								);
+								for (const [id, currentTask] of currentTaskMap) {
+									const previousTask = previousTaskMap.get(id);
+
+									if (previousTask) {
+										if (previousTask.column !== currentTask.column) {
+											let newStatus: "to_do" | "in_progress" | "done" = "to_do";
+											if (currentTask.column === "inprogress") {
+												newStatus = "in_progress";
+											} else if (currentTask.column === "done") {
+												newStatus = "done";
+											}
+											const taskId = parseInt(id);
+											updateAttachmentStatus(taskId, { status: newStatus })
+												.then(() => {
+													// Only update the ref after successful API call
+													// Deep clone to prevent mutation issues
+													prevKanbanTasksRef.current = JSON.parse(
+														JSON.stringify(updatedTasks)
+													);
+												})
+												.catch(() => {
+													toast.error("Failed to update status");
+												});
+										}
+									}
+								}
+
+								// Update local state for UI
+								setKanbanTasks(updatedTasks);
+							}}
 							className="contents">
 							{(column) => (
 								<KanbanBoard
@@ -168,16 +231,19 @@ export default function TaskChecklistDetails({
 										{column.name}
 									</KanbanHeader>
 
-								<KanbanCards
-									id={column.id}
-									className="flex flex-col gap-3 sm:gap-4 flex-1 min-h-0 overflow-auto">
+									<KanbanCards
+										id={column.id}
+										className="flex flex-col gap-3 sm:gap-4 flex-1 min-h-0 overflow-auto">
 										{(task: KanbanItemProps) => (
 											<div key={task.id}>
 												<KanbanCard
 													id={task.id}
 													name={task.name}
 													column={task.column}
-													onPointerUp={() => handleCardClick(task as Task)}
+													onPointerUp={(e) => {
+														e.stopPropagation();
+														handleCardClick(task as Task);
+													}}
 													className="rounded-lg bg-white p-3 sm:p-4 cursor-pointer">
 													{/* Card UI */}
 													<div className="space-y-3">
@@ -256,7 +322,7 @@ export default function TaskChecklistDetails({
 									</KanbanCards>
 
 									{column.id === "done" && (
-										<div className="mt-3 sm:mt-4 flex-1 flex items-center justify-center">
+										<div className="mt-4 flex items-center justify-center">
 											<div className="w-full h-[120px] sm:h-[150px] flex items-center justify-center border-2 border-dashed border-[#888DA7]/50 text-[#888DA7] text-xs sm:text-sm rounded-lg">
 												Drag your task here...
 											</div>
@@ -275,8 +341,9 @@ export default function TaskChecklistDetails({
 					<ChecklistDrawerContent
 						title={selectedTask.name}
 						subtitle={selectedTask.description}
-						description="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt..."
+						description={selectedTask.detail}
 						date={selectedTask.date}
+						files={selectedTask.files}
 					/>
 				)}
 			</Sheet>

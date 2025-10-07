@@ -146,14 +146,6 @@ export function EmployeeProfileCard({ employee }: EmployeeProfileCardProps) {
 							<ProfilePictureDialog
 								image={resolvedEmployee.profileImage}
 								name={resolvedEmployee.name}
-								onSave={async ({ file }) => {
-									// The hook in ProfilePictureDialog handles the API call
-									console.log("Profile picture saved");
-								}}
-								onDelete={async () => {
-									// The hook in ProfilePictureDialog handles the API call
-									console.log("Profile picture deleted");
-								}}
 							/>
 						</div>
 

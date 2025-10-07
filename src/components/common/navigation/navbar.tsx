@@ -28,9 +28,14 @@ export const navItems = [
 		icon: "/icons/note-blank.svg",
 	},
 	{
-		href: ROUTES.DASHBOARD.TEAMS,
-		label: "Teams",
+		href: ROUTES.DASHBOARD.ORG_CHAT_DIRECTORY,
+		label: "Org Chart/Directory",
 		icon: "/icons/user-hierarchy.svg",
+	},
+	{
+		href: ROUTES.DASHBOARD.EXECUTIVES,
+		label: "Executives",
+		icon: "/icons/users.svg",
 	},
 	{
 		href: ROUTES.DASHBOARD.TRAINING_CHECKLIST,
@@ -84,8 +89,8 @@ export function Navbar() {
 						<Image
 							src="/logo-white.svg"
 							alt="Logo"
-							width={150}
-							height={46}
+							width={120}
+							height={36}
 							priority
 						/>
 					</Link>
@@ -109,7 +114,7 @@ export function Navbar() {
 												<Link
 													href={item.href}
 													className={cn(
-														"px-2.5 py-1.5 text-md font-medium transition-colors rounded-[4px] inline-flex items-center flex-row gap-2",
+														"px-2.5 py-1.5 text-xs font-medium transition-colors rounded-[4px] inline-flex items-center flex-row gap-2",
 														"text-white/80 hover:text-black",
 														isActive(item.href) && "bg-white text-black"
 													)}>

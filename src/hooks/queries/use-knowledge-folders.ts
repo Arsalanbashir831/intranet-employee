@@ -1,149 +1,113 @@
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { toast } from "sonner";
-import {
-  getAllFolders,
-  getFolders,
-  getFolder,
-  getFolderTree,
-  createFolder,
-  updateFolder,
-  patchFolder,
-  deleteFolder,
-  searchFolders,
-  FolderCreateRequest,
-  FolderUpdateRequest,
-  FolderPatchRequest,
-  FolderListParams,
-} from "@/services/knowledge-folders";
+import { useQuery } from "@tanstack/react-query";
+import { getFolderTree } from "@/services/knowledge-folders";
+import { useAuth } from "@/contexts/auth-context";
+import { FolderTreeItem, FolderTreeFile } from "@/services/knowledge-folders";
 
-// Query keys
-export const folderKeys = {
-  all: ["knowledge-folders"] as const,
-  lists: () => [...folderKeys.all, "list"] as const,
-  list: (params?: FolderListParams) => [...folderKeys.lists(), params] as const,
-  details: () => [...folderKeys.all, "detail"] as const,
-  detail: (id: number | string) => [...folderKeys.details(), id] as const,
-  tree: (employeeId?: number | string) => [...folderKeys.all, "tree", employeeId] as const,
+// Query key factory
+export const knowledgeFoldersKeys = {
+	all: ["knowledgeFolders"] as const,
+	list: (params: Record<string, unknown> = {}) =>
+		[...knowledgeFoldersKeys.all, "list", params] as const,
 };
 
-// Query hooks
-export const useGetFolders = (params?: FolderListParams) => {
-  return useQuery({
-    queryKey: folderKeys.list(params),
-    queryFn: () => getFolders(params),
-    staleTime: 5 * 60 * 1000, // 5 minutes
-  });
-};
+// Helper function to flatten the folder tree and filter by search term
+function flattenAndFilterTree(
+	items: FolderTreeItem[],
+	searchTerm: string = ""
+): FolderTreeItem[] {
+	if (!searchTerm) return items;
 
-export const useGetAllFolders = () => {
-  return useQuery({
-    queryKey: folderKeys.lists(),
-    queryFn: getAllFolders,
-    staleTime: 5 * 60 * 1000, // 5 minutes
-    placeholderData: (previousData) => previousData, // Keep previous data while fetching
-  });
-};
+	const lowerSearchTerm = searchTerm.toLowerCase();
 
-export const useSearchFolders = (params?: Record<string, string | number | boolean>) => {
-  return useQuery({
-    queryKey: [...folderKeys.lists(), params],
-    queryFn: () => searchFolders(params),
-    staleTime: 5 * 60 * 1000, // 5 minutes
-    refetchOnWindowFocus: false,
-    placeholderData: (previousData) => previousData, // Keep previous data while fetching
-  });
-};
+	function searchInItem(item: FolderTreeItem): boolean {
+		// Check if folder name matches
+		if (item.name.toLowerCase().includes(lowerSearchTerm)) {
+			return true;
+		}
 
-export const useGetFolder = (id: number | string, enabled: boolean = true) => {
-  return useQuery({
-    queryKey: folderKeys.detail(id),
-    queryFn: () => getFolder(id),
-    enabled: enabled && !!id,
-    staleTime: 5 * 60 * 1000, // 5 minutes
-  });
-};
+		// Check if any file in this folder matches
+		if (
+			item.files.some(
+				(file) =>
+					file.name.toLowerCase().includes(lowerSearchTerm) ||
+					file.description.toLowerCase().includes(lowerSearchTerm)
+			)
+		) {
+			return true;
+		}
 
-export const useGetFolderTree = (employeeId?: number | string) => {
-  return useQuery({
-    queryKey: folderKeys.tree(employeeId),
-    queryFn: () => getFolderTree(employeeId),
-    staleTime: 5 * 60 * 1000, // 5 minutes
-  });
-};
+		// Check nested folders recursively
+		return item.folders.some(searchInItem);
+	}
 
-// Mutation hooks
-export const useCreateFolder = () => {
-  const queryClient = useQueryClient();
+	function filterFiles(files: FolderTreeFile[]): FolderTreeFile[] {
+		if (!searchTerm) return files;
+		return files.filter(
+			(file) =>
+				file.name.toLowerCase().includes(lowerSearchTerm) ||
+				file.description.toLowerCase().includes(lowerSearchTerm)
+		);
+	}
 
-  return useMutation({
-    mutationFn: (folderData: FolderCreateRequest) => createFolder(folderData),
-    onSuccess: () => {
-      // Invalidate and refetch folder queries
-      queryClient.invalidateQueries({ queryKey: folderKeys.all });
-      toast.success("Folder created successfully");
-    },
-    onError: (error: Error) => {
-      const errorMessage = error?.message || "Failed to create folder";
-      toast.error(errorMessage);
-    },
-  });
-};
+	function filterFolders(folders: FolderTreeItem[]): FolderTreeItem[] {
+		if (!searchTerm) return folders;
+		return folders.filter(searchInItem).map((folder) => ({
+			...folder,
+			files: filterFiles(folder.files),
+			folders: filterFolders(folder.folders),
+		}));
+	}
 
-export const useUpdateFolder = () => {
-  const queryClient = useQueryClient();
+	return filterFolders(items);
+}
 
-  return useMutation({
-    mutationFn: ({ id, data }: { id: number | string; data: FolderUpdateRequest }) =>
-      updateFolder(id, data),
-    onSuccess: (data, variables) => {
-      // Update the specific folder in cache
-      queryClient.setQueryData(folderKeys.detail(variables.id), data);
-      // Invalidate list queries
-      queryClient.invalidateQueries({ queryKey: folderKeys.lists() });
-      toast.success("Folder updated successfully");
-    },
-    onError: (error: Error) => {
-      const errorMessage = error?.message || "Failed to update folder";
-      toast.error(errorMessage);
-    },
-  });
-};
+// Hook to get paginated knowledge folders from tree
+export function useKnowledgeFolders(
+	page: number = 1,
+	pageSize: number = 10,
+	searchTerm: string = ""
+) {
+	const { user } = useAuth();
 
-export const usePatchFolder = () => {
-  const queryClient = useQueryClient();
+	return useQuery({
+		queryKey: knowledgeFoldersKeys.list({
+			page,
+			pageSize,
+			employeeId: user?.employeeId,
+			searchTerm,
+		}),
+		queryFn: async () => {
+			try {
+				const employeeId = user?.employeeId
+					? String(user.employeeId)
+					: undefined;
+				const treeData = await getFolderTree(employeeId);
 
-  return useMutation({
-    mutationFn: ({ id, data }: { id: number | string; data: FolderPatchRequest }) =>
-      patchFolder(id, data),
-    onSuccess: (data, variables) => {
-      // Update the specific folder in cache
-      queryClient.setQueryData(folderKeys.detail(variables.id), data);
-      // Invalidate list queries
-      queryClient.invalidateQueries({ queryKey: folderKeys.lists() });
-      toast.success("Folder updated successfully");
-    },
-    onError: (error: Error) => {
-      const errorMessage = error?.message || "Failed to update folder";
-      toast.error(errorMessage);
-    },
-  });
-};
+				// Flatten and filter the tree based on search term
+				const allFolders = flattenAndFilterTree(
+					treeData?.folders || [],
+					searchTerm
+				);
 
-export const useDeleteFolder = () => {
-  const queryClient = useQueryClient();
+				// Simulate pagination
+				const startIndex = (page - 1) * pageSize;
+				const endIndex = startIndex + pageSize;
+				const paginatedFolders = allFolders.slice(startIndex, endIndex);
 
-  return useMutation({
-    mutationFn: (id: number | string) => deleteFolder(id),
-    onSuccess: (_, id) => {
-      // Remove the deleted folder from cache
-      queryClient.removeQueries({ queryKey: folderKeys.detail(id) });
-      // Invalidate list queries
-      queryClient.invalidateQueries({ queryKey: folderKeys.lists() });
-      toast.success("Folder deleted successfully");
-    },
-    onError: (error: Error) => {
-      const errorMessage = error?.message || "Failed to delete folder";
-      toast.error(errorMessage);
-    },
-  });
-};
+				return {
+					folders: {
+						count: allFolders.length,
+						results: paginatedFolders,
+						next: endIndex < allFolders.length ? `page=${page + 1}` : null,
+						previous: page > 1 ? `page=${page - 1}` : null,
+					},
+				};
+			} catch (error) {
+				console.error("Error fetching knowledge folders:", error);
+				throw error;
+			}
+		},
+		placeholderData: (previousData) => previousData, // Keep previous data while fetching new data for smooth transitions
+		staleTime: 5 * 60 * 1000, // 5 minutes
+	});
+}

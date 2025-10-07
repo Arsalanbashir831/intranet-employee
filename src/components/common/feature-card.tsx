@@ -5,41 +5,31 @@ import Image from "next/image";
 import Link from "next/link";
 import React from "react";
 
+/* ---------------- Types ---------------- */
 type BadgeItem =
 	| string
 	| number
 	| { front: string | number; back?: string | number };
-
-interface PolicyCardProps {
+type PolicyCardProps = {
 	image?: string;
 	title: string;
 	description: string;
 	link?: string;
-	width?: number | string; // optional: still supported
-	height?: number | string; // optional: still supported
-	badgeLines?: BadgeItem[];
-	className?: string; // ✅ now used
-	imgClassName?: string; // ✅ now used
-}
+	badgeLines?: [BadgeItem, BadgeItem, BadgeItem];
+	className?: string;
+	imgClassName?: string;
+};
 
 export default function FeatureCard({
 	image,
 	title,
 	description,
 	link = "#",
-	width = "100%",
-	height, // if omitted, we’ll use responsive heights via classes
 	badgeLines,
 	className,
 	imgClassName,
 }: PolicyCardProps) {
-	// Approximate original proportion: 247 / 450 ≈ 0.55
-	const topRatio = 0.55;
-
-	// If explicit height provided, keep your old grid split (but use fr so it scales)
-	// Otherwise, use responsive height classes below.
-	const useInlineGridRows = Boolean(height);
-
+	// Responsive aspect ratio for image area
 	const renderBadgeItem = (item: BadgeItem) => {
 		if (typeof item === "string" || typeof item === "number") return item;
 		return (
@@ -53,24 +43,18 @@ export default function FeatureCard({
 	return (
 		<Card
 			className={[
-				"overflow-hidden relative grid",
-				!height && "h-[392px] sm:h-[420px] md:h-[400px] gap-0 ",
-				"grid-rows-[55%_45%]",
+				"overflow-hidden relative grid grid-rows-[auto_1fr] min-h-0 min-w-0",
+				// Responsive min/max heights for card
+				"h-full w-full",
 				className || "",
+				"min-h-[340px] md:min-h-[380px] lg:min-h-[440px]",
 			]
 				.filter(Boolean)
 				.join(" ")}
-			style={{
-				// Keep supporting explicit width/height if supplied
-				width,
-				...(height ? { height } : {}),
-				...(useInlineGridRows
-					? { gridTemplateRows: `${topRatio}fr ${1 - topRatio}fr` }
-					: {}),
-			}}>
+			style={{}}>
 			{/* Badge */}
 			{badgeLines && badgeLines.length === 3 && (
-				<div className="absolute top-2 left-2 bg-white/60 backdrop-blur-sm rounded-sm shadow-md flex flex-col items-center justify-center px-2 w-[60px] h-[80px] min-[1920px]:w-[68px] min-[1920px]:h-[90px] min-[2560px]:w-[76px] min-[2560px]:h-[100px]">
+				<div className="absolute top-2 left-2 bg-white/60 backdrop-blur-sm rounded-sm shadow-md flex flex-col items-center justify-center px-2 w-14 h-20 min-[1920px]:w-16 min-[1920px]:h-24 min-[2560px]:w-20 min-[2560px]:h-28">
 					<span className="text-xl min-[1920px]:text-2xl font-bold leading-tight">
 						{renderBadgeItem(badgeLines[0])}
 					</span>
@@ -84,7 +68,7 @@ export default function FeatureCard({
 			)}
 
 			{/* Top (Image area) */}
-			<div className="relative w-full aspect-[4/3] sm:aspect-auto [430px]:h-[180px] lg:aspect-auto">
+			<div className="relative w-full aspect-[4/3] sm:aspect-[16/9] md:aspect-[3/2] lg:aspect-[5/4] xl:aspect-[7/5]">
 				{image ? (
 					<Image
 						src={image}
@@ -101,8 +85,7 @@ export default function FeatureCard({
 						<Image
 							src="/icons/document.svg"
 							alt="Default Icon"
-							width={120}
-							height={120}
+							fill
 							className={["object-contain", imgClassName || ""]
 								.filter(Boolean)
 								.join(" ")}
@@ -112,17 +95,13 @@ export default function FeatureCard({
 			</div>
 
 			{/* Bottom (Content) */}
-			<div className="flex flex-col px-5 py-4 overflow-hidden">
+			<div className="flex flex-col px-5 py-4 overflow-hidden min-h-0">
 				<div className="space-y-3 overflow-hidden">
-					<h1
-						className=" text-gray-900  font-semibold text-base sm:text-lg md:text-xl line-clamp-2 text-[clamp(1rem,1vw+0.75rem,2rem)] 
-            ">
+					<h1 className="text-gray-900 font-semibold text-base sm:text-lg md:text-xl line-clamp-2 text-[clamp(1rem,1vw+0.75rem,2rem)]">
 						{title}
 					</h1>
 
-					<p
-						className="text-gray-600 text-md sm:text-sm md:text-md leading-snug line-clamp-3 text-[clamp(0.9rem,0.7vw+0.6rem,1.3rem)]
-            ">
+					<p className="text-gray-600 text-md sm:text-sm md:text-md leading-snug line-clamp-3 text-[clamp(0.9rem,0.7vw+0.6rem,1.3rem)]">
 						{description}
 					</p>
 				</div>

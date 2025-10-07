@@ -1,11 +1,13 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { login, logout, refreshToken, getMe, forgotPassword, resetPasswordWithOTP, changePassword } from "@/services/auth";
+import { login, logout, refreshToken, forgotPassword, resetPasswordWithOTP, changePassword } from "@/services/auth";
 import type { LoginRequest, ForgotPasswordRequest, ResetPasswordWithOTPRequest } from "@/services/auth";
 import { ROUTES } from "@/constants/routes";
 import { setAuthCookies, clearAuthCookies } from "@/lib/cookies";
+import { useRouter } from "next/navigation";
 
 export function useLogin() {
   const qc = useQueryClient();
+  const router = useRouter();
   
   return useMutation({
     mutationFn: (credentials: LoginRequest) => login(credentials),
@@ -23,19 +25,8 @@ export function useLogin() {
       
       // Navigate to dashboard
       if (typeof window !== "undefined") {
-        // Try to use Next.js router first
-        try {
-          const router = require("next/navigation").useRouter();
-          if (router && typeof router.push === 'function') {
-            router.push(ROUTES.DASHBOARD.HOME);
-            return;
-          }
-        } catch (e) {
-          // If router is not available, fall back to window.location
-          window.location.assign(ROUTES.DASHBOARD.HOME);
-        }
-        // Fallback
-        window.location.assign(ROUTES.DASHBOARD.HOME);
+        // Use Next.js router
+        router.push(ROUTES.DASHBOARD.HOME);
       }
     },
     onError: (error) => {
