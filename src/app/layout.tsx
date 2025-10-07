@@ -42,7 +42,8 @@ export default function RootLayout({
 }>) {
 	return (
 		<html lang="en">
-			<body
+			<body 
+			suppressHydrationWarning
 				className={`${poppins.variable} ${geistSans.variable} ${geistMono.variable} antialiased`}>
 				{children}
 				<Toaster />
