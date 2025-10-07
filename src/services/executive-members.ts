@@ -11,6 +11,10 @@ export type Executive = {
 	email: string;
 	role: string;
 	education: string;
+	bio?: string;
+	branch: string;
+	hire_date: string;
+	department: string;
 	profile_picture?: string | null;
 	created_at: string;
 	updated_at: string;
@@ -18,12 +22,10 @@ export type Executive = {
 
 // Response types
 export type ExecutiveListResponse = {
-	executives: {
-		count: number;
-		page: number;
-		page_size: number;
-		results: Executive[];
-	};
+	count: number;
+	page: number;
+	page_size: number;
+	results: Executive[];
 };
 
 export type ExecutiveDetailResponse = Executive;
