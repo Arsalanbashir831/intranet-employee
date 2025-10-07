@@ -4,7 +4,7 @@ import { PageHeader } from "@/components/common/page-header";
 import FeatureCard from "@/components/common/feature-card";
 import { ROUTES } from "@/constants/routes";
 
-import { useState, useMemo, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useDebounce } from "@/hooks/use-debounce";
 import {
 	createColumnHelper,
@@ -138,8 +138,10 @@ export default function CompanyHub() {
 	// Client-side sorting
 	const sortKey = sort === "created_at" ? "createdAt" : "title";
 	const sorted = [...dataSource].sort((a, b) => {
-		const av = (a as any)[sortKey] ?? "";
-		const bv = (b as any)[sortKey] ?? "";
+		const av =
+			sortKey === "createdAt" ? (a as Announcement).createdAt ?? "" : a.title;
+		const bv =
+			sortKey === "createdAt" ? (b as Announcement).createdAt ?? "" : b.title;
 		return String(av).localeCompare(String(bv));
 	});
 

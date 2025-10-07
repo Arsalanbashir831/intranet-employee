@@ -2,20 +2,12 @@
 
 import { PageHeader } from "@/components/common/page-header";
 import TeamsCard from "@/components/teams/teams-card";
-import { ROUTES } from "@/constants/routes";
 import Link from "next/link";
 import {
 	createColumnHelper,
 	getCoreRowModel,
 	useReactTable,
 } from "@tanstack/react-table";
-import {
-	Select,
-	SelectContent,
-	SelectItem,
-	SelectTrigger,
-	SelectValue,
-} from "@/components/ui/select";
 import { TableSearch } from "@/components/common/card-table/table-search";
 import { CardTablePagination } from "@/components/common/card-table/card-table-pagination";
 import { useState } from "react";

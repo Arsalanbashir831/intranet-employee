@@ -9,18 +9,10 @@ import {
 	getCoreRowModel,
 	useReactTable,
 } from "@tanstack/react-table";
-import {
-	Select,
-	SelectContent,
-	SelectItem,
-	SelectTrigger,
-	SelectValue,
-} from "@/components/ui/select";
 import { TableSearch } from "@/components/common/card-table/table-search";
 import { CardTablePagination } from "@/components/common/card-table/card-table-pagination";
 import { useState } from "react";
 import { useDebounce } from "@/hooks/use-debounce";
-import { useAuth } from "@/contexts/auth-context";
 import {
 	useAllEmployees,
 	useDepartmentEmployees,
@@ -65,7 +57,6 @@ const columns = [
 ];
 
 export default function OrgChartDirectoryPage() {
-	const { user } = useAuth();
 	const [query, setQuery] = useState("");
 	const debouncedQuery = useDebounce(query, 400);
 	const [page, setPage] = useState(1);
@@ -79,27 +70,35 @@ export default function OrgChartDirectoryPage() {
 	}>({});
 
 	// Determine which hook to use based on filters
-	let data, isLoading, isError;
 	const hasDepartment = filters.department && filters.department !== "__all__";
 	const hasBranchDept =
 		filters.branch_department && filters.branch_department !== "__all__";
 
+	// Call all hooks unconditionally to avoid hook rules violations
+	const allEmployeesQuery = useAllEmployees({
+		page,
+		page_size: pageSize,
+		search: debouncedQuery,
+	});
+
+	const departmentEmployeesQuery = useDepartmentEmployees(
+		filters.department || "0", // fallback to avoid empty string
+		{ page, page_size: pageSize, search: debouncedQuery }
+	);
+
+	const branchDeptEmployeesQuery = useBranchDeptEmployees(
+		filters.branch_department || "0", // fallback to avoid empty string
+		{ page, page_size: pageSize, search: debouncedQuery }
+	);
+
+	// Select the appropriate query result based on filters
+	let data, isLoading, isError;
 	if (hasDepartment) {
-		({ data, isLoading, isError } = useDepartmentEmployees(
-			filters.department!,
-			{ page, page_size: pageSize, search: debouncedQuery }
-		));
+		({ data, isLoading, isError } = departmentEmployeesQuery);
 	} else if (hasBranchDept) {
-		({ data, isLoading, isError } = useBranchDeptEmployees(
-			filters.branch_department!,
-			{ page, page_size: pageSize, search: debouncedQuery }
-		));
+		({ data, isLoading, isError } = branchDeptEmployeesQuery);
 	} else {
-		({ data, isLoading, isError } = useAllEmployees({
-			page,
-			page_size: pageSize,
-			search: debouncedQuery,
-		}));
+		({ data, isLoading, isError } = allEmployeesQuery);
 	}
 
 	// Transform API data to match component structure
