@@ -6,6 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import Link from "next/link";
 import { useBranchDepartmentEmployees } from "@/hooks/queries/use-departments";
 import { useAuth } from "@/contexts/auth-context";
+import { ROUTES } from "@/constants/routes";
 
 interface TeamMember {
 	id: number;
@@ -25,7 +26,7 @@ export default function TeamSection() {
 
 	// Transform API data to match component structure
 	const teamMembers: TeamMember[] =
-		data?.employees?.results?.slice(0, 3).map((employee) => ({
+		data?.employees?.results?.map((employee) => ({
 			id: employee.id,
 			name: employee.emp_name,
 			role: employee.role.toLowerCase().includes("manager")
@@ -43,7 +44,7 @@ export default function TeamSection() {
 						My Team
 					</h2>
 					<Link
-						href="/teams"
+						href={ROUTES.DASHBOARD.ORG_CHAT_DIRECTORY}
 						className="underline font-medium text-[#E5004E] text-xs sm:text-sm md:text-base">
 						View More
 					</Link>
@@ -64,7 +65,7 @@ export default function TeamSection() {
 						My Team
 					</h2>
 					<Link
-						href="/teams"
+						href={ROUTES.DASHBOARD.ORG_CHAT_DIRECTORY}
 						className="underline font-medium text-[#E5004E] text-xs sm:text-sm md:text-base">
 						View More
 					</Link>
@@ -85,7 +86,7 @@ export default function TeamSection() {
 						My Team
 					</h2>
 					<Link
-						href="/teams"
+						href={ROUTES.DASHBOARD.ORG_CHAT_DIRECTORY}
 						className="underline font-medium text-[#E5004E] text-xs sm:text-sm md:text-base">
 						View More
 					</Link>
@@ -111,7 +112,7 @@ export default function TeamSection() {
 				</h2>
 
 				<Link
-					href="/teams"
+					href={ROUTES.DASHBOARD.ORG_CHAT_DIRECTORY}
 					className="
             underline font-medium text-[#E5004E]
             text-xs sm:text-sm md:text-base

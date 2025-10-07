@@ -29,10 +29,10 @@ export default function ChecklistDrawerContent({
 	files = [],
 }: ChecklistTaskDrawerProps) {
 	const handleFileDownload = (fileUrl: string) => {
-		const link = document.createElement('a');
+		const link = document.createElement("a");
 		link.href = fileUrl;
-		link.target = '_blank';
-		link.download = '';
+		link.target = "_blank";
+		link.download = "";
 		document.body.appendChild(link);
 		link.click();
 		document.body.removeChild(link);
@@ -77,7 +77,10 @@ export default function ChecklistDrawerContent({
 
 			{/* Description */}
 			<div className="space-y-3">
-				<p className="text-sm text-gray-600 leading-relaxed">{description}</p>
+				<div
+					className="text-sm text-gray-600 leading-relaxed prose-p:leading-relaxed prose-pre:p-0 prose-ul:my-2 prose-ol:my-2 prose-li:my-1 [&_ul_li_p]:inline [&_ol_li_p]:inline [&_ul_li_p]:m-0 [&_ol_li_p]:m-0"
+					dangerouslySetInnerHTML={{ __html: description }}
+				/>
 			</div>
 
 			{/* Files Section */}
@@ -86,7 +89,7 @@ export default function ChecklistDrawerContent({
 					<div className="space-y-2">
 						{files.map((file) => {
 							// Extract filename from URL
-							const filename = file.file.split('/').pop() || 'File';
+							const filename = file.file.split("/").pop() || "File";
 							return (
 								<Button
 									key={file.id}
