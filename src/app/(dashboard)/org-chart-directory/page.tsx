@@ -45,6 +45,7 @@ interface TeamMember {
 	branch: string;
 	department: string;
 	education: string;
+	bio: string;
 }
 
 const columnHelper = createColumnHelper<TeamMember>();
@@ -112,7 +113,8 @@ export default function OrgChartDirectoryPage() {
 			phone: employee.phone,
 			branch: employee.branch_department.branch.branch_name,
 			department: employee.branch_department.department.dept_name,
-			education: employee.education,
+			bio: employee?.bio || "",
+			education: employee?.education || "",
 		})) || [];
 
 	const pageCount = data?.employees
@@ -245,7 +247,9 @@ export default function OrgChartDirectoryPage() {
 												image={m.image}
 												name={m.name}
 												designation={m.designation}
-												description={m.education}
+												description={
+													m.bio || m.education || "No description available"
+												}
 												className="w-full mx-auto xl:max-w-[320px] xl:h-[370px]"
 												topClassName="relative w-full aspect-[4/3] sm:aspect-[16/10] xl:aspect-auto xl:h-[230px]"
 												imgClassName="object-cover"
