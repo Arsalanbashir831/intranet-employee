@@ -19,7 +19,7 @@ export default function MobileMenu() {
 					<Menu className="h-5 w-5" />
 				</Button>
 			</SheetTrigger>
-			<SheetContent side="left" className="w-80 p-0">
+			<SheetContent id="sheet-content-mobile-menu" side="left" className="w-80 p-0">
 				<div className="bg-secondary px-4 py-4 text-white">
 					<Image src="/logo-white.svg" alt="Logo" width={118} height={46} />
 				</div>

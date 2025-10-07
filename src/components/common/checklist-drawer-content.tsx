@@ -39,9 +39,10 @@ export default function ChecklistDrawerContent({
 	};
 
 	return (
-		<SheetContent
-			side="right"
-			className="w-[380px] bg-white shadow-xl rounded-l-2xl p-6 overflow-y-auto">
+	    <SheetContent
+		    id="sheet-content-checklist-drawer"
+		    side="right"
+		    className="w-[380px] bg-white shadow-xl rounded-l-2xl p-6 overflow-y-auto">
 			{/* Header */}
 			<SheetHeader className="flex flex-col items-start gap-1">
 				<div className="flex items-center gap-4">
