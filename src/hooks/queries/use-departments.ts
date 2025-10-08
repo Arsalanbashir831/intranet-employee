@@ -4,29 +4,27 @@ import {
 	Department,
 	DepartmentListResponse,
 	getBranchDepartmentEmployees,
-  listDepartments,
+	listDepartments,
 } from "@/services/departments";
-import { API_ROUTES } from "@/constants/api-routes";
-import apiCaller from "@/lib/api-caller";
 
 // Hook to fetch all departments
 export function useDepartments(
-  params?: Record<string, string | number | boolean>,
-  pagination?: { page?: number; pageSize?: number }
+	params?: Record<string, string | number | boolean>,
+	pagination?: { page?: number; pageSize?: number }
 ) {
-  const keyParams = normalizeParams(params);
-  const keyPagination =
-    pagination && (pagination.page || pagination.pageSize)
-      ? { page: pagination.page ?? 1, pageSize: pagination.pageSize ?? 50 }
-      : undefined;
+	const keyParams = normalizeParams(params);
+	const keyPagination =
+		pagination && (pagination.page || pagination.pageSize)
+			? { page: pagination.page ?? 1, pageSize: pagination.pageSize ?? 50 }
+			: undefined;
 
-  return useQuery({
-    queryKey: ["departments", keyParams, keyPagination],
-    queryFn: () => listDepartments(keyParams, keyPagination),
-    staleTime: 60_000,
-    refetchOnWindowFocus: false,
-    placeholderData: keepPreviousData,
-  });
+	return useQuery({
+		queryKey: ["departments", keyParams, keyPagination],
+		queryFn: () => listDepartments(keyParams, keyPagination),
+		staleTime: 60_000,
+		refetchOnWindowFocus: false,
+		placeholderData: keepPreviousData,
+	});
 }
 
 // Hook to fetch all branch departments

@@ -16,8 +16,10 @@ import { useState, useMemo } from "react";
 import { PaginationState, pageIndexToPageNumber } from "@/lib/pagination-utils";
 import { KnowledgeBaseRow } from "@/components/knowledge-base/knowledge-base-table";
 import { FolderTreeItem } from "@/services/knowledge-folders";
+import { useRouter } from "next/navigation";
 
 export default function Home() {
+	const router = useRouter();
 	const [pagination, setPagination] = useState<PaginationState>({
 		pageIndex: 0,
 		pageSize: 5,
@@ -57,6 +59,15 @@ export default function Home() {
 		setSearchTerm(term);
 		// Reset to first page when searching
 		setPagination((prev) => ({ ...prev, pageIndex: 0 }));
+	};
+
+	const handleRowClick = (row: KnowledgeBaseRow) => {
+		if (row.type === "folder") {
+			// Navigate using folder ID
+			router.push(`${ROUTES.DASHBOARD.KNOWLEDGE_BASE}/${row.id}`);
+		} else if (row.type === "file" && row.fileUrl) {
+			window.open(row.fileUrl, "_blank");
+		}
 	};
 
 	return (
@@ -148,6 +159,7 @@ export default function Home() {
 												totalCount: data?.folders?.count || 0,
 												onPaginationChange: handlePaginationChange,
 											}}
+											onRowClick={handleRowClick}
 											onSearch={handleSearch}
 											searchTerm={searchTerm}
 										/>

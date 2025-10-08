@@ -93,9 +93,24 @@ export function KnowledgeBaseFolderView({
 		fetchData();
 	}, [user?.employeeId]);
 
+	// Create a flat lookup map of all folders by ID
+	const folderMap = useMemo(() => {
+		if (!folderTree) return new Map<number, FolderTreeItem>();
+		const map = new Map<number, FolderTreeItem>();
+
+		const addToMap = (folder: FolderTreeItem) => {
+			map.set(folder.id, folder);
+			folder.folders?.forEach(addToMap);
+		};
+
+		folderTree.folders?.forEach(addToMap);
+		return map;
+	}, [folderTree]);
+
 	const targetFolder = useMemo(() => {
 		if (!folderTree) return null;
-		const currentFolders = folderTree.folders || [];
+
+		// If no path, show root with all top-level folders
 		if (folderPath.length === 0) {
 			return {
 				id: 0,
@@ -110,30 +125,16 @@ export function KnowledgeBaseFolderView({
 					employees: [],
 				},
 				files: [],
-				folders: currentFolders,
+				folders: folderTree.folders || [],
 			};
 		}
-		const findFolderByPath = (
-			folders: FolderTreeItem[],
-			path: string[],
-			depth: number
-		): FolderTreeItem | null => {
-			if (depth >= path.length) return null;
-			const folderName = path[depth];
-			for (const folder of folders) {
-				if (folder.name === folderName) {
-					if (depth === path.length - 1) {
-						return folder;
-					} else {
-						const result = findFolderByPath(folder.folders, path, depth + 1);
-						if (result) return result;
-					}
-				}
-			}
-			return null;
-		};
-		return findFolderByPath(currentFolders, folderPath, 0);
-	}, [folderTree, folderPath]);
+
+		// Get folder ID from path (expect last segment to be the folder ID)
+		const folderId = parseInt(folderPath[folderPath.length - 1]);
+		if (isNaN(folderId)) return null;
+
+		return folderMap.get(folderId) || null;
+	}, [folderTree, folderPath, folderMap]);
 
 	const filteredFolder = useMemo(() => {
 		if (!targetFolder) return null;
@@ -149,12 +150,8 @@ export function KnowledgeBaseFolderView({
 
 	const handleRowClick = (row: KnowledgeBaseRow) => {
 		if (row.type === "folder") {
-			const newPath = [...folderPath, row.folder];
-			router.push(
-				`${ROUTES.DASHBOARD.KNOWLEDGE_BASE}/${newPath
-					.map(encodeURIComponent)
-					.join("/")}`
-			);
+			// Navigate using folder ID
+			router.push(`${ROUTES.DASHBOARD.KNOWLEDGE_BASE}/${row.id}`);
 		} else if (row.type === "file" && row.fileUrl) {
 			window.open(row.fileUrl, "_blank");
 		}
@@ -205,21 +202,34 @@ export function KnowledgeBaseFolderView({
 		);
 	}
 
-	// Build breadcrumbs
+	// Build breadcrumbs using folder hierarchy
 	const crumbs = [
 		{ label: "Pages", href: "#" },
 		{ label: "Knowledge Base", href: ROUTES.DASHBOARD.KNOWLEDGE_BASE },
 	];
-	folderPath.forEach((folder, index) => {
-		const pathToThisFolder = folderPath.slice(0, index + 1);
-		const decodedFolderName = decodeURIComponent(folder);
-		crumbs.push({
-			label: decodedFolderName,
-			href: `${ROUTES.DASHBOARD.KNOWLEDGE_BASE}/${pathToThisFolder
-				.map(encodeURIComponent)
-				.join("/")}`,
+
+	if (targetFolder && targetFolder.id !== 0) {
+		// Build path from current folder back to root
+		const pathFolders: FolderTreeItem[] = [];
+		let current: FolderTreeItem | null = targetFolder;
+
+		while (current && current.id !== 0) {
+			pathFolders.unshift(current);
+			if (current.parent) {
+				current = folderMap.get(current.parent) || null;
+			} else {
+				break;
+			}
+		}
+
+		// Add breadcrumbs for each folder in the path
+		pathFolders.forEach((folder) => {
+			crumbs.push({
+				label: folder.name,
+				href: `${ROUTES.DASHBOARD.KNOWLEDGE_BASE}/${folder.id}`,
+			});
 		});
-	});
+	}
 
 	return (
 		<div>
@@ -227,11 +237,7 @@ export function KnowledgeBaseFolderView({
 			<div className="mx-auto w-full px-4 sm:px-6 md:px-8 py-6 sm:py-8 lg:py-10">
 				<KnowledgeBaseTable
 					data={data}
-					title={
-						folderPath.length > 0
-							? folderPath[folderPath.length - 1]
-							: "Knowledge Base"
-					}
+					title={targetFolder?.name || "Knowledge Base"}
 					onRowClick={handleRowClick}
 					onSearch={handleSearch}
 					searchTerm={searchTerm}

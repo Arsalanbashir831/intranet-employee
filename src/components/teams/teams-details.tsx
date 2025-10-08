@@ -114,8 +114,8 @@ export function TeamsDetailsCard({ employee }: EmployeeProfileCardProps) {
 							<div className="min-w-0">
 								{resolved.bio && resolved.bio !== "null" ? (
 									<div
-										className="text-sm sm:text-[15px] text-[#535862] leading-relaxed"
-										dangerouslySetInnerHTML={{ __html: resolved.education }}
+										className="text-sm sm:text-[15px] text-[#535862] leading-relaxed prose-p:leading-relaxed prose-pre:p-0 prose-ul:my-2 prose-ol:my-2 prose-li:my-1 [&_ul_li_p]:inline [&_ol_li_p]:inline [&_ul_li_p]:m-0 [&_ol_li_p]:m-0"
+										dangerouslySetInnerHTML={{ __html: resolved.bio }}
 									/>
 								) : (
 									<p className="text-sm sm:text-[15px] text-[#535862] leading-relaxed">
@@ -168,26 +168,10 @@ export function TeamsDetailsCard({ employee }: EmployeeProfileCardProps) {
 						</h3>
 
 						{/* readable line lengths on large screens */}
-						<div className="mt-4 sm:mt-5 text-[#535862] leading-relaxed ">
-							<div className="space-y-4">
-								<p>
-									Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed
-									do eiusmod tempor incididunt ut labore et dolore magna aliqua.
-									Ut enim ad minim veniam, quis nostrud exercitation ullamco
-									laboris nisi ut aliquip ex ea commodo consequat.
-								</p>
-								<p>
-									Duis aute irure dolor in reprehenderit in voluptate velit esse
-									cillum dolore eu fugiat nulla pariatur. Excepteur sint
-									occaecat cupidatat non proident, sunt in culpa qui officia
-									deserunt mollit anim id est laborum.
-								</p>
-								<p>
-									Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed
-									do eiusmod tempor incididunt ut labore et dolore magna aliqua.
-								</p>
-							</div>
-						</div>
+						<div
+							className="mt-4 sm:mt-5 text-[#535862] leading-relaxed prose prose-sm sm:prose-base focus:outline-none prose-p:leading-relaxed prose-pre:p-0 prose-ul:my-2 prose-ol:my-2 prose-li:my-1 [&_ul_li_p]:inline [&_ol_li_p]:inline [&_ul_li_p]:m-0 [&_ol_li_p]:m-0"
+							dangerouslySetInnerHTML={{ __html: resolved.education }}
+						/>
 					</section>
 				</Card>
 			</main>
