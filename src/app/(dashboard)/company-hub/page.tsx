@@ -2,6 +2,7 @@
 
 import { PageHeader } from "@/components/common/page-header";
 import FeatureCard from "@/components/common/feature-card";
+import PollCard from "@/components/common/poll-card";
 import { ROUTES } from "@/constants/routes";
 
 import { useState, useEffect } from "react";
@@ -31,6 +32,25 @@ interface Announcement extends CompanyHubItem {
 }
 type Policy = CompanyHubItem;
 
+interface PollOption {
+	id: string;
+	text: string;
+	votes: number;
+	percentage: number;
+}
+
+interface Poll extends CompanyHubItem {
+	question: string;
+	options: PollOption[];
+	totalVotes: number;
+	isActive: boolean;
+	expiresAt: string;
+	createdAt: string;
+	userVoted?: boolean;
+	userVoteOptionId?: string;
+	badgeLines: [string, string, string];
+}
+
 /* ---------------- Table scaffold (for pagination UI) ---------------- */
 const columnHelper = createColumnHelper<CompanyHubItem>();
 const columns = [
@@ -56,14 +76,14 @@ export default function CompanyHub() {
 	const { user } = useAuth();
 
 	const urlTab =
-		(search.get("tab") as "announcements" | "policies") ?? "announcements";
-	const [activeTab, setActiveTab] = useState<"announcements" | "policies">(
+		(search.get("tab") as "announcements" | "policies" | "polls") ?? "announcements";
+	const [activeTab, setActiveTab] = useState<"announcements" | "policies" | "polls">(
 		urlTab
 	);
 
 	useEffect(() => {
 		const next =
-			(search.get("tab") as "announcements" | "policies") ?? "announcements";
+			(search.get("tab") as "announcements" | "policies" | "polls") ?? "announcements";
 		if (next !== activeTab) setActiveTab(next);
 	}, [search, activeTab]);
 
@@ -74,6 +94,145 @@ export default function CompanyHub() {
 
 	// Figma-like: 4 across on xl; 2 across on lg; 1 on small → page size 8 (2 rows of 4)
 	const pageSize = 8;
+
+	// Mock polls data with different types - in a real app, this would come from an API
+	const mockPolls: Poll[] = [
+		{
+			id: "1",
+			title: "Office Environment Survey",
+			description: "Help us improve our workplace environment by sharing your thoughts on the current office setup.",
+			question: "How satisfied are you with the current office environment?",
+			options: [
+				{ id: "1-1", text: "Very Satisfied", votes: 45, percentage: 35 },
+				{ id: "1-2", text: "Satisfied", votes: 38, percentage: 30 },
+				{ id: "1-3", text: "Neutral", votes: 25, percentage: 20 },
+				{ id: "1-4", text: "Dissatisfied", votes: 15, percentage: 12 },
+				{ id: "1-5", text: "Very Dissatisfied", votes: 5, percentage: 3 }
+			],
+			totalVotes: 128,
+			isActive: true,
+			expiresAt: "2025-10-15T23:59:59Z",
+			createdAt: "2025-01-15T10:00:00Z",
+			userVoted: false,
+			badgeLines: [
+				new Date("2025-01-15T10:00:00Z").getDate().toString(),
+				new Date("2025-01-15T10:00:00Z").toLocaleString("default", { month: "short" }),
+				new Date("2025-01-15T10:00:00Z").getFullYear().toString()
+			] as [string, string, string]
+		},
+		{
+			id: "2",
+			title: "Team Building Activities",
+			description: "What type of team building activities would you prefer for our next company event?",
+			question: "Which team building activity interests you most?",
+			options: [
+				{ id: "2-1", text: "Outdoor Adventure", votes: 32, percentage: 40 },
+				{ id: "2-2", text: "Cooking Class", votes: 24, percentage: 30 },
+				{ id: "2-3", text: "Escape Room", votes: 16, percentage: 20 },
+				{ id: "2-4", text: "Sports Tournament", votes: 8, percentage: 10 }
+			],
+			totalVotes: 80,
+			isActive: true,
+			expiresAt: "2025-10-20T23:59:59Z",
+			createdAt: "2025-01-16T14:30:00Z",
+			userVoted: true,
+			userVoteOptionId: "2-1",
+			badgeLines: [
+				new Date("2025-01-16T14:30:00Z").getDate().toString(),
+				new Date("2025-01-16T14:30:00Z").toLocaleString("default", { month: "short" }),
+				new Date("2025-01-16T14:30:00Z").getFullYear().toString()
+			] as [string, string, string]
+		},
+		{
+			id: "3",
+			title: "Remote Work Policy",
+			description: "Share your preferences regarding our remote work policy and hybrid arrangements.",
+			question: "What's your preferred work arrangement?",
+			options: [
+				{ id: "3-1", text: "Fully Remote", votes: 28, percentage: 35 },
+				{ id: "3-2", text: "Hybrid (2-3 days office)", votes: 32, percentage: 40 },
+				{ id: "3-3", text: "Mostly Office", votes: 20, percentage: 25 }
+			],
+			totalVotes: 80,
+			isActive: false,
+			expiresAt: "2025-01-30T23:59:59Z",
+			createdAt: "2025-01-10T09:00:00Z",
+			userVoted: false,
+			badgeLines: [
+				new Date("2025-01-10T09:00:00Z").getDate().toString(),
+				new Date("2025-01-10T09:00:00Z").toLocaleString("default", { month: "short" }),
+				new Date("2025-01-10T09:00:00Z").getFullYear().toString()
+			] as [string, string, string]
+		},
+		{
+			id: "4",
+			title: "Company Benefits Review",
+			description: "Help us understand which benefits matter most to you for our annual benefits review.",
+			question: "Which benefit would you like to see improved or added?",
+			options: [
+				{ id: "4-1", text: "Health Insurance", votes: 42, percentage: 28 },
+				{ id: "4-2", text: "Retirement Plan", votes: 38, percentage: 25 },
+				{ id: "4-3", text: "Paid Time Off", votes: 35, percentage: 23 },
+				{ id: "4-4", text: "Professional Development", votes: 20, percentage: 13 },
+				{ id: "4-5", text: "Flexible Hours", votes: 15, percentage: 10 }
+			],
+			totalVotes: 150,
+			isActive: true,
+			expiresAt: "2025-10-25T23:59:59Z",
+			createdAt: "2025-01-18T09:15:00Z",
+			userVoted: false,
+			badgeLines: [
+				new Date("2025-01-18T09:15:00Z").getDate().toString(),
+				new Date("2025-01-18T09:15:00Z").toLocaleString("default", { month: "short" }),
+				new Date("2025-01-18T09:15:00Z").getFullYear().toString()
+			] as [string, string, string]
+		},
+		{
+			id: "5",
+			title: "Lunch Options Survey",
+			description: "We're considering adding new lunch options to the office cafeteria. What would you prefer?",
+			question: "What type of lunch service would you prefer?",
+			options: [
+				{ id: "5-1", text: "Catered Lunch Daily", votes: 25, percentage: 31 },
+				{ id: "5-2", text: "Food Truck Fridays", votes: 22, percentage: 28 },
+				{ id: "5-3", text: "Lunch Allowance", votes: 18, percentage: 23 },
+				{ id: "5-4", text: "Current Setup", votes: 15, percentage: 19 }
+			],
+			totalVotes: 80,
+			isActive: true,
+			expiresAt: "2025-10-10T23:59:59Z",
+			createdAt: "2025-01-20T11:30:00Z",
+			userVoted: true,
+			userVoteOptionId: "5-2",
+			badgeLines: [
+				new Date("2025-01-20T11:30:00Z").getDate().toString(),
+				new Date("2025-01-20T11:30:00Z").toLocaleString("default", { month: "short" }),
+				new Date("2025-01-20T11:30:00Z").getFullYear().toString()
+			] as [string, string, string]
+		},
+		{
+			id: "6",
+			title: "Training Programs",
+			description: "We're planning our training programs for the next quarter. What skills would you like to develop?",
+			question: "Which training program interests you most?",
+			options: [
+				{ id: "6-1", text: "Leadership Skills", votes: 30, percentage: 30 },
+				{ id: "6-2", text: "Technical Skills", votes: 28, percentage: 28 },
+				{ id: "6-3", text: "Communication", votes: 25, percentage: 25 },
+				{ id: "6-4", text: "Project Management", votes: 17, percentage: 17 }
+			],
+			totalVotes: 100,
+			isActive: true,
+			expiresAt: "2025-12-28T23:59:59Z",
+			createdAt: "2025-10-22T14:45:00Z",
+			userVoted: false,
+			badgeLines: [
+				new Date("2025-01-22T14:45:00Z").getDate().toString(),
+				new Date("2025-01-22T14:45:00Z").toLocaleString("default", { month: "short" }),
+				new Date("2025-01-22T14:45:00Z").getFullYear().toString()
+			] as [string, string, string]
+		}
+	];
 
 	// Fetch announcements data (no server-side sorting)
 	const {
@@ -125,7 +284,7 @@ export default function CompanyHub() {
 				] as [string, string, string],
 				createdAt: announcement.created_at,
 			})) as Announcement[]) || [];
-	} else {
+	} else if (activeTab === "policies") {
 		dataSource =
 			(policiesData?.announcements.results.map((policy) => ({
 				id: policy.id.toString(),
@@ -133,6 +292,17 @@ export default function CompanyHub() {
 				description:
 					policy.body.replace(/<[^>]*>/g, "").substring(0, 100) + "...",
 			})) as Policy[]) || [];
+	} else if (activeTab === "polls") {
+		// Filter polls based on search query and show all polls (active and expired)
+		const filteredPolls = mockPolls.filter(poll => {
+			const matchesSearch = !debouncedQuery.trim() || 
+				poll.title.toLowerCase().includes(debouncedQuery.toLowerCase()) ||
+				poll.description.toLowerCase().includes(debouncedQuery.toLowerCase()) ||
+				poll.question.toLowerCase().includes(debouncedQuery.toLowerCase());
+			
+			return matchesSearch;
+		});
+		dataSource = filteredPolls;
 	}
 
 	// Client-side sorting
@@ -149,11 +319,14 @@ export default function CompanyHub() {
 
 	const announcementsCount = announcementsData?.announcements.count || 0;
 	const policiesCount = policiesData?.announcements.count || 0;
+	const pollsCount = mockPolls.length;
 
 	const pageCount =
 		activeTab === "announcements"
 			? Math.max(1, calculateTotalPages(announcementsCount, pageSize))
-			: Math.max(1, calculateTotalPages(policiesCount, pageSize));
+			: activeTab === "policies"
+			? Math.max(1, calculateTotalPages(policiesCount, pageSize))
+			: Math.max(1, calculateTotalPages(pollsCount, pageSize));
 
 	const pageItems = filtered.slice((page - 1) * pageSize, page * pageSize);
 
@@ -192,7 +365,7 @@ export default function CompanyHub() {
 	};
 
 	const handleTabChange = (tabKey: string) => {
-		const t = tabKey as "announcements" | "policies";
+		const t = tabKey as "announcements" | "policies" | "polls";
 		setActiveTab(t);
 		setPage(1);
 		setQuery("");
@@ -221,6 +394,7 @@ export default function CompanyHub() {
 				tabs={[
 					{ key: "announcements", label: "Announcements" },
 					{ key: "policies", label: "Policies" },
+					{ key: "polls", label: "Polls" },
 				]}
 				activeTab={activeTab}
 				onTabChange={handleTabChange}
@@ -235,7 +409,11 @@ export default function CompanyHub() {
 						{/* Toolbar (no margins here) */}
 						<CardTableToolbar
 							title={
-								activeTab === "announcements" ? "Announcements" : "Policies"
+								activeTab === "announcements" 
+									? "Announcements" 
+									: activeTab === "policies" 
+									? "Policies" 
+									: "Polls"
 							}
 							placeholder="Search"
 							searchValue={query}
@@ -269,7 +447,7 @@ export default function CompanyHub() {
 											className="w-full"
 											imgClassName="object-cover"
 										/>
-									) : (
+									) : activeTab === "policies" ? (
 										<FeatureCard
 											key={item.id}
 											link={`${ROUTES.DASHBOARD.COMPANY_HUB}/${item.id}`}
@@ -277,6 +455,11 @@ export default function CompanyHub() {
 											description={item.description}
 											className="w-full"
 											imgClassName="object-contain"
+										/>
+									) : (
+										<PollCard
+											key={item.id}
+											poll={item as Poll}
 										/>
 									)
 								)
