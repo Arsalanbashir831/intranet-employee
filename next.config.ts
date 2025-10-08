@@ -11,6 +11,10 @@ const nextConfig: NextConfig = {
         protocol: "http",
         hostname: "168.231.79.28",
       },
+      {
+        protocol: "https",
+        hostname: "api.lordevs.com",
+      },
     ],
   },
 };
