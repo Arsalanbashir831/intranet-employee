@@ -22,27 +22,13 @@ import {
   TrendingUp
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { AxiosError } from "axios";
 
 interface PollOption {
   id: string;
   text: string;
   votes: number;
   percentage: number;
-}
-
-interface Poll {
-  id: string;
-  title: string;
-  description: string;
-  question: string;
-  options: PollOption[];
-  totalVotes: number;
-  isActive: boolean;
-  expiresAt: string;
-  createdAt: string;
-  userVoted?: boolean;
-  userVoteOptionId?: string;
-  badgeLines: [string, string, string];
 }
 
 export default function PollDetail() {
@@ -109,8 +95,8 @@ export default function PollDetail() {
         optionId: parseInt(selectedOption)
       });
       toast.success("Vote submitted successfully!");
-    } catch (error: any) {
-      if (error?.response?.data?.error === "You have already voted on this poll") {
+    } catch (error: unknown) {
+      if ((error as AxiosError<{ error?: string }>)?.response?.data?.error === "You have already voted on this poll") {
         toast.error("You have already voted on this poll");
       } else {
         toast.error("Failed to submit vote. Please try again.");
