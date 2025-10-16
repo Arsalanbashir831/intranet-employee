@@ -42,11 +42,11 @@ export const navItems = [
 		label: "Training Checklist",
 		icon: "/icons/training.svg",
 	},
-	{
-		href: ROUTES.DASHBOARD.TASK_CHECKLIST,
-		label: "Task Checklist",
-		icon: "/icons/task.svg",
-	},
+	// {
+	// 	href: ROUTES.DASHBOARD.TASK_CHECKLIST,
+	// 	label: "Task Checklist",
+	// 	icon: "/icons/task.svg",
+	// },
 ];
 
 function NavIcon({ src, className }: { src: string; className?: string }) {
@@ -104,7 +104,7 @@ export function Navbar() {
 
 				{/* desktop */}
 				<div className="hidden flex-1 items-center justify-between lg:flex">
-					<nav className="flex items-center">
+					<nav className="flex items-center justify-center">
 						<NavigationMenu>
 							<NavigationMenuList className="gap-6">
 								{navItems.map((item) => {

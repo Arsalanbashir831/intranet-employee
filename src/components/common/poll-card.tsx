@@ -65,12 +65,12 @@ export const PollCard: React.FC<PollCardProps> = ({ poll, className }) => {
   );
 
   return (
-    <Link href={`/company-hub/poll/${poll.id}`}>
+    <Link href={`/company-hub/poll/${poll.id}`} className="h-full block">
       <Card className={cn(
-        "group cursor-pointer transition-all duration-200 hover:shadow-lg hover:scale-[1.02] border-1 border-transparent hover:border-[#E5004E]/20 bg-white",
+        "group cursor-pointer transition-all duration-200 hover:shadow-lg hover:scale-[1.02] border-1 border-transparent hover:border-[#E5004E]/20 bg-white h-full min-h-[300px]",
         className
       )}>
-        <CardContent className="p-4 sm:p-6">
+        <CardContent className="p-4 sm:p-6 h-full flex flex-col">
           {/* Header with status and date */}
           <div className="flex items-start justify-between mb-4">
             <div className="flex items-center space-x-2">
@@ -115,25 +115,27 @@ export const PollCard: React.FC<PollCardProps> = ({ poll, className }) => {
             </div>
           </div>
 
-          {/* Title and description */}
-          <div className="mb-4">
-            <h3 className="text-lg font-semibold text-gray-900 mb-2 line-clamp-2">
-              {poll.title}
-            </h3>
-            <p className="text-sm text-gray-600 line-clamp-2">
-              {poll.description}
-            </p>
-          </div>
+          {/* Content area - flexible */}
+          <div className="flex-1">
+            {/* Title and description */}
+            <div className="mb-4">
+              <h3 className="text-lg font-semibold text-gray-900 mb-2 line-clamp-2">
+                {poll.title}
+              </h3>
+              <p className="text-sm text-gray-600 line-clamp-2">
+                {poll.description}
+              </p>
+            </div>
 
-          {/* Question */}
-          <div className="mb-4">
-            <p className="text-sm font-medium text-gray-800 line-clamp-2">
-              {poll.question}
-            </p>
-          </div>
+            {/* Question */}
+            <div className="mb-4">
+              <p className="text-sm font-medium text-gray-800 line-clamp-2">
+                {poll.question}
+              </p>
+            </div>
 
-          {/* Poll options preview */}
-          <div className="space-y-2 mb-4">
+            {/* Poll options preview */}
+            <div className="space-y-2">
             {poll.options.slice(0, 2).map((option) => (
               <div key={option.id} className="space-y-1">
                 <div className="flex items-center justify-between text-xs">
@@ -156,10 +158,11 @@ export const PollCard: React.FC<PollCardProps> = ({ poll, className }) => {
                 +{poll.options.length - 2} more options
               </div>
             )}
+            </div>
           </div>
 
-          {/* Footer with stats */}
-          <div className="flex items-center justify-between pt-4 border-t border-gray-100">
+          {/* Footer with stats - pushed to bottom */}
+          <div className="flex items-center justify-between pt-4 border-t border-gray-100 mt-auto">
             <div className="flex items-center space-x-4 text-xs text-gray-500">
               <div className="flex items-center space-x-1">
                 <Users className="h-3 w-3" />

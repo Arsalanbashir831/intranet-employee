@@ -4,6 +4,8 @@ import React, { useState } from "react";
 import { PageHeader } from "@/components/common/page-header";
 import { ROUTES } from "@/constants/routes";
 import { useParams } from "next/navigation";
+import { usePollResults, useVotePoll } from "@/hooks/queries/use-polls";
+import { toast } from "sonner";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
@@ -47,36 +49,44 @@ export default function PollDetail() {
   const params = useParams();
   const id = params.id as string;
   
-  // Mock poll data - in a real app, this would come from an API
-  const [poll, setPoll] = useState<Poll>({
-    id: "1",
-    title: "Office Environment Survey",
-    description: "Help us improve our workplace environment by sharing your thoughts on the current office setup. Your feedback is crucial for creating a better work environment for everyone.",
-    question: "How satisfied are you with the current office environment?",
-    options: [
-      { id: "1-1", text: "Very Satisfied", votes: 45, percentage: 35 },
-      { id: "1-2", text: "Satisfied", votes: 38, percentage: 30 },
-      { id: "1-3", text: "Neutral", votes: 25, percentage: 20 },
-      { id: "1-4", text: "Dissatisfied", votes: 15, percentage: 12 },
-      { id: "1-5", text: "Very Dissatisfied", votes: 5, percentage: 3 }
-    ],
-    totalVotes: 128,
-    isActive: true,
-    expiresAt: "2025-10-15T23:59:59Z",
-    createdAt: "2025-01-15T10:00:00Z",
-    userVoted: false,
-    badgeLines: [
-      new Date("2024-01-15T10:00:00Z").getDate().toString(),
-      new Date("2024-01-15T10:00:00Z").toLocaleString("default", { month: "short" }),
-      new Date("2024-01-15T10:00:00Z").getFullYear().toString()
-    ] as [string, string, string]
-  });
+  // Fetch poll data from API
+  const {
+    data: pollData,
+    isLoading: pollLoading,
+    error: pollError
+  } = usePollResults(id);
 
+  const voteMutation = useVotePoll();
+  
   const [selectedOption, setSelectedOption] = useState<string>("");
-  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const isExpired = new Date(poll.expiresAt) < new Date();
-  const isActive = poll.isActive && !isExpired;
+  // Transform API data to component format
+  const poll = pollData ? {
+    id: pollData.id.toString(),
+    title: pollData.title,
+    description: pollData.subtitle || pollData.question,
+    question: pollData.question,
+    options: pollData.options.map(option => ({
+      id: option.id.toString(),
+      text: option.option_text,
+      votes: option.vote_count,
+      percentage: pollData.total_votes > 0 ? Math.round((option.vote_count / pollData.total_votes) * 100) : 0
+    })),
+    totalVotes: pollData.total_votes,
+    isActive: pollData.is_active && !pollData.is_expired,
+    expiresAt: pollData.expires_at,
+    createdAt: pollData.created_at,
+    userVoted: pollData.has_voted,
+    userVoteOptionId: pollData.user_vote?.toString(),
+    badgeLines: [
+      new Date(pollData.created_at).getDate().toString(),
+      new Date(pollData.created_at).toLocaleString("default", { month: "short" }),
+      new Date(pollData.created_at).getFullYear().toString()
+    ] as [string, string, string]
+  } : null;
+
+  const isExpired = poll ? new Date(poll.expiresAt) < new Date() : false;
+  const isActive = poll ? poll.isActive && !isExpired : false;
   
   // Format expiration date
   const formatExpiration = (dateString: string) => {
@@ -91,34 +101,70 @@ export default function PollDetail() {
   };
 
   const handleVote = async () => {
-    if (!selectedOption) return;
+    if (!selectedOption || !poll) return;
     
-    setIsSubmitting(true);
     try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      // Update poll state
-      setPoll(prev => ({
-        ...prev,
-        userVoted: true,
-        userVoteOptionId: selectedOption,
-        totalVotes: prev.totalVotes + 1,
-        options: prev.options.map(option => {
-          if (option.id === selectedOption) {
-            const newVotes = option.votes + 1;
-            const newPercentage = Math.round((newVotes / (prev.totalVotes + 1)) * 100);
-            return { ...option, votes: newVotes, percentage: newPercentage };
-          } else {
-            const newPercentage = Math.round((option.votes / (prev.totalVotes + 1)) * 100);
-            return { ...option, percentage: newPercentage };
-          }
-        })
-      }));
-    } finally {
-      setIsSubmitting(false);
+      await voteMutation.mutateAsync({
+        pollId: id,
+        optionId: parseInt(selectedOption)
+      });
+      toast.success("Vote submitted successfully!");
+    } catch (error: any) {
+      if (error?.response?.data?.error === "You have already voted on this poll") {
+        toast.error("You have already voted on this poll");
+      } else {
+        toast.error("Failed to submit vote. Please try again.");
+      }
     }
   };
+
+  // Loading state
+  if (pollLoading) {
+    return (
+      <div className="min-h-screen bg-[#F8F8F8]">
+        <PageHeader
+          title="Company Hub"
+          crumbs={[
+            { label: "Pages", href: "#" },
+            { label: "Company Hub", href: ROUTES.DASHBOARD.COMPANY_HUB },
+            { label: "Polls", href: `${ROUTES.DASHBOARD.COMPANY_HUB}?tab=polls` },
+            { label: "Loading..." }
+          ]}
+        />
+        <div className="mx-auto w-full px-4 sm:px-6 md:px-8 py-6 sm:py-8 lg:py-10">
+          <div className="bg-white rounded-lg shadow-sm p-4 sm:p-6 lg:p-5">
+            <div className="flex justify-center py-8">
+              <div>Loading poll...</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Error state
+  if (pollError || !poll) {
+    return (
+      <div className="min-h-screen bg-[#F8F8F8]">
+        <PageHeader
+          title="Company Hub"
+          crumbs={[
+            { label: "Pages", href: "#" },
+            { label: "Company Hub", href: ROUTES.DASHBOARD.COMPANY_HUB },
+            { label: "Polls", href: `${ROUTES.DASHBOARD.COMPANY_HUB}?tab=polls` },
+            { label: "Error" }
+          ]}
+        />
+        <div className="mx-auto w-full px-4 sm:px-6 md:px-8 py-6 sm:py-8 lg:py-10">
+          <div className="bg-white rounded-lg shadow-sm p-4 sm:p-6 lg:p-5">
+            <div className="flex justify-center py-8">
+              <div className="text-red-600">Failed to load poll. Please try again.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-[#F8F8F8]">
@@ -243,39 +289,77 @@ export default function PollDetail() {
                 <div className="flex justify-end pt-6">
                   <Button
                     onClick={handleVote}
-                    disabled={!selectedOption || isSubmitting}
+                    disabled={!selectedOption || voteMutation.isPending}
                     className="bg-[#E5004E] hover:bg-[#E5004E]/90 text-white px-8 py-3 text-sm sm:text-base font-medium rounded-full"
                   >
-                    {isSubmitting ? "Submitting..." : "Submit Vote"}
+                    {voteMutation.isPending ? "Submitting..." : "Submit Vote"}
                   </Button>
                 </div>
               </div>
             ) : (
               // Results Interface
               <div className="space-y-6">
-                {poll.options.map((option) => (
-                  <div key={option.id} className="space-y-3">
-                    <div className="flex items-center justify-between">
-                      <span className={cn(
-                        "text-sm sm:text-base font-medium text-gray-900",
-                        poll.userVoted && poll.userVoteOptionId === option.id && "text-[#E5004E] font-semibold"
-                      )}>
-                        {option.text}
-                        {poll.userVoted && poll.userVoteOptionId === option.id && (
-                          <span className="ml-2 text-[#E5004E] text-xs">(Your vote)</span>
-                        )}
-                      </span>
-                      <div className="flex items-center space-x-3 text-sm text-gray-600">
-                        <span className="font-semibold">{option.percentage}%</span>
-                        <span>({option.votes} votes)</span>
+                {poll.options.map((option) => {
+                  // Get the corresponding API option to access voters
+                  const apiOption = pollData?.options.find(opt => opt.id.toString() === option.id);
+                  const voters = apiOption?.voters || [];
+                  
+                  return (
+                    <div key={option.id} className="space-y-3">
+                      <div className="flex items-center justify-between">
+                        <span className={cn(
+                          "text-sm sm:text-base font-medium text-gray-900",
+                          poll.userVoted && poll.userVoteOptionId === option.id && "text-[#E5004E] font-semibold"
+                        )}>
+                          {option.text}
+                          {poll.userVoted && poll.userVoteOptionId === option.id && (
+                            <span className="ml-2 text-[#E5004E] text-xs">(Your vote)</span>
+                          )}
+                        </span>
+                        <div className="flex items-center space-x-3 text-sm text-gray-600">
+                          <span className="font-semibold">{option.percentage}%</span>
+                          <span>({option.votes} votes)</span>
+                        </div>
                       </div>
+                      <Progress 
+                        value={option.percentage} 
+                        className="h-3 bg-gray-200"
+                      />
+                      
+                      {/* Show voters if poll is public and user has voted */}
+                      {pollData?.poll_type === "public" && poll.userVoted && voters.length > 0 && (
+                        <div className="mt-3 p-3 bg-gray-50 rounded-lg">
+                          <div className="text-xs font-medium text-gray-600 mb-2">
+                            Voters ({voters.length}):
+                          </div>
+                          <div className="flex flex-wrap gap-2">
+                            {voters.map((voter) => (
+                              <div key={voter.id} className="flex items-center space-x-2 bg-white px-2 py-1 rounded-full border text-xs">
+                                {voter.profile_picture ? (
+                                  <img 
+                                    src={voter.profile_picture} 
+                                    alt={voter.name}
+                                    className="w-4 h-4 rounded-full object-cover"
+                                  />
+                                ) : (
+                                  <div className="w-4 h-4 rounded-full bg-[#E5004E] flex items-center justify-center">
+                                    <span className="text-white text-xs font-medium">
+                                      {voter.name.charAt(0).toUpperCase()}
+                                    </span>
+                                  </div>
+                                )}
+                                <span className="text-gray-700 font-medium">{voter.name}</span>
+                                <span className="text-gray-500">
+                                  {new Date(voter.voted_at).toLocaleDateString()}
+                                </span>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      )}
                     </div>
-                    <Progress 
-                      value={option.percentage} 
-                      className="h-3 bg-gray-200"
-                    />
-                  </div>
-                ))}
+                  );
+                })}
                 
                 {poll.userVoted && (
                   <div className="mt-8 p-6 bg-[#E5004E]/5 border-2 border-[#E5004E]/20 rounded-lg">

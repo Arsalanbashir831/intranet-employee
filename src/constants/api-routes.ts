@@ -42,6 +42,12 @@ export const API_ROUTES = {
 			LIST: "/knowledge/announcements/",
 			DETAIL: (id: number | string) => `/knowledge/announcements/${id}/`,
 		},
+		POLLS: {
+			LIST: "/knowledge/polls/",
+			DETAIL: (id: number | string) => `/knowledge/polls/${id}/`,
+			RESULTS: (id: number | string) => `/knowledge/polls/${id}/results/`,
+			VOTE: (id: number | string) => `/knowledge/polls/${id}/vote/`,
+		},
 	},
 	NEW_HIRE: {
 		ATTACHEMENT_STATUS: {
