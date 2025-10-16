@@ -26,9 +26,6 @@ export default function Home() {
 	});
 	const [searchTerm, setSearchTerm] = useState<string>("");
 
-	// Debugging: Log the search term to see if it's being maintained correctly
-	console.log("Home page searchTerm:", searchTerm);
-
 	const { data, isLoading, isError } = useKnowledgeFolders(
 		pageIndexToPageNumber(pagination.pageIndex),
 		pagination.pageSize,
@@ -55,7 +52,6 @@ export default function Home() {
 	};
 
 	const handleSearch = (term: string) => {
-		console.log("Home page handleSearch called with:", term);
 		setSearchTerm(term);
 		// Reset to first page when searching
 		setPagination((prev) => ({ ...prev, pageIndex: 0 }));

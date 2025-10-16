@@ -23,8 +23,6 @@ export default function UserMenu() {
 		logout();
 	};
 
-	console.log(user);
-
 	// Get user's initials for avatar fallback
 	const getUserInitials = () => {
 		if (!user) return "U";

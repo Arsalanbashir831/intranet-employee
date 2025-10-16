@@ -9,8 +9,6 @@ import { Card, CardContent } from "@/components/ui/card";
 import { 
   Reply, 
   MoreHorizontal, 
-  ThumbsUp, 
-  ThumbsDown,
   ChevronDown,
   ChevronRight
 } from "lucide-react";
@@ -33,19 +31,17 @@ export interface Comment {
   };
   content: string;
   createdAt: string;
-  likes: number;
-  dislikes: number;
-  isLiked?: boolean;
-  isDisliked?: boolean;
+  isEdited?: boolean;
   replies?: Comment[];
   isExpanded?: boolean;
+  canEdit?: boolean;
+  canDelete?: boolean;
+  replyCount?: number;
 }
 
 interface CommentsSectionProps {
   comments: Comment[];
   onAddComment: (content: string, parentId?: string) => void;
-  onLikeComment: (commentId: string) => void;
-  onDislikeComment: (commentId: string) => void;
   onDeleteComment?: (commentId: string) => void;
   onEditComment?: (commentId: string, newContent: string) => void;
   currentUser?: {
@@ -61,8 +57,6 @@ interface CommentItemProps {
   comment: Comment;
   level: number;
   onReply: (parentId: string, content: string) => void;
-  onLike: (commentId: string) => void;
-  onDislike: (commentId: string) => void;
   onDelete?: (commentId: string) => void;
   onEdit?: (commentId: string, newContent: string) => void;
   currentUser?: {
@@ -95,8 +89,6 @@ const CommentItem: React.FC<CommentItemProps> = ({
   comment,
   level,
   onReply,
-  onLike,
-  onDislike,
   onDelete,
   onEdit,
   currentUser
@@ -153,8 +145,8 @@ const CommentItem: React.FC<CommentItemProps> = ({
     }
   };
 
-  const canEdit = currentUser?.name === comment.author.name;
-  const canDelete = currentUser?.name === comment.author.name;
+  const canEdit = comment.canEdit ?? (currentUser?.name === comment.author.name);
+  const canDelete = comment.canDelete ?? (currentUser?.name === comment.author.name);
 
   return (
     <div className={cn(
@@ -186,9 +178,14 @@ const CommentItem: React.FC<CommentItemProps> = ({
                     </Badge>
                   )}
                 </div>
-                <span className="text-xs text-gray-500">
-                  {formatDate(comment.createdAt)}
-                </span>
+                <div className="flex items-center space-x-2">
+                  <span className="text-xs text-gray-500">
+                    {formatDate(comment.createdAt)}
+                  </span>
+                  {comment.isEdited && (
+                    <span className="text-xs text-gray-400 italic">(edited)</span>
+                  )}
+                </div>
               </div>
               
               {isEditing ? (
@@ -227,32 +224,6 @@ const CommentItem: React.FC<CommentItemProps> = ({
               
               <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mt-3">
                 <div className="flex items-center space-x-2 sm:space-x-4">
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => onLike(comment.id)}
-                    className={cn(
-                      "h-7 sm:h-8 px-1 sm:px-2 text-xs",
-                      comment.isLiked && "text-[#E5004E] bg-pink-50"
-                    )}
-                  >
-                    <ThumbsUp className="h-3 w-3 mr-1" />
-                    {comment.likes}
-                  </Button>
-                  
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => onDislike(comment.id)}
-                    className={cn(
-                      "h-7 sm:h-8 px-1 sm:px-2 text-xs",
-                      comment.isDisliked && "text-red-600 bg-red-50"
-                    )}
-                  >
-                    <ThumbsDown className="h-3 w-3 mr-1" />
-                    {comment.dislikes}
-                  </Button>
-                  
                   <Button
                     variant="ghost"
                     size="sm"
@@ -348,8 +319,6 @@ const CommentItem: React.FC<CommentItemProps> = ({
               comment={reply}
               level={level + 1}
               onReply={onReply}
-              onLike={onLike}
-              onDislike={onDislike}
               onDelete={onDelete}
               onEdit={onEdit}
               currentUser={currentUser}
@@ -396,8 +365,6 @@ const countHiddenReplies = (replies: Comment[], visibleCount: number): number =>
 export const CommentsSection: React.FC<CommentsSectionProps> = ({
   comments,
   onAddComment,
-  onLikeComment,
-  onDislikeComment,
   onDeleteComment,
   onEditComment,
   currentUser,
@@ -470,8 +437,6 @@ export const CommentsSection: React.FC<CommentsSectionProps> = ({
               comment={comment}
               level={0}
               onReply={handleReply}
-              onLike={onLikeComment}
-              onDislike={onDislikeComment}
               onDelete={onDeleteComment}
               onEdit={onEditComment}
               currentUser={currentUser}

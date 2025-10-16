@@ -121,10 +121,7 @@ export function ChangePasswordDialog({
 					toast.success("Password changed successfully");
 					onOpenChange(false);
 				},
-				onError: (error: unknown) => {
-					// Debug: Log the error object to see its structure
-					console.log("Change password error:", error);
-					
+				onError: (error: unknown) => {					
 					// Handle API error response with multiple fallbacks
 					let errorMessage = "Failed to change password. Please try again.";
 					

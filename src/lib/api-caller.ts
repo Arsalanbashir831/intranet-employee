@@ -25,11 +25,9 @@ export default async function apiCaller<T = unknown>(
   };
 
   if (data) {
-    // console.log("apiCaller: Received data object:", data); // Already have this
     if (dataType === "formdata") {
       if (data instanceof FormData) {
         config.data = data;
-        // console.log("apiCaller: Using provided FormData instance for data."); // Already have this
       } else {
         // This block is for when you pass a plain object but expect it to be FormData
         console.warn(
@@ -72,12 +70,7 @@ export default async function apiCaller<T = unknown>(
         // Set default if not overridden by options
         config.headers["Content-Type"] = "application/json";
       }
-      // console.log("apiCaller: Using JSON data:", data); // Already have this
     }
   }
-
-  // console.log("apiCaller: Final Axios config headers:", config.headers); // Your existing log
-  // ... (your other logging for FormData entries) ...
-
   return api.request<T>(config);
 }

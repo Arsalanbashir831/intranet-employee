@@ -9,7 +9,7 @@ import axios, {
 } from "axios";
 
 const BACKEND_URL =
-  (typeof process !== "undefined" && process.env.NEXT_PUBLIC_API_BASE_URL) ||
+  (typeof process !== "undefined" && process.env.NEXT_PUBLIC_API_BASE_URL + "/api") ||
   "/api"; // fallback to Next.js API proxy
 
 interface PendingRequest {
@@ -100,7 +100,6 @@ export class ApiClient {
     if (originalReq.url === API_ROUTES.AUTH.OBTAIN_TOKEN || 
         originalReq.url === API_ROUTES.AUTH.VERIFY_TOKEN ||
         originalReq.url === API_ROUTES.AUTH.ME) {
-      console.log("ApiClient: Login/verify/me attempt failed. Bypassing token refresh.");
       return Promise.reject(error);
     }
 

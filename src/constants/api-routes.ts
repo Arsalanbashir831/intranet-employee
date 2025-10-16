@@ -48,6 +48,13 @@ export const API_ROUTES = {
 			RESULTS: (id: number | string) => `/knowledge/polls/${id}/results/`,
 			VOTE: (id: number | string) => `/knowledge/polls/${id}/vote/`,
 		},
+		COMMENTS: {
+			LIST: "/knowledge/comments/",
+			DETAIL: (id: number | string) => `/knowledge/comments/${id}/`,
+			CREATE: "/knowledge/comments/",
+			UPDATE: (id: number | string) => `/knowledge/comments/${id}/`,
+			DELETE: (id: number | string) => `/knowledge/comments/${id}/`,
+		},
 	},
 	NEW_HIRE: {
 		ATTACHEMENT_STATUS: {
