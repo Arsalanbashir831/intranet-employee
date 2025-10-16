@@ -50,9 +50,12 @@ export function useCreateComment() {
       });
       toast.success("Comment added successfully!");
     },
-    onError: (error: any) => {
+    onError: (error: unknown) => {
       console.error("Error creating comment:", error);
-      toast.error(error?.response?.data?.error || "Failed to add comment");
+      const errorMessage = error instanceof Error && 'response' in error 
+        ? (error as { response?: { data?: { error?: string } } }).response?.data?.error 
+        : "Failed to add comment";
+      toast.error(errorMessage || "Failed to add comment");
     },
   });
 }
@@ -79,9 +82,12 @@ export function useUpdateComment() {
       });
       toast.success("Comment updated successfully!");
     },
-    onError: (error: any) => {
+    onError: (error: unknown) => {
       console.error("Error updating comment:", error);
-      toast.error(error?.response?.data?.error || "Failed to update comment");
+      const errorMessage = error instanceof Error && 'response' in error 
+        ? (error as { response?: { data?: { error?: string } } }).response?.data?.error 
+        : "Failed to update comment";
+      toast.error(errorMessage || "Failed to update comment");
     },
   });
 }
@@ -103,9 +109,12 @@ export function useDeleteComment() {
       });
       toast.success("Comment deleted successfully!");
     },
-    onError: (error: any) => {
+    onError: (error: unknown) => {
       console.error("Error deleting comment:", error);
-      toast.error(error?.response?.data?.error || "Failed to delete comment");
+      const errorMessage = error instanceof Error && 'response' in error 
+        ? (error as { response?: { data?: { error?: string } } }).response?.data?.error 
+        : "Failed to delete comment";
+      toast.error(errorMessage || "Failed to delete comment");
     },
   });
 }

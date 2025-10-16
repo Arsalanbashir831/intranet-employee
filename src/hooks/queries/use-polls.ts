@@ -5,7 +5,7 @@ import {
   getPollResults,
   votePoll,
 } from "@/services/polls";
-import type { PollListResponse, PollResultsResponse, PollVoteResponse } from "@/services/polls";
+import type { PollListResponse } from "@/services/polls";
 
 // Helper to create stable query keys
 const normalizeParams = (
