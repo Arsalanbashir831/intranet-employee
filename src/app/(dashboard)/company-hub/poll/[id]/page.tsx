@@ -52,7 +52,7 @@ export default function PollDetail() {
     title: pollData.title,
     description: pollData.subtitle || pollData.question,
     question: pollData.question,
-    options: pollData.options.map(option => ({
+    options: (pollData.options_details || []).map(option => ({
       id: option.id.toString(),
       text: option.option_text,
       votes: option.vote_count,
@@ -287,7 +287,7 @@ export default function PollDetail() {
               <div className="space-y-6">
                 {poll.options.map((option) => {
                   // Get the corresponding API option to access voters
-                  const apiOption = pollData?.options.find(opt => opt.id.toString() === option.id);
+                  const apiOption = pollData?.options_details?.find(opt => opt.id.toString() === option.id);
                   const voters = apiOption?.voters || [];
                   
                   return (
@@ -318,26 +318,27 @@ export default function PollDetail() {
                           <div className="text-xs font-medium text-gray-600 mb-2">
                             Voters ({voters.length}):
                           </div>
-                          <div className="flex flex-wrap gap-2">
-                            {voters.map((voter) => (
-                              <div key={voter.id} className="flex items-center space-x-2 bg-white px-2 py-1 rounded-full border text-xs">
+                          <div className="flex -space-x-2">
+                            {voters.map((voter, index) => (
+                              <div 
+                                key={voter.id} 
+                                className="relative"
+                                style={{ zIndex: voters.length - index }}
+                              >
                                 {voter.profile_picture ? (
                                   <img 
-                                    src={voter.profile_picture} 
+                                    src={`${process.env.NEXT_PUBLIC_API_BASE_URL || 'http://127.0.0.1:8000'}${voter.profile_picture}`}
                                     alt={voter.name}
-                                    className="w-4 h-4 rounded-full object-cover"
+                                    className="w-8 h-8 rounded-full object-cover border-2 border-white shadow-sm"
+                                    title={voter.name}
                                   />
                                 ) : (
-                                  <div className="w-4 h-4 rounded-full bg-[#E5004E] flex items-center justify-center">
+                                  <div className="w-8 h-8 rounded-full bg-[#E5004E] flex items-center justify-center border-2 border-white shadow-sm" title={voter.name}>
                                     <span className="text-white text-xs font-medium">
                                       {voter.name.charAt(0).toUpperCase()}
                                     </span>
                                   </div>
                                 )}
-                                <span className="text-gray-700 font-medium">{voter.name}</span>
-                                <span className="text-gray-500">
-                                  {new Date(voter.voted_at).toLocaleDateString()}
-                                </span>
                               </div>
                             ))}
                           </div>

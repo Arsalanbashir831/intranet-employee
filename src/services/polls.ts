@@ -45,7 +45,7 @@ export type Poll = {
   permitted_departments: number[];
   permitted_branch_departments: number[];
   permitted_employees: number[];
-  options: PollOption[];
+  options_details: PollOption[];
   has_voted: boolean;
   user_vote: number | null;
   created_by_details: {

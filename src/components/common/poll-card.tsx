@@ -59,9 +59,11 @@ export const PollCard: React.FC<PollCardProps> = ({ poll, className }) => {
   };
 
   // Get the leading option
-  const leadingOption = poll.options.reduce((prev, current) => 
-    (prev.votes > current.votes) ? prev : current
-  );
+  const leadingOption = poll.options.length > 0 
+    ? poll.options.reduce((prev, current) => 
+        (prev.votes > current.votes) ? prev : current
+      )
+    : null;
 
   return (
     <Link href={`/company-hub/poll/${poll.id}`} className="h-full block">
@@ -174,7 +176,7 @@ export const PollCard: React.FC<PollCardProps> = ({ poll, className }) => {
             </div>
             
             <div className="text-xs text-gray-500">
-              {leadingOption.percentage}% leading
+              {leadingOption ? `${leadingOption.percentage}% leading` : 'No votes yet'}
             </div>
           </div>
         </CardContent>
