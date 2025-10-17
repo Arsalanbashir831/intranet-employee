@@ -88,7 +88,7 @@ export default function AnnouncementDetailCard({
 				</div>
 
 				{/* Badge */}
-				<div className="border-b border-[#CDD0D5] py-3">
+				{/* <div className="border-b border-[#CDD0D5] py-3">
 					<Badge
 						className="
               bg-neutral font-extralight text-[#000000]
@@ -96,7 +96,7 @@ export default function AnnouncementDetailCard({
             ">
 						{hashTags}
 					</Badge>
-				</div>
+				</div> */}
 
 				{/* Title */}
 				<div className="border-b border-[#CDD0D5] py-6 mb-6">

@@ -40,7 +40,7 @@ export default function TeamsCard({
 			{/* Top image band */}
 			<div
 				className={[
-					"relative w-full bg-gray-100",
+					"relative w-full bg-[#373332]",
 					topClassName || "aspect-[4/3] sm:aspect-[16/10] xl:h-[230px]",
 				].join(" ")}>
 				<Image

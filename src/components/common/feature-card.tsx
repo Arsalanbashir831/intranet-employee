@@ -54,7 +54,7 @@ export default function FeatureCard({
 			style={{}}>
 			{/* Badge */}
 			{badgeLines && badgeLines.length === 3 && (
-				<div className="absolute top-2 left-2 bg-white/60 backdrop-blur-sm rounded-sm shadow-md flex flex-col items-center justify-center px-2 w-14 h-20 min-[1920px]:w-16 min-[1920px]:h-24 min-[2560px]:w-20 min-[2560px]:h-28">
+				<div className="absolute top-2 left-2 bg-white/60 backdrop-blur-sm rounded-sm shadow-md flex flex-col items-center justify-center px-2 w-14 h-20 min-[1920px]:w-16 min-[1920px]:h-24 min-[2560px]:w-20 min-[2560px]:h-28 z-10">
 					<span className="text-xl min-[1920px]:text-2xl font-bold leading-tight">
 						{renderBadgeItem(badgeLines[0])}
 					</span>
@@ -75,7 +75,7 @@ export default function FeatureCard({
 						alt={title}
 						fill
 						sizes="(min-width:2560px) 20vw, (min-width:1920px) 25vw, (min-width:1024px) 30vw, 100vw"
-						className={["object-cover", imgClassName || ""]
+						className={["object-cover bg-[#373332]", imgClassName || ""]
 							.filter(Boolean)
 							.join(" ")}
 						priority={false}

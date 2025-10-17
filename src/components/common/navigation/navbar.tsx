@@ -103,7 +103,7 @@ export function Navbar() {
 				</div>
 
 				{/* desktop */}
-				<div className="hidden flex-1 items-center justify-between lg:flex">
+				<div className="hidden flex-1 items-center justify-center lg:flex">
 					<nav className="flex items-center justify-center">
 						<NavigationMenu>
 							<NavigationMenuList className="gap-6">
@@ -132,10 +132,9 @@ export function Navbar() {
 							</NavigationMenuList>
 						</NavigationMenu>
 					</nav>
-
-					<div className="flex items-center gap-3">
-						<UserMenu />
-					</div>
+				</div>
+				<div className="flex items-center gap-3">
+					<UserMenu />
 				</div>
 			</div>
 			<Separator className="bg-white/20" />

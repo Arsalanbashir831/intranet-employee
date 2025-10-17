@@ -27,7 +27,7 @@ export const LatestAnnouncements = () => {
                 id: announcement.id.toString(),
                 image: announcement.attachments.length > 0
                     ? announcement.attachments[0].file_url
-                    : "/images/office-work.png",
+                    : "/logos/profile-circle.svg",
                 title: announcement.title,
                 description: announcement.body.replace(/<[^>]*>/g, "").substring(0, 100) + "...",
                 badgeLines: [

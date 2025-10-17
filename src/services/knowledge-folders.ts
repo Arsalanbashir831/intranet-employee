@@ -30,6 +30,22 @@ export type FolderTreeItem = {
   parent: number | null;
   inherits_parent_permissions: boolean;
   created_at: string;
+  created_by: {
+    id: number | null;
+    emp_name: string;
+    email: string | null;
+    phone: string | null;
+    role: string | null;
+    profile_picture: string | null;
+    branch_department_ids: number[];
+    is_admin: boolean;
+  };
+  access_level: {
+    branches: any[];
+    departments: any[];
+    branch_departments: any[];
+    employees: any[];
+  };
   effective_permissions: {
     branches: number[];
     departments: number[];

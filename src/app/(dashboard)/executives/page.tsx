@@ -60,7 +60,7 @@ export default function Executives() {
 			id: executive.id.toString(),
 			name: executive.name,
 			role: executive.role,
-			image: executive.profile_picture || "/images/avatar.jpg",
+			image: executive.profile_picture || "/logos/profile-circle.svg",
 			email: executive.email,
 			phone: executive.phone,
 			address: executive.address,
@@ -141,7 +141,7 @@ export default function Executives() {
 										image={m.image}
 										name={m.name}
 										designation={m.role}
-										description={m.education}
+										// description={m.education}
 										className="w-full mx-auto xl:max-w-[320px] xl:h-[370px]"
 										topClassName="relative w-full aspect-[4/3] sm:aspect-[16/10] xl:aspect-auto xl:h-[230px]"
 										imgClassName="object-cover"

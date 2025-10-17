@@ -9,10 +9,18 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Card } from "@/components/ui/card";
 import { CardTableToolbar } from "@/components/common/card-table/card-table-toolbar";
 import { CardTablePagination } from "@/components/common/card-table/card-table-pagination";
-import { FolderIcon, FileIcon } from "lucide-react";
+import { FolderIcon, FileIcon, MoreHorizontal, Edit, Trash2 } from "lucide-react";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 import { PaginationState } from "@/lib/pagination-utils";
+import { useAuth } from "@/contexts/auth-context";
+import {
+	DropdownMenu,
+	DropdownMenuContent,
+	DropdownMenuItem,
+	DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Button } from "@/components/ui/button";
 
 /* ---------------- Types ---------------- */
 export type KnowledgeBaseRow = {
@@ -23,6 +31,16 @@ export type KnowledgeBaseRow = {
 	dateCreated: string; // YYYY-MM-DD
 	type?: "folder" | "file"; // Added type to distinguish between folders and files
 	fileUrl?: string; // Added file URL for downloading files
+	createdBy?: {
+		id: number | null;
+		emp_name: string;
+		email: string | null;
+		phone: string | null;
+		role: string | null;
+		profile_picture: string | null;
+		branch_department_ids: number[];
+		is_admin: boolean;
+	};
 };
 
 type Props = {
@@ -61,6 +79,7 @@ export function KnowledgeBaseTable({
 }: Props) {
 	// Use the provided title prop directly
 	const displayTitle = title;
+	const { user } = useAuth();
 
 	const isControlled = data !== undefined;
 	const [sorting, setSorting] = React.useState<SortingState>([
@@ -178,6 +197,53 @@ export function KnowledgeBaseTable({
 				);
 			},
 		},
+		{
+			id: "actions",
+			header: () => <span className="text-sm font-medium">Actions</span>,
+			cell: ({ row }) => {
+				const isAdmin = user?.isAdmin || false;
+				const isFolder = row.original.type === "folder";
+				
+				// Only show actions for admin users and folders
+				if (!isAdmin || !isFolder) {
+					return null;
+				}
+
+				return (
+					<div className="flex items-center justify-end">
+						<DropdownMenu>
+							<DropdownMenuTrigger asChild>
+								<Button variant="ghost" className="h-8 w-8 p-0">
+									<span className="sr-only">Open menu</span>
+									<MoreHorizontal className="h-4 w-4" />
+								</Button>
+							</DropdownMenuTrigger>
+							<DropdownMenuContent align="end">
+								<DropdownMenuItem
+									onClick={(e) => {
+										e.stopPropagation();
+										// TODO: Implement edit functionality
+										console.log("Edit folder:", row.original.id);
+									}}>
+									<Edit className="mr-2 h-4 w-4" />
+									Edit
+								</DropdownMenuItem>
+								<DropdownMenuItem
+									onClick={(e) => {
+										e.stopPropagation();
+										// TODO: Implement delete functionality
+										console.log("Delete folder:", row.original.id);
+									}}
+									className="text-red-600">
+									<Trash2 className="mr-2 h-4 w-4" />
+									Delete
+								</DropdownMenuItem>
+							</DropdownMenuContent>
+						</DropdownMenu>
+					</div>
+				);
+			},
+		},
 	];
 
 	return (
@@ -226,8 +292,8 @@ export function KnowledgeBaseTable({
 						<CardTable<KnowledgeBaseRow, unknown>
 							columns={columns}
 							data={tableData}
-							headerClassName="grid-cols-[1.2fr_1fr_0.9fr]"
-							rowClassName="hover:bg-[#FAFAFB] grid-cols-[1.2fr_1fr_0.9fr] cursor-pointer"
+							headerClassName="grid-cols-[1.2fr_1fr_0.9fr_0.5fr]"
+							rowClassName="hover:bg-[#FAFAFB] grid-cols-[1.2fr_1fr_0.9fr_0.5fr] cursor-pointer"
 							onRowClick={
 								onRowClick ? (row) => onRowClick(row.original) : undefined
 							}

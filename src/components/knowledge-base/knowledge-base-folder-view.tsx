@@ -25,9 +25,11 @@ function convertFolderToRow(folder: FolderTreeItem): KnowledgeBaseRow {
 	return {
 		id: String(folder.id),
 		folder: folder.name,
-		createdByName: "",
+		createdByName: folder.created_by?.emp_name || "Admin",
+		createdByAvatar: folder.created_by?.profile_picture || undefined,
 		dateCreated: folder.created_at,
 		type: "folder",
+		createdBy: folder.created_by,
 	};
 }
 import type { FolderTreeFile } from "@/services/knowledge-folders";

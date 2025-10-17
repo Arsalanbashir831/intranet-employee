@@ -151,7 +151,7 @@ export default function CompanyHub() {
 				image:
 					announcement.attachments.length > 0
 						? announcement.attachments[0].file_url
-						: "/images/office-work.png",
+						: "/logos/profile-circle.svg",
 				badgeLines: [
 					new Date(announcement.created_at).getDate().toString(),
 					new Date(announcement.created_at).toLocaleString("default", {

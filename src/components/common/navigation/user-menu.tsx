@@ -42,7 +42,7 @@ export default function UserMenu() {
 					className="h-9 gap-2 px-2 text-white hover:bg-transparent hover:text-white">
 					<Avatar className="h-8 w-8">
 						<AvatarImage 
-							src={user?.profilePicture || "/images/avatar.jpg"} 
+							src={user?.profilePicture || "/logos/profile-circle.svg"} 
 							alt={user?.name || "User"} 
 						/>
 						<AvatarFallback className="text-black">

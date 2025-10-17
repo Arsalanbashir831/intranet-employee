@@ -88,7 +88,7 @@ export default function OrgChartDirectoryPage() {
 			id: employee.id.toString(),
 			name: employee.emp_name,
 			designation: employee.role,
-			image: employee.profile_picture || "/images/avatar.jpg",
+			image: employee.profile_picture || "/logos/profile-circle.svg",
 			email: employee.email,
 			phone: employee.phone,
 			role: employee.role,
