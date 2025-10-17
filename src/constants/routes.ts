@@ -9,7 +9,7 @@ export const ROUTES = {
 		HOME: "/home",
 		COMPANY_HUB: "/company-hub",
 		KNOWLEDGE_BASE: "/knowledge-base",
-		ORG_CHAT_DIRECTORY: "/org-chart-directory",
+		ORG_CHAT_DIRECTORY: "/people-directory",
 		EXECUTIVES: "/executives",
 		TRAINING_CHECKLIST: "/training-checklist",
 		TASK_CHECKLIST: "/task-checklist",

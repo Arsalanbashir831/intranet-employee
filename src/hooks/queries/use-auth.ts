@@ -1,6 +1,6 @@
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { login, logout, refreshToken, forgotPassword, resetPasswordWithOTP, changePassword } from "@/services/auth";
-import type { LoginRequest, ForgotPasswordRequest, ResetPasswordWithOTPRequest } from "@/services/auth";
+import { useMutation, useQueryClient, useQuery } from "@tanstack/react-query";
+import { login, logout, refreshToken, forgotPassword, resetPasswordWithOTP, changePassword, getMe } from "@/services/auth";
+import type { LoginRequest, ForgotPasswordRequest, ResetPasswordWithOTPRequest, MeResponse } from "@/services/auth";
 import { ROUTES } from "@/constants/routes";
 import { setAuthCookies, clearAuthCookies } from "@/lib/cookies";
 import { useRouter } from "next/navigation";
@@ -161,5 +161,14 @@ export function useChangePassword() {
       // Let the specific error message from the API pass through instead of overriding it
       throw error;
     },
+  });
+}
+
+export function useMe() {
+  return useQuery<MeResponse>({
+    queryKey: ["me"],
+    queryFn: getMe,
+    staleTime: 5 * 60 * 1000, // 5 minutes
+    retry: false,
   });
 }

@@ -9,7 +9,9 @@ type Props = {
 	image: string;
 	name: string;
 	designation: string;
-	description?: string;
+	role?: string;
+	branch?: string;
+	department?: string;
 	href?: string;
 	className?: string;
 	topClassName?: string; // image wrapper
@@ -20,7 +22,9 @@ export default function TeamsCard({
 	image,
 	name,
 	designation,
-	description = "There are many variations of passages of Lorem Ipsum available.",
+	role,
+	branch,
+	department,
 	href,
 	className,
 	topClassName,
@@ -53,15 +57,24 @@ export default function TeamsCard({
 				<h3 className="text-[#E5004E] text-lg font-semibold">{name}</h3>
 				<p className="text-[#49A2A6] text-sm">{designation}</p>
 
-				{/* Render description as HTML if it contains HTML tags, otherwise as plain text */}
-				{description && description.includes('<') ? (
-					<div 
-						className="text-[#5F6980] text-sm mt-2 line-clamp-3"
-						dangerouslySetInnerHTML={{ __html: description }}
-					/>
-				) : (
-					<p className="text-[#5F6980] text-sm mt-2 line-clamp-3">{description}</p>
-				)}
+				{/* Show role, branch and department */}
+				<div className="mt-2 space-y-1">
+					{role && (
+						<p className="text-[#5F6980] text-xs">
+							<span className="font-medium">Role:</span> {role}
+						</p>
+					)}
+					{branch && (
+						<p className="text-[#5F6980] text-xs">
+							<span className="font-medium">Branch:</span> {branch}
+						</p>
+					)}
+					{department && (
+						<p className="text-[#5F6980] text-xs">
+							<span className="font-medium">Department:</span> {department}
+						</p>
+					)}
+				</div>
 			</div>
 		</Card>
 	);

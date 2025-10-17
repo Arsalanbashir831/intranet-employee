@@ -6,12 +6,14 @@ import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { Badge } from "../ui/badge";
 import { Separator } from "../ui/separator";
 import { Textarea } from "../ui/textarea";
-import { Button } from "../ui/button";
-import { ProfilePictureDialog } from "./ProfilePictureDialog";
-import { RichTextEditor } from "../common/rich-text-editor";
-import Image from "next/image";
-import { useEmployee, useUpdateEmployee } from "@/hooks/queries/use-employees";
-import { toast } from "sonner";
+// import { Button } from "../ui/button";
+// import { ProfilePictureDialog } from "./ProfilePictureDialog";
+// import { RichTextEditor } from "../common/rich-text-editor";
+// import Image from "next/image";
+import { useMe } from "@/hooks/queries/use-auth";
+// import { useUpdateEmployee } from "@/hooks/queries/use-employees";
+// import { toast } from "sonner";
+import type { Employee as ApiEmployee } from "@/services/auth";
 
 /* ---------- Types ---------- */
 interface Employee {
@@ -36,29 +38,30 @@ interface EmployeeProfileCardProps {
 }
 
 export function EmployeeProfileCard({ employee }: EmployeeProfileCardProps) {
-	const { data, isLoading, isError } = useEmployee();
-	const { mutate: updateEmployeeMutation } = useUpdateEmployee();
-	const [isEditingEducation, setIsEditingEducation] = useState(false);
+	const { data, isLoading, isError } = useMe();
+	// const { mutate: updateEmployeeMutation } = useUpdateEmployee();
+	// const [isEditingEducation, setIsEditingEducation] = useState(false);
 	const [education, setEducation] = useState("");
 	const [initialEducation, setInitialEducation] = useState("");
 
 	// Transform API data to match component structure
-	const resolvedEmployee: Employee | undefined = data?.employee ? {
-		id: data.employee.id.toString(),
-		name: data.employee.emp_name,
-		role: data.employee.role,
-		email: data.employee.email,
-		phone: data.employee.phone,
-		joinDate: new Date(data.employee.hire_date).toLocaleDateString(),
-		department: data.employee.branch_department?.department?.dept_name || "",
-		reportingTo: data.employee.branch_department?.manager ? 
-			data.employee.branch_department.manager.employee.emp_name : "--",
-		address: data.employee.address,
-		city: data.employee.city,
-		branch: data.employee.branch_department?.branch?.branch_name || "",
+	const apiEmployee = (data as any)?.employee as ApiEmployee | undefined;
+	const resolvedEmployee: Employee | undefined = apiEmployee ? {
+		id: apiEmployee.id.toString(),
+		name: apiEmployee.emp_name,
+		role: apiEmployee.role,
+		email: apiEmployee.email,
+		phone: apiEmployee.phone,
+		joinDate: new Date(apiEmployee.hire_date).toLocaleDateString(),
+		department: apiEmployee.branch_departments?.[0]?.department?.dept_name || "",
+		reportingTo: apiEmployee.branch_departments?.[0]?.manager ?
+			apiEmployee.branch_departments[0].manager.employee.emp_name : "--",
+		address: apiEmployee.address,
+		city: apiEmployee.city,
+		branch: apiEmployee.branch_departments?.[0]?.branch?.branch_name || "",
 		status: "Active Employee", // Default status
-		education: data.employee.education || "",
-		profileImage: data.employee.profile_picture || "",
+		education: apiEmployee.education || "",
+		profileImage: apiEmployee.profile_picture || "",
 	} : employee;
 
 	// Initialize education state when employee data is first loaded
@@ -101,23 +104,23 @@ export function EmployeeProfileCard({ employee }: EmployeeProfileCardProps) {
 		/>
 	);
 
-	const handleSaveEducation = () => {
-		updateEmployeeMutation(
-			{ education }, // Use the current education state value
-			{
-				onSuccess: () => {
-					toast.success("Education updated successfully");
-					setIsEditingEducation(false);
-					// Update initialEducation to the new value after successful save
-					setInitialEducation(education);
-				},
-				onError: (error) => {
-					toast.error("Failed to update education");
-					console.error("Failed to update education:", error);
-				},
-			}
-		);
-	};
+	// const handleSaveEducation = () => {
+	// 	updateEmployeeMutation(
+	// 		{ education }, // Use the current education state value
+	// 		{
+	// 			onSuccess: () => {
+	// 				toast.success("Education updated successfully");
+	// 				setIsEditingEducation(false);
+	// 				// Update initialEducation to the new value after successful save
+	// 				setInitialEducation(education);
+	// 			},
+	// 			onError: (error) => {
+	// 				toast.error("Failed to update education");
+	// 				console.error("Failed to update education:", error);
+	// 			},
+	// 		}
+	// 	);
+	// };
 
 	return (
 		<div className="w-full bg-[#F8F8F8] py-4 sm:py-6 lg:py-2">
@@ -134,7 +137,7 @@ export function EmployeeProfileCard({ employee }: EmployeeProfileCardProps) {
 					<div className="flex items-start gap-4 sm:gap-5">
 						<div className="relative">
 							<Avatar className="size-20 sm:size-24 md:size-28">
-								<AvatarImage src={resolvedEmployee.profileImage} alt={resolvedEmployee.name} />
+								<AvatarImage src={resolvedEmployee.profileImage || "/logos/profile-circle.svg"} alt={resolvedEmployee.name} />
 								<AvatarFallback className="bg-gray-100 text-gray-600 font-medium">
 									{resolvedEmployee.name
 										.split(" ")
@@ -143,10 +146,10 @@ export function EmployeeProfileCard({ employee }: EmployeeProfileCardProps) {
 								</AvatarFallback>
 							</Avatar>
 
-							<ProfilePictureDialog
+							{/* <ProfilePictureDialog
 								image={resolvedEmployee.profileImage}
 								name={resolvedEmployee.name}
-							/>
+							/> */}
 						</div>
 
 						<div className="min-w-0">
@@ -163,17 +166,15 @@ export function EmployeeProfileCard({ employee }: EmployeeProfileCardProps) {
 
 					{/* Right: Education with border and floating edit button */}
 					<div className="flex-1 max-w-3xl flex items-end gap-1">
-						{isEditingEducation ? (
+						{/* {isEditingEducation ? (
 							<div className="w-full">
-								{/* Rich Text Editor in edit mode */}
 								<RichTextEditor
 									content={education}
 									onChange={setEducation}
 									className="min-h-[120px] border border-gray-200 rounded-md"
 								/>
 
-								{/* Action Buttons */}
-								<div className="flex justify-end gap-2 mt-2">
+							<div className="flex justify-end gap-2 mt-2">
 									<Button
 										variant="outline"
 										onClick={() => {
@@ -191,29 +192,29 @@ export function EmployeeProfileCard({ employee }: EmployeeProfileCardProps) {
 								</div>
 							</div>
 						) : (
-							<>
-								{/* Readonly Education View */}
-								{education && education.includes('<') ? (
-									<div 
-										className="min-h-[120px] border border-[#E2E8F0] bg-gray-50 p-3 rounded-md overflow-y-auto min-w-[75vw] md:min-w-[40vw] lg:min-w-[50vw]"
-										dangerouslySetInnerHTML={{ __html: education }}
-									/>
-								) : education ? (
-									<Textarea
-										value={education}
-										readOnly
-										className="min-h-[120px] resize-none border-[#E2E8F0] bg-gray-50"
-									/>
-								) : (
-									<Textarea
-										value="No education information available"
-										readOnly
-										className="min-h-[120px] resize-none border-[#E2E8F0] bg-gray-50"
-									/>
-								)}
+							<> */}
+						{/* Readonly Education View */}
+						{education && education.includes('<') ? (
+							<div
+								className="min-h-[120px] border border-[#E2E8F0] bg-gray-50 text-[#535862] p-3 rounded-md overflow-y-auto min-w-[75vw] md:min-w-[40vw] lg:min-w-[70vw] text-sm"
+								dangerouslySetInnerHTML={{ __html: education }}
+							/>
+						) : education ? (
+							<Textarea
+								value={education}
+								readOnly
+								className="min-h-[120px] resize-none border-[#E2E8F0] bg-gray-50"
+							/>
+						) : (
+							<Textarea
+								value="No education information available"
+								readOnly
+								className="min-h-[120px] resize-none border-[#E2E8F0] bg-gray-50"
+							/>
+						)}
 
-								{/* Edit Button */}
-								<Button
+						{/* Edit Button */}
+						{/* <Button
 									size="icon"
 									variant="secondary"
 									className="rounded-full bg-[#F0F1F3] shadow-md  group transition hover:bg-[#E5004E]"
@@ -225,9 +226,9 @@ export function EmployeeProfileCard({ employee }: EmployeeProfileCardProps) {
 										alt="edit"
 										className="transition group-hover:brightness-0 group-hover:invert"
 									/>
-								</Button>
-							</>
-						)}
+								</Button> */}
+						{/* </>
+						)} */}
 					</div>
 				</div>
 

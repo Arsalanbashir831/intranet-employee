@@ -15,22 +15,24 @@ import { useState } from "react";
 import { useDebounce } from "@/hooks/use-debounce";
 import {
 	useAllEmployees,
-	useDepartmentEmployees,
-	useBranchDeptEmployees,
 } from "@/hooks/queries/use-employees";
-
-import { FilterDrawer } from "@/components/common/card-table/filter-drawer";
-import {
-	DepartmentFilter,
-	BranchDepartmentFilter,
-} from "@/components/common/card-table/filter-components";
 import { Button } from "@/components/ui/button";
+import {
+	DropdownMenu,
+	DropdownMenuContent,
+	DropdownMenuRadioGroup,
+	DropdownMenuRadioItem,
+	DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { ChevronDown, Users } from "lucide-react";
+
 
 /* ---------------- Types & Data ---------------- */
 interface TeamMember {
 	id: string;
 	name: string;
 	designation: string;
+	role: string;
 	image: string;
 	email: string;
 	phone: string;
@@ -62,44 +64,23 @@ export default function OrgChartDirectoryPage() {
 	const [page, setPage] = useState(1);
 	const pageSize = 8;
 
-	// Filter drawer state
-	const [isFilterOpen, setIsFilterOpen] = useState(false);
-	const [filters, setFilters] = useState<{
-		department?: string;
-		branch_department?: string;
-	}>({});
+	// Role filter state
+	const [selectedRole, setSelectedRole] = useState<string>("__all__");
 
-	// Determine which hook to use based on filters
-	const hasDepartment = filters.department && filters.department !== "__all__";
-	const hasBranchDept =
-		filters.branch_department && filters.branch_department !== "__all__";
-
-	// Call all hooks unconditionally to avoid hook rules violations
-	const allEmployeesQuery = useAllEmployees({
+	// Build query parameters
+	const queryParams: Record<string, string | number | boolean> = {
 		page,
 		page_size: pageSize,
 		search: debouncedQuery,
-	});
+	};
 
-	const departmentEmployeesQuery = useDepartmentEmployees(
-		filters.department || "0", // fallback to avoid empty string
-		{ page, page_size: pageSize, search: debouncedQuery }
-	);
-
-	const branchDeptEmployeesQuery = useBranchDeptEmployees(
-		filters.branch_department || "0", // fallback to avoid empty string
-		{ page, page_size: pageSize, search: debouncedQuery }
-	);
-
-	// Select the appropriate query result based on filters
-	let data, isLoading, isError;
-	if (hasDepartment) {
-		({ data, isLoading, isError } = departmentEmployeesQuery);
-	} else if (hasBranchDept) {
-		({ data, isLoading, isError } = branchDeptEmployeesQuery);
-	} else {
-		({ data, isLoading, isError } = allEmployeesQuery);
+	// Add role filter if selected
+	if (selectedRole && selectedRole !== "__all__") {
+		queryParams.role = selectedRole;
 	}
+
+	// Use the single employees query with filters
+	const { data, isLoading, isError } = useAllEmployees(queryParams);
 
 	// Transform API data to match component structure
 	const teamData: TeamMember[] =
@@ -110,8 +91,9 @@ export default function OrgChartDirectoryPage() {
 			image: employee.profile_picture || "/images/avatar.jpg",
 			email: employee.email,
 			phone: employee.phone,
-			branch: employee.branch_department.branch.branch_name,
-			department: employee.branch_department.department.dept_name,
+			role: employee.role,
+			branch: employee.branch_departments?.[0]?.branch?.branch_name || "",
+			department: employee.branch_departments?.[0]?.department?.dept_name || "",
 			bio: employee?.bio || "",
 			education: employee?.education || "",
 		})) || [];
@@ -161,11 +143,11 @@ export default function OrgChartDirectoryPage() {
 	return (
 		<div className="min-h-screen bg-[#F8F8F8]">
 			<PageHeader
-				title="Org Chart/Directory"
+				title="People Directory"
 				crumbs={[
 					{ label: "Pages", href: "#" },
 					{
-						label: "Org Chart/Directory",
+						label: "People Directory",
 						href: ROUTES.DASHBOARD.ORG_CHAT_DIRECTORY,
 					},
 				]}
@@ -175,7 +157,7 @@ export default function OrgChartDirectoryPage() {
 			<main className="mx-auto w-full px-4 sm:px-6 md:px-8 py-6 sm:py-8 lg:py-10">
 				<section className="bg-white rounded-2xl shadow-sm p-6 sm:p-6 lg:p-4">
 					<h1 className="text-2xl font-semibold text-[#1F2937]">
-						Org Chart/Directory
+						My Team
 					</h1>
 
 					{/* Controls row */}
@@ -191,43 +173,52 @@ export default function OrgChartDirectoryPage() {
 							/>
 						</div>
 						<div className="flex flex-wrap gap-3 items-center">
-							<Button
-								variant="outline"
-								className="w-full"
-								onClick={() => setIsFilterOpen(true)}>
-								Filters
-							</Button>
+							{/* Role Filter Dropdown */}
+							<DropdownMenu>
+								<DropdownMenuTrigger asChild>
+									<Button variant="outline" className="gap-1 rounded-[4px]">
+										<Users className="size-3.5 mr-1" /> Filter by Role
+										<ChevronDown className="size-4" />
+									</Button>
+								</DropdownMenuTrigger>
+								<DropdownMenuContent align="end" className="w-56">
+									<DropdownMenuRadioGroup
+										value={selectedRole}
+										onValueChange={(value) => {
+											setSelectedRole(value);
+											setPage(1); // Reset to first page when filtering
+										}}>
+										<DropdownMenuRadioItem
+											value="__all__"
+											className="py-2 text-[15px]">
+											All Roles
+										</DropdownMenuRadioItem>
+										<DropdownMenuRadioItem
+											value="1"
+											className="py-2 text-[15px]">
+											Junior Staff
+										</DropdownMenuRadioItem>
+										<DropdownMenuRadioItem
+											value="2"
+											className="py-2 text-[15px]">
+											Mid Senior Staff
+										</DropdownMenuRadioItem>
+										<DropdownMenuRadioItem
+											value="3"
+											className="py-2 text-[15px]">
+											Senior Staff
+										</DropdownMenuRadioItem>
+										<DropdownMenuRadioItem
+											value="4"
+											className="py-2 text-[15px]">
+											Manager
+										</DropdownMenuRadioItem>
+									</DropdownMenuRadioGroup>
+								</DropdownMenuContent>
+							</DropdownMenu>
 						</div>
 					</div>
 
-					{/* Filter Drawer */}
-					<FilterDrawer
-						open={isFilterOpen}
-						onOpenChange={setIsFilterOpen}
-						onReset={() => {
-							setFilters({});
-							setPage(1);
-						}}
-						showFilterButton={false}
-						title="Filter Employees"
-						description="Filter employees by department or branch department">
-						<div className="space-y-6 py-4">
-							<DepartmentFilter
-								value={filters.department || "__all__"}
-								onValueChange={(value: string) => {
-									setFilters((prev) => ({ ...prev, department: value }));
-									setPage(1);
-								}}
-							/>
-							<BranchDepartmentFilter
-								value={filters.branch_department || "__all__"}
-								onValueChange={(value: string) => {
-									setFilters((prev) => ({ ...prev, branch_department: value }));
-									setPage(1);
-								}}
-							/>
-						</div>
-					</FilterDrawer>
 
 					{/* Cards grid or empty state */}
 					<div className="mt-6 min-w-0">
@@ -246,9 +237,9 @@ export default function OrgChartDirectoryPage() {
 												image={m.image}
 												name={m.name}
 												designation={m.designation}
-												description={
-													m.bio || m.education || "No description available"
-												}
+												role={m.role}
+												branch={m.branch}
+												department={m.department}
 												className="w-full mx-auto xl:max-w-[320px] xl:h-[370px]"
 												topClassName="relative w-full aspect-[4/3] sm:aspect-[16/10] xl:aspect-auto xl:h-[230px]"
 												imgClassName="object-cover"

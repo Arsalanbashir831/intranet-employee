@@ -43,7 +43,7 @@ export default function OrgChartDirectoryDetailPage() {
 				role: data.employee.role,
 				address: data.employee.address,
 				city: data.employee.city,
-				branch: data.employee.branch_department.branch.branch_name,
+				branch: data.employee.branch_departments?.[0]?.branch?.branch_name || "",
 				status: "ACTIVE", // Default status
 				bio: data.employee.bio || "No bio available",
 				profileImage:
@@ -52,13 +52,13 @@ export default function OrgChartDirectoryDetailPage() {
 				email: data.employee.email,
 				phone: data.employee.phone,
 				hireDate: data.employee.hire_date,
-				department: data.employee.branch_department.department.dept_name,
-				manager: data.employee.branch_department.manager
+				department: data.employee.branch_departments?.[0]?.department?.dept_name || "",
+				manager: data.employee.branch_departments?.[0]?.manager
 					? {
-							name: data.employee.branch_department.manager.employee.emp_name,
-							role: data.employee.branch_department.manager.employee.role,
+							name: data.employee.branch_departments[0].manager.employee.emp_name,
+							role: data.employee.branch_departments[0].manager.employee.role,
 							profileImage:
-								data.employee.branch_department.manager.employee
+								data.employee.branch_departments[0].manager.employee
 									.profile_picture || "/images/default-profile.png",
 					  }
 					: undefined,
@@ -88,11 +88,11 @@ export default function OrgChartDirectoryDetailPage() {
 	return (
 		<div>
 			<PageHeader
-				title="Org Chart/Directory"
+				title="People Directory"
 				crumbs={[
 					{ label: "Pages", href: "#" },
 					{
-						label: "Org Chart/Directory",
+						label: "People Directory",
 						href: ROUTES.DASHBOARD.ORG_CHAT_DIRECTORY,
 					},
 					{

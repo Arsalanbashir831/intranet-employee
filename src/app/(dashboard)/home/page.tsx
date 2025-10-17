@@ -90,13 +90,8 @@ export default function Home() {
 						{/* Left column */}
 						<div className="flex flex-col gap-[calc(var(--gap)*0.9)] w-full">
 							<Checklist
-								title="Task Checklist"
-								viewMoreLink="/task-checklist"
-								type="task"
-							/>
-							<Checklist
 								title="Training Checklist"
-								viewMoreLink="/training-checklist"
+								viewMoreLink={ROUTES.DASHBOARD.TRAINING_CHECKLIST}
 								type="training"
 							/>
 							{/* keep your contact block */}

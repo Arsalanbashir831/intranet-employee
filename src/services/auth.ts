@@ -32,7 +32,7 @@ export type Executive = {
 export type Employee = {
   id: number;
   emp_name: string;
-  branch_department_id: number | null;
+  branch_department_ids: number[];
   hire_date: string;
   address: string;
   city: string;
@@ -42,7 +42,8 @@ export type Employee = {
   education: string;
   bio: string;
   profile_picture: string | null;
-  branch_department: {
+  isAdmin: boolean;
+  branch_departments: {
     id: number;
     branch: {
       id: number;
@@ -52,8 +53,28 @@ export type Employee = {
       id: number;
       dept_name: string;
     };
-    manager: null;
-  } | null;
+    manager: {
+      id: number;
+      employee: {
+        id: number;
+        emp_name: string;
+        profile_picture: string | null;
+        email: string;
+        role: string;
+      };
+      branch_department: {
+        id: number;
+        branch: {
+          id: number;
+          branch_name: string;
+        };
+        department: {
+          id: number;
+          dept_name: string;
+        };
+      };
+    } | null;
+  }[];
 };
 
 export type MeResponse = {

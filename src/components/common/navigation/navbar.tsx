@@ -29,14 +29,14 @@ export const navItems = [
 	},
 	{
 		href: ROUTES.DASHBOARD.ORG_CHAT_DIRECTORY,
-		label: "Org Chart/Directory",
+		label: "People Directory",
 		icon: "/icons/user-hierarchy.svg",
 	},
-	{
-		href: ROUTES.DASHBOARD.EXECUTIVES,
-		label: "Executives",
-		icon: "/icons/users.svg",
-	},
+	// {
+	// 	href: ROUTES.DASHBOARD.EXECUTIVES,
+	// 	label: "Executives",
+	// 	icon: "/icons/users.svg",
+	// },
 	{
 		href: ROUTES.DASHBOARD.TRAINING_CHECKLIST,
 		label: "Training Checklist",

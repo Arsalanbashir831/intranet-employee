@@ -74,7 +74,7 @@ export async function listAllEmployees(
 export type Employee = {
 	id: number;
 	emp_name: string;
-	branch_department_id: number;
+	branch_department_ids: number[];
 	hire_date: string;
 	address: string;
 	city: string;
@@ -84,7 +84,8 @@ export type Employee = {
 	education: string;
 	bio: string | null;
 	profile_picture: string | null;
-	branch_department: {
+	isAdmin: boolean;
+	branch_departments: {
 		id: number;
 		branch: {
 			id: number;
@@ -115,7 +116,7 @@ export type Employee = {
 				};
 			};
 		} | null;
-	};
+	}[];
 };
 
 export type EmployeeDetailResponse = {

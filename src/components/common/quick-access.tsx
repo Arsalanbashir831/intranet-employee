@@ -25,6 +25,12 @@ const quickAccessItems = [
 		href: process.env.NEXT_PUBLIC_TEAMS_URL || "#",
 	},
 	{
+		id: 4,
+		src: "/logos/cyclr.svg",
+		alt: "Cyclr",
+		href: process.env.NEXT_PUBLIC_CYCLR_URL || "#",
+	},
+	{
 		id: 5,
 		src: "/logos/linkedin.svg",
 		alt: "LinkedIn",
