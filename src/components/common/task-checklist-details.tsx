@@ -66,8 +66,8 @@ export default function TaskChecklistDetails({
 					item.status === "to_do"
 						? "todo"
 						: item.status === "in_progress"
-						? "inprogress"
-						: "done";
+							? "inprogress"
+							: "done";
 				return {
 					id: item.id.toString(),
 					name: item.attachment_details.title,
@@ -105,9 +105,8 @@ export default function TaskChecklistDetails({
 		},
 		{
 			id: "inprogress",
-			name: `In progress (${
-				tasks.filter((t) => t.column === "inprogress").length
-			})`,
+			name: `In progress (${tasks.filter((t) => t.column === "inprogress").length
+				})`,
 		},
 		{
 			id: "done",
@@ -221,11 +220,11 @@ export default function TaskChecklistDetails({
 									className={cn(
 										"rounded-xl px-2 py-3 h-full flex flex-col",
 										column.id === "todo" &&
-											"border-2 border-dashed border-[#E5004E] bg-[#E5004E]/10",
+										"border-2 border-dashed border-[#E5004E] bg-[#E5004E]/10",
 										column.id === "inprogress" &&
-											"border-2 border-dashed border-[#888DA7]/20 bg-white",
+										"border-2 border-dashed border-[#888DA7]/20 bg-white",
 										column.id === "done" &&
-											"border-2 border-dashed border-[#888DA7]/20 bg-white"
+										"border-2 border-dashed border-[#888DA7]/20 bg-white"
 									)}>
 									<KanbanHeader className="text-sm sm:text-base font-semibold text-[#1C1D22]/60 mb-3 sm:mb-4 border-none">
 										{column.name}
@@ -247,22 +246,26 @@ export default function TaskChecklistDetails({
 													className="rounded-lg bg-white p-3 sm:p-4 cursor-pointer">
 													{/* Card UI */}
 													<div className="space-y-3">
-														<div className="flex items-center gap-2">
+														<div className="flex items-start gap-2">
 															<div className="p-2 border bg-white rounded-md">
 																<Image
 																	src="/icons/clipboard-primary.svg"
 																	alt="clipboard"
-																	width={22}
-																	height={22}
+																	width={24}
+																	height={24}
 																/>
 															</div>
 															<div className="min-w-0">
 																<h3 className="font-semibold text-[14px] sm:text-[15px] text-gray-900 truncate">
 																	{(task as Task).name}
 																</h3>
-																<p className="text-xs text-gray-500 truncate">
+																{/* <p className="text-xs text-gray-500 truncate">
 																	{(task as Task).description}
-																</p>
+																</p> */}
+																<div
+																	className="text-xs text-gray-500 leading-relaxed line-clamp-1 prose-p:leading-relaxed prose-pre:p-0 prose-ul:my-2 prose-ol:my-2 prose-li:my-1 [&_ul_li_p]:inline [&_ol_li_p]:inline [&_ul_li_p]:m-0 [&_ol_li_p]:m-0"
+																	dangerouslySetInnerHTML={{ __html: (task as Task).description }}
+																/>
 															</div>
 														</div>
 
@@ -277,8 +280,8 @@ export default function TaskChecklistDetails({
 																{task.column === "todo"
 																	? "To do"
 																	: task.column === "inprogress"
-																	? "Progress"
-																	: "Done"}
+																		? "Progress"
+																		: "Done"}
 															</span>
 														</div>
 
@@ -289,7 +292,7 @@ export default function TaskChecklistDetails({
 																	"h-1.5 rounded-full transition-[width]",
 																	task.column === "todo" && "bg-transparent",
 																	task.column === "inprogress" &&
-																		"bg-[#FFA048]",
+																	"bg-[#FFA048]",
 																	task.column === "done" && "bg-[#78D700]"
 																)}
 																style={{
@@ -297,8 +300,8 @@ export default function TaskChecklistDetails({
 																		task.column === "done"
 																			? "100%"
 																			: task.column === "inprogress"
-																			? "60%"
-																			: "0%",
+																				? "60%"
+																				: "0%",
 																}}
 															/>
 														</div>
@@ -307,11 +310,11 @@ export default function TaskChecklistDetails({
 															className={cn(
 																"w-[108px] h-[28px] flex items-center justify-center text-[11px] sm:text-xs font-medium rounded-full",
 																task.column === "todo" &&
-																	"text-[#FF7979]  bg-[#FF7979]/10",
+																"text-[#FF7979]  bg-[#FF7979]/10",
 																task.column === "inprogress" &&
-																	"text-[#FFA048] bg-[#FFA048]/10",
+																"text-[#FFA048] bg-[#FFA048]/10",
 																task.column === "done" &&
-																	"text-[#888DA7] bg-[#888DA7]/10"
+																"text-[#888DA7] bg-[#888DA7]/10"
 															)}>
 															{(task as Task).date}
 														</div>
@@ -340,7 +343,7 @@ export default function TaskChecklistDetails({
 				{selectedTask && (
 					<ChecklistDrawerContent
 						title={selectedTask.name}
-						subtitle={selectedTask.description}
+						// subtitle={selectedTask.description}
 						description={selectedTask.detail}
 						date={selectedTask.date}
 						files={selectedTask.files}
