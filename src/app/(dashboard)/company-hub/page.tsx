@@ -176,7 +176,7 @@ export default function CompanyHub() {
 			title: poll.title,
 			description: poll.subtitle || poll.question,
 			question: poll.question,
-			options: (poll.options_details || []).map((option: any) => ({
+			options: (poll.options_details || []).map((option: { id: number; option_text: string; vote_count: number }) => ({
 				id: option.id.toString(),
 				text: option.option_text,
 				votes: option.vote_count,

@@ -65,26 +65,42 @@ export function KnowledgeBaseFolderView({
 					? String(user.employeeId)
 					: undefined;
 				const tree = await getFolderTree(employeeId);
-				// If API returns { folders: FolderTreeItem[] }, use the first folder or wrap as needed
-				if (Array.isArray(tree.folders)) {
-					setFolderTree({
-						id: 0,
-						name: "Root",
-						description: "",
-						parent: null,
-						created_at: new Date().toISOString(),
-						inherits_parent_permissions: true,
-						effective_permissions: {
-							branches: [],
-							departments: [],
-							employees: [],
-						},
-						files: [],
-						folders: tree.folders,
-					});
-				} else {
-					setFolderTree(tree as FolderTreeItem);
-				}
+			// If API returns { folders: FolderTreeItem[] }, use the first folder or wrap as needed
+			if (Array.isArray(tree.folders)) {
+				setFolderTree({
+					id: 0,
+					name: "Root",
+					description: "",
+					parent: null,
+					created_at: new Date().toISOString(),
+					inherits_parent_permissions: true,
+					created_by: {
+						id: null,
+						emp_name: "System",
+						email: null,
+						phone: null,
+						role: null,
+						profile_picture: null,
+						branch_department_ids: [],
+						is_admin: false,
+					},
+					access_level: {
+						branches: [],
+						departments: [],
+						branch_departments: [],
+						employees: [],
+					},
+					effective_permissions: {
+						branches: [],
+						departments: [],
+						employees: [],
+					},
+					files: [],
+					folders: tree.folders,
+				});
+			} else {
+				setFolderTree(tree as FolderTreeItem);
+			}
 			} catch {
 				setError("Failed to load folder contents");
 				setFolderTree(null);
@@ -121,6 +137,22 @@ export function KnowledgeBaseFolderView({
 				parent: null,
 				created_at: new Date().toISOString(),
 				inherits_parent_permissions: true,
+				created_by: {
+					id: null,
+					emp_name: "System",
+					email: null,
+					phone: null,
+					role: null,
+					profile_picture: null,
+					branch_department_ids: [],
+					is_admin: false,
+				},
+				access_level: {
+					branches: [],
+					departments: [],
+					branch_departments: [],
+					employees: [],
+				},
 				effective_permissions: {
 					branches: [],
 					departments: [],

@@ -201,7 +201,7 @@ export function KnowledgeBaseTable({
 			id: "actions",
 			header: () => <span className="text-sm font-medium">Actions</span>,
 			cell: ({ row }) => {
-				const isAdmin = user?.isAdmin || false;
+				const isAdmin = user?.isStaff || user?.isSuperuser || false;
 				const isFolder = row.original.type === "folder";
 				
 				// Only show actions for admin users and folders

@@ -41,10 +41,10 @@ export type FolderTreeItem = {
     is_admin: boolean;
   };
   access_level: {
-    branches: any[];
-    departments: any[];
-    branch_departments: any[];
-    employees: any[];
+    branches: number[];
+    departments: number[];
+    branch_departments: number[];
+    employees: number[];
   };
   effective_permissions: {
     branches: number[];

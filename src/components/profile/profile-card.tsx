@@ -45,7 +45,7 @@ export function EmployeeProfileCard({ employee }: EmployeeProfileCardProps) {
 	const [initialEducation, setInitialEducation] = useState("");
 
 	// Transform API data to match component structure
-	const apiEmployee = (data as any)?.employee as ApiEmployee | undefined;
+	const apiEmployee = data?.employee as ApiEmployee | undefined;
 	const resolvedEmployee: Employee | undefined = apiEmployee ? {
 		id: apiEmployee.id.toString(),
 		name: apiEmployee.emp_name,
