@@ -2,8 +2,10 @@
 
 import { useAuth } from "@/contexts/auth-context";
 import { X } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "../ui/button";
+
+const BANNER_STORAGE_KEY = "welcome-banner-closed";
 
 export default function BannerSection({
 	message = "Welcome Back Brian",
@@ -13,10 +15,17 @@ export default function BannerSection({
 	onClose?: () => void;
 }) {
 	const { user } = useAuth();
-	const [isVisible, setIsVisible] = useState(true);
+	const [isVisible, setIsVisible] = useState(false);
+
+	// Check localStorage on mount to determine initial visibility
+	useEffect(() => {
+		const isClosed = localStorage.getItem(BANNER_STORAGE_KEY);
+		setIsVisible(!isClosed);
+	}, []);
 
 	const handleClose = () => {
 		setIsVisible(false);
+		localStorage.setItem(BANNER_STORAGE_KEY, "true");
 		onClose?.();
 	};
 
