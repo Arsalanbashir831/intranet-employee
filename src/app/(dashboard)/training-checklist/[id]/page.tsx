@@ -202,7 +202,7 @@ export default function TrainingDetailsPage() {
             Training Not Found
           </h1>
           <p className="text-gray-600 mb-4">
-            The training you're looking for doesn't exist.
+            The training you&apos;re looking for doesn&apos;t exist.
           </p>
           <Button
             onClick={() => router.push(ROUTES.DASHBOARD.TRAINING_CHECKLIST)}

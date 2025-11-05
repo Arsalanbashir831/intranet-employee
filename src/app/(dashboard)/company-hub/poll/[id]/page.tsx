@@ -35,6 +35,7 @@ import {
   ResponsiveContainer 
 } from "recharts";
 import { format } from "date-fns";
+import Image from "next/image";
 import type { PollVoter } from "@/services/polls";
 
 export default function PollDetail() {
@@ -358,9 +359,11 @@ export default function PollDetail() {
                                 style={{ zIndex: voters.length - index }}
                               >
                                 {voter.profile_picture ? (
-                                  <img 
+                                  <Image
                                     src={`${process.env.NEXT_PUBLIC_API_BASE_URL || 'http://127.0.0.1:8000'}${voter.profile_picture}`}
                                     alt={voter.name}
+                                    width={32}
+                                    height={32}
                                     className="w-8 h-8 rounded-full object-cover border-2 border-white shadow-sm"
                                     title={voter.name}
                                   />
