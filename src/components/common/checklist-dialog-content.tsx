@@ -1,0 +1,127 @@
+"use client";
+
+import Image from "next/image";
+import {
+	DialogContent,
+	DialogHeader,
+	DialogTitle,
+	DialogDescription,
+} from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
+
+interface ChecklistTaskDialogProps {
+	title: string;
+	subtitle?: string;
+	description: string;
+	date: string;
+	files?: {
+		id: number;
+		file: string;
+		uploaded_at: string;
+	}[];
+}
+
+export default function ChecklistDialogContent({
+	title,
+	subtitle,
+	description,
+	date,
+	files = [],
+}: ChecklistTaskDialogProps) {
+	const handleFileDownload = (fileUrl: string) => {
+		const link = document.createElement("a");
+		link.href = fileUrl;
+		link.target = "_blank";
+		link.download = "";
+		document.body.appendChild(link);
+		link.click();
+		document.body.removeChild(link);
+	};
+
+	return (
+		<DialogContent
+			id="dialog-content-checklist-dialog"
+			className="w-[calc(100%-2rem)] max-w-2xl bg-white shadow-xl rounded-lg p-4 sm:p-6 overflow-y-auto max-h-[90vh] gap-3 sm:gap-4">
+			{/* Header */}
+			<DialogHeader className="flex flex-col items-start gap-1 sm:gap-2">
+				<div className="flex items-center gap-2 sm:gap-4">
+					<div className="p-1.5 sm:p-2 bg-white shadow-xs border rounded-[7px] border-gray-300">
+						<Image
+							src="/icons/clipboard-primary.svg"
+							alt="clipboard icon"
+							width={24}
+							height={24}
+							className="sm:w-[30px] sm:h-[30px]"
+						/>
+					</div>
+					<div className="flex-1 min-w-0">
+						<DialogTitle className="text-sm sm:text-[15px] font-semibold text-gray-800 break-words">
+							{title}
+						</DialogTitle>
+						{subtitle && (
+							<DialogDescription className="text-xs sm:text-sm text-gray-500 break-words">
+								{subtitle}
+							</DialogDescription>
+						)}
+					</div>
+				</div>
+			</DialogHeader>
+
+			{/* To Do Section */}
+			<div className="mt-2 sm:mt-0">
+				<p className="text-xs sm:text-sm font-medium text-gray-400 flex items-center gap-1">
+					<Image src="/icons/todo.svg" alt="todo" width={14} height={14} className="sm:w-4 sm:h-4" />
+					Details
+				</p>
+			</div>
+
+			{/* Description */}
+			<div className="space-y-1 sm:space-y-2">
+				<div
+					className="text-xs sm:text-sm text-gray-600 leading-relaxed prose-p:leading-relaxed prose-pre:p-0 prose-ul:my-2 prose-ol:my-2 prose-li:my-1 [&_ul_li_p]:inline [&_ol_li_p]:inline [&_ul_li_p]:m-0 [&_ol_li_p]:m-0"
+					dangerouslySetInnerHTML={{ __html: description }}
+				/>
+			</div>
+
+			{/* Files Section */}
+			{files.length > 0 && (
+				<div className="mt-2 sm:mt-4">
+					<div className="space-y-2">
+						{files.map((file) => {
+							// Extract filename from URL
+							const filename = file.file.split("/").pop() || "File";
+							return (
+								<Button
+									key={file.id}
+									variant="outline"
+									className="w-full h-12 sm:h-14 flex items-center rounded-xl justify-start gap-2 border-gray-200 p-2 sm:p-3"
+									onClick={() => handleFileDownload(file.file)}>
+									<div className="bg-[#E5004E] p-1.5 sm:p-2 rounded-sm flex items-center justify-center flex-shrink-0">
+										<Image
+											src="/icons/clipboard.svg"
+											alt="clipboard"
+											width={18}
+											height={18}
+											className="sm:w-[22px] sm:h-[22px]"
+										/>
+									</div>
+									<span className="text-xs sm:text-sm text-gray-700 truncate flex-1 text-left">
+										{filename}
+									</span>
+								</Button>
+							);
+						})}
+					</div>
+				</div>
+			)}
+
+			{/* Date */}
+			<div className="mt-2 sm:mt-4">
+				<span className="inline-block text-[10px] sm:text-xs font-medium text-[#FF7979] bg-[#FF7979]/10 px-2 sm:px-3 py-1 rounded-md">
+					{date}
+				</span>
+			</div>
+		</DialogContent>
+	);
+}
+
