@@ -29,6 +29,8 @@ type PageHeaderProps = {
 	defaultTab?: string; // fallback when URL has no ?tab=
 	syncTabWithQuery?: boolean; // default false
 	queryKey?: string; // default "tab"
+	tabsPosition?: "left" | "right"; // default "left"
+	tabsClassName?: string; // custom className for tabs container
 };
 
 export function PageHeader(props: PageHeaderProps) {
@@ -43,6 +45,8 @@ export function PageHeader(props: PageHeaderProps) {
 		defaultTab = tabs[0]?.key || "",
 		syncTabWithQuery = false,
 		queryKey = "tab",
+		tabsPosition = "left",
+		tabsClassName,
 	} = props;
 
 	const router = useRouter();
@@ -143,19 +147,15 @@ export function PageHeader(props: PageHeaderProps) {
 						</div>
 					</div>
 
-					{/* Tabs */}
-					{tabs.length > 0 && (
+					{/* Tabs (left position) */}
+					{tabs.length > 0 && tabsPosition === "left" && (
 						<div
-							className="
-            md:ml-3 w-full md:w-auto overflow-x-auto
-            scroll-smooth
-            [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden
-          ">
+							className={cn(
+								"md:ml-3 w-full md:w-auto overflow-x-auto scroll-smooth [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden",
+								tabsClassName
+							)}>
 							<Tabs value={currentValue} onValueChange={handleChange}>
-								<TabsList
-									className="
-                border border-gray-300 rounded-lg p-1 inline-flex min-w-max gap-1
-              ">
+								<TabsList className="border border-gray-300 rounded-lg p-1 inline-flex min-w-max gap-1">
 									{tabs.map((t) => {
 										const isActive = currentValue === t.key;
 										return (
@@ -166,7 +166,6 @@ export function PageHeader(props: PageHeaderProps) {
 												className={cn(
 													"shrink-0 whitespace-nowrap px-3 py-2 text-sm rounded-md text-gray-600 transition",
 													"data-[state=active]:bg-[#E5004E] data-[state=active]:text-white",
-													// subtle animation to feel instant
 													isActive
 														? "scale-[0.98] animate-[fadeIn_.16s_ease-out]"
 														: ""
@@ -182,9 +181,42 @@ export function PageHeader(props: PageHeaderProps) {
 				</div>
 
 				{/* Right action */}
-				{action ? (
-					<div className="shrink-0 self-end md:self-center">{action}</div>
-				) : null}
+				<div className="flex items-center gap-3 shrink-0 self-end md:self-center">
+					{/* Tabs (right position) */}
+					{tabs.length > 0 && tabsPosition === "right" && (
+						<div
+							className={cn(
+								"overflow-x-auto scroll-smooth [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden",
+								tabsClassName
+							)}>
+							<Tabs value={currentValue} onValueChange={handleChange}>
+								<TabsList className="border border-gray-300 rounded-lg p-1 inline-flex gap-1 w-full min-w-[200px]">
+									{tabs.map((t) => {
+										const isActive = currentValue === t.key;
+										return (
+											<TabsTrigger
+												key={t.key}
+												value={t.key}
+												data-tab-trigger={t.key}
+												className={cn(
+													"flex-1 whitespace-nowrap px-4 py-2 text-sm rounded-md text-gray-600 transition",
+													"data-[state=active]:bg-[#E5004E] data-[state=active]:text-white",
+													isActive
+														? "scale-[0.98] animate-[fadeIn_.16s_ease-out]"
+														: ""
+												)}>
+												{t.label}
+											</TabsTrigger>
+										);
+									})}
+								</TabsList>
+							</Tabs>
+						</div>
+					)}
+					{action && (
+						<div>{action}</div>
+					)}
+				</div>
 			</div>
 		</div>
 	);

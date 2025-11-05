@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useMemo } from "react";
 import { PageHeader } from "@/components/common/page-header";
 import { ROUTES } from "@/constants/routes";
 import { useParams } from "next/navigation";
@@ -11,6 +11,8 @@ import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
+import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { 
   Users, 
   Clock, 
@@ -23,17 +25,22 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { AxiosError } from "axios";
-
-interface PollOption {
-  id: string;
-  text: string;
-  votes: number;
-  percentage: number;
-}
+import { 
+  BarChart, 
+  Bar, 
+  XAxis, 
+  YAxis, 
+  CartesianGrid, 
+  Tooltip, 
+  ResponsiveContainer 
+} from "recharts";
+import { format } from "date-fns";
+import type { PollVoter } from "@/services/polls";
 
 export default function PollDetail() {
   const params = useParams();
   const id = params.id as string;
+  const [activeTab, setActiveTab] = useState("detail");
   
   // Fetch poll data from API
   const {
@@ -85,6 +92,20 @@ export default function PollDetail() {
     if (diffInDays === 1) return "Expires tomorrow";
     return `Expires in ${diffInDays} days`;
   };
+
+  // Prepare chart data for Stats tab
+  const chartData = useMemo(() => {
+    if (!pollData?.options_details) return [];
+    return pollData.options_details.map((option) => ({
+      name: option.option_text.length > 20 
+        ? option.option_text.substring(0, 20) + "..." 
+        : option.option_text,
+      votes: option.vote_count,
+      percentage: pollData.total_votes > 0 
+        ? Math.round((option.vote_count / pollData.total_votes) * 100) 
+        : 0,
+    }));
+  }, [pollData]);
 
   const handleVote = async () => {
     if (!selectedOption || !poll) return;
@@ -162,6 +183,14 @@ export default function PollDetail() {
           { label: "Polls", href: `${ROUTES.DASHBOARD.COMPANY_HUB}?tab=polls` },
           { label: poll.title }
         ]}
+        tabs={[
+          { key: "detail", label: "Detail" },
+          { key: "stats", label: "Stats" },
+        ]}
+        activeTab={activeTab}
+        onTabChange={setActiveTab}
+        tabsPosition="right"
+        tabsClassName="min-w-[250px]"
       />
 
       <div className="mx-auto w-full px-4 sm:px-6 md:px-8 py-6 sm:py-8 lg:py-10">
@@ -248,9 +277,12 @@ export default function PollDetail() {
             </h2>
           </div>
 
-          {/* Poll Options */}
-          <div className="py-6">
-            {!poll.userVoted && isActive ? (
+          {/* Poll Content */}
+          {activeTab === "detail" ? (
+              <>
+              {/* Poll Options */}
+              <div className="py-6">
+                {!poll.userVoted && isActive ? (
               // Voting Interface
               <div className="space-y-4">
                 <RadioGroup
@@ -359,28 +391,146 @@ export default function PollDetail() {
               </div>
             )}
 
-            {/* Poll Stats */}
-            <div className="mt-8 pt-6 border-t border-[#CDD0D5]">
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
-                <div className="flex items-center space-x-3 text-sm sm:text-base text-gray-600">
-                  <Users className="h-5 w-5" />
-                  <span className="font-medium">{poll.totalVotes} total votes</span>
-                </div>
-                <div className="flex items-center space-x-3 text-sm sm:text-base text-gray-600">
-                  <BarChart3 className="h-5 w-5" />
-                  <span className="font-medium">{poll.options.length} options</span>
-                </div>
-                <div className="flex items-center space-x-3 text-sm sm:text-base text-gray-600">
-                  <TrendingUp className="h-5 w-5" />
-                  <span className="font-medium">
-                    {poll.options.reduce((prev, current) => 
-                      (prev.votes > current.votes) ? prev : current
-                    ).percentage}% leading
-                  </span>
+                {/* Poll Stats */}
+                <div className="mt-8 pt-6 border-t border-[#CDD0D5]">
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
+                    <div className="flex items-center space-x-3 text-sm sm:text-base text-gray-600">
+                      <Users className="h-5 w-5" />
+                      <span className="font-medium">{poll.totalVotes} total votes</span>
+                    </div>
+                    <div className="flex items-center space-x-3 text-sm sm:text-base text-gray-600">
+                      <BarChart3 className="h-5 w-5" />
+                      <span className="font-medium">{poll.options.length} options</span>
+                    </div>
+                    <div className="flex items-center space-x-3 text-sm sm:text-base text-gray-600">
+                      <TrendingUp className="h-5 w-5" />
+                      <span className="font-medium">
+                        {poll.options.reduce((prev, current) => 
+                          (prev.votes > current.votes) ? prev : current
+                        ).percentage}% leading
+                      </span>
+                    </div>
+                  </div>
                 </div>
               </div>
-            </div>
-          </div>
+              </>
+          ) : (
+              <>
+              {/* Results Visualization */}
+              <Card className="shadow-none border-[#D0D0D0]">
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <BarChart3 className="h-5 w-5" />
+                    Results
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  {pollData && pollData.total_votes > 0 ? (
+                    <div className="space-y-6">
+                      {/* Bar Chart */}
+                      <div className="h-80">
+                        <ResponsiveContainer width="100%" height="100%">
+                          <BarChart data={chartData} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
+                            <CartesianGrid strokeDasharray="3 3" />
+                            <XAxis 
+                              dataKey="name" 
+                              angle={-45}
+                              textAnchor="end"
+                              height={100}
+                              fontSize={12}
+                            />
+                            <YAxis />
+                            <Tooltip 
+                              formatter={(value: number, name: string) => [
+                                `${value} votes (${chartData.find(d => d.votes === value)?.percentage.toFixed(1)}%)`,
+                                name
+                              ]}
+                            />
+                            <Bar dataKey="votes" fill="#d64575" radius={[6, 6, 0, 0]} />
+                          </BarChart>
+                        </ResponsiveContainer>
+                      </div>
+
+                      {/* Detailed Results with Voters */}
+                      <div className="space-y-4">
+                        <h3 className="font-semibold">Detailed Results</h3>
+                        <div className="space-y-3">
+                          {pollData.options_details?.map((option) => {
+                            const percentage = pollData.total_votes > 0 
+                              ? (option.vote_count / pollData.total_votes) * 100 
+                              : 0;
+                            
+                            return (
+                              <div key={option.id} className="rounded-lg border border-[#E4E4E4] bg-white px-4 py-3">
+                                <div className="flex items-center justify-between mb-3">
+                                  <span className="font-medium">{option.option_text}</span>
+                                  <div className="flex items-center gap-4">
+                                    <span className="text-sm text-muted-foreground">
+                                      {option.vote_count} votes
+                                    </span>
+                                    <span className="text-sm font-medium">
+                                      {percentage.toFixed(1)}%
+                                    </span>
+                                  </div>
+                                </div>
+                                
+                                <Progress value={percentage} className="h-2 mb-3" />
+                                
+                                {/* Voters List */}
+                                {option.voters && option.voters.length > 0 && (
+                                  <div className="mt-3 pt-3 border-t border-[#E4E4E4]">
+                                    <h4 className="font-medium text-sm text-muted-foreground mb-2 flex items-center gap-2">
+                                      <Users className="h-4 w-4" />
+                                      Voters ({option.voters.length})
+                                    </h4>
+                                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2">
+                                      {option.voters.map((voter: PollVoter, voterIndex: number) => (
+                                        <div key={voterIndex} className="flex items-center gap-2 p-2 bg-muted rounded-lg">
+                                          <Avatar className="h-6 w-6">
+                                            <AvatarImage 
+                                              src={
+                                                voter.profile_picture 
+                                                  ? `${process.env.NEXT_PUBLIC_API_BASE_URL || 'http://127.0.0.1:8000'}${voter.profile_picture}`
+                                                  : undefined
+                                              } 
+                                            />
+                                            <AvatarFallback className="text-xs">
+                                              {voter.name.split(' ').map((n: string) => n[0]).join('').toUpperCase()}
+                                            </AvatarFallback>
+                                          </Avatar>
+                                          <div className="flex-1 min-w-0">
+                                            <p className="font-medium text-xs truncate">{voter.name}</p>
+                                            <p className="text-xs text-muted-foreground truncate">{voter.email}</p>
+                                            {voter.branch_department && (
+                                              <p className="text-xs text-muted-foreground truncate">
+                                                {voter.branch_department.branch.name} - {voter.branch_department.department.name}
+                                              </p>
+                                            )}
+                                          </div>
+                                          <div className="text-xs text-muted-foreground">
+                                            {format(new Date(voter.voted_at), "MMM dd")}
+                                          </div>
+                                        </div>
+                                      ))}
+                                    </div>
+                                  </div>
+                                )}
+                              </div>
+                            );
+                          })}
+                        </div>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="text-center py-8 text-muted-foreground">
+                      <p>No votes yet</p>
+                      <p className="text-sm">Results will appear here once people start voting</p>
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+              </>
+          )}
         </div>
       </div>
     </div>
