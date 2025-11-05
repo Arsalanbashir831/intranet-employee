@@ -11,7 +11,7 @@ import { cn } from "@/lib/utils";
 import type {
   ExecutiveTask,
   AssignedEmployee,
-} from "@/components/common/executive-table";
+} from "@/components/training-checklist/executive-traning-checklist";
 
 // Mock data - in real app, this would come from API
 const mockTasks: ExecutiveTask[] = [
