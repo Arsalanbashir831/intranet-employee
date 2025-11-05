@@ -14,6 +14,7 @@ interface CardTablePaginationProps<TData> {
   pageSize?: number;
   totalCount?: number;
   onPaginationChange?: (pagination: PaginationState) => void;
+  alwaysShow?: boolean; // Show pagination even for single page
 }
 
 export function CardTablePagination<TData>({ 
@@ -21,7 +22,8 @@ export function CardTablePagination<TData>({
   pageIndex: externalPageIndex,
   pageSize: externalPageSize = 10,
   totalCount = 0,
-  onPaginationChange 
+  onPaginationChange,
+  alwaysShow = false
 }: CardTablePaginationProps<TData>) {
   // Use external pagination if provided, otherwise use table pagination
   const isExternalPagination = externalPageIndex !== undefined && onPaginationChange !== undefined;
@@ -35,7 +37,13 @@ export function CardTablePagination<TData>({
     : table?.getState().pagination.pageIndex || 0;
 
   const numbers = React.useMemo(() => {
-    if (pageCount <= 1) return [];
+    if (pageCount <= 1) {
+      // If alwaysShow is true and there's at least 1 page, return [0] for single page
+      if (alwaysShow && pageCount === 1) {
+        return [0];
+      }
+      return [];
+    }
     
     if (isExternalPagination) {
       return generatePageNumbers(pageIndex, pageCount);
@@ -55,10 +63,15 @@ export function CardTablePagination<TData>({
     if (end < pageCount - 2) res.push("...");
     res.push(pageCount - 1);
     return res;
-  }, [pageCount, pageIndex, isExternalPagination, table]);
+  }, [pageCount, pageIndex, isExternalPagination, table, alwaysShow]);
 
-  // Don't show pagination if there's only one page or no data
-  if (pageCount <= 1) {
+  // Don't show pagination if there's only one page or no data (unless alwaysShow is true)
+  if (pageCount <= 1 && !alwaysShow) {
+    return null;
+  }
+  
+  // Don't show if no data
+  if (pageCount === 0) {
     return null;
   }
 
