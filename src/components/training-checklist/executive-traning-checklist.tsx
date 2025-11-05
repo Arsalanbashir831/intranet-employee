@@ -238,8 +238,6 @@ export default function ExecutiveTable() {
       filtered = filtered.filter(
         (task) =>
           task.title.toLowerCase().includes(query) ||
-          task.description.toLowerCase().includes(query) ||
-          task.assignTo.some((emp) => emp.name.toLowerCase().includes(query)) ||
           task.assignBy.toLowerCase().includes(query)
       );
     }
@@ -255,14 +253,6 @@ export default function ExecutiveTable() {
           case "title":
             aValue = a.title;
             bValue = b.title;
-            break;
-          case "description":
-            aValue = a.description;
-            bValue = b.description;
-            break;
-          case "assignTo":
-            aValue = a.assignTo.length;
-            bValue = b.assignTo.length;
             break;
           case "assignBy":
             aValue = a.assignBy;
@@ -374,8 +364,6 @@ export default function ExecutiveTable() {
           hasFilter={false}
           sortOptions={[
             { label: "Title", value: "title" },
-            { label: "Description", value: "description" },
-            { label: "Assign To", value: "assignTo" },
             { label: "Assign By", value: "assignBy" },
           ]}
           activeSort={sorting[0]?.id || "title"}

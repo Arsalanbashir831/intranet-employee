@@ -1,6 +1,6 @@
 import { PageHeader } from "@/components/common/page-header";
 import { ROUTES } from "@/constants/routes";
-import TrainingChecklistDetails from "@/components/common/training-checklist-details";
+import TrainingChecklistDetails from "@/components/training-checklist/training-checklist-details";
 import ExecutiveTable from "@/components/training-checklist/executive-traning-checklist";
 
 export default function TrainingChecklist() {

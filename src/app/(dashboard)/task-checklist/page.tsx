@@ -1,6 +1,6 @@
 "use client";
 
-import TaskChecklistDetails from "@/components/common/training-checklist-details";
+import TaskChecklistDetails from "@/components/training-checklist/training-checklist-details";
 import { ROUTES } from "@/constants/routes";
 import { PageHeader } from "@/components/common/page-header";
 

@@ -8,7 +8,7 @@ import { CardTableToolbar } from "@/components/common/card-table/card-table-tool
 import { CardTableColumnHeader } from "@/components/common/card-table/card-table-column-header";
 import { CardTablePagination } from "@/components/common/card-table/card-table-pagination";
 import { Dialog } from "@/components/ui/dialog";
-import ChecklistDialogContent from "./checklist-dialog-content";
+import ChecklistDialogContent from "../common/checklist-dialog-content";
 import {
   useAttachmentStatus,
   useUpdateAttachmentStatus,
