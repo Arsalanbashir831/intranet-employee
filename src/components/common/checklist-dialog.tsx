@@ -25,7 +25,6 @@ export default function ChecklistDialog({ files = [], ...props }: ChecklistDialo
 					<ArrowRight className="w-3 h-3 sm:w-3.5 sm:h-3.5 ml-1" />
 				</span>
 			</DialogTrigger>
-
 			<ChecklistDialogContent {...props} files={files} />
 		</Dialog>
 	);
