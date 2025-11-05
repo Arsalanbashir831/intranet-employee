@@ -6,7 +6,6 @@ import { Card } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft } from "lucide-react";
 import { ROUTES } from "@/constants/routes";
 import { cn } from "@/lib/utils";
 import type {
@@ -229,18 +228,8 @@ export default function TrainingDetailsPage() {
         ]}
       />
 
-      <div className="mx-auto w-full px-4 sm:px-6 md:px-8 py-6 sm:py-8 lg:py-10">
+      <div className="mx-auto w-full px-4 sm:px-1 md:px-2 py-6 sm:py-8 lg:py-10">
         <Card className="shadow-none border-[#FFF6F6] p-4 sm:p-5 md:p-5">
-          {/* Back Button */}
-          <Button
-            variant="ghost"
-            onClick={() => router.push(ROUTES.DASHBOARD.TRAINING_CHECKLIST)}
-            className="mb-4 text-[#E5004E] hover:text-[#E5004E]/80 hover:bg-[#E5004E]/10"
-          >
-            <ArrowLeft className="h-4 w-4 mr-2" />
-            Back to Trainings
-          </Button>
-
           {/* Training Information */}
           <div className="mb-6">
             <h1 className="text-2xl font-semibold text-gray-900 mb-2">
@@ -263,15 +252,15 @@ export default function TrainingDetailsPage() {
             <h2 className="text-lg font-semibold text-gray-900 mb-4">
               Assigned Employees ({training.assignTo.length})
             </h2>
-            <div className="grid gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-4 gap-4">
               {training.assignTo.map((employee) => {
                 const statusConfig = getStatusConfig(employee.status);
                 return (
                   <div
                     key={employee.id}
-                    className="flex items-center gap-4 p-4 border border-gray-200 rounded-lg hover:bg-gray-50"
+                    className="flex flex-col items-center gap-3 p-4 border border-gray-200 rounded-lg hover:bg-gray-50"
                   >
-                    <Avatar className="size-12">
+                    <Avatar className="size-16">
                       <AvatarImage
                         src={
                           employee.profileImage || "/logos/profile-circle.svg"
@@ -285,11 +274,11 @@ export default function TrainingDetailsPage() {
                           .join("")}
                       </AvatarFallback>
                     </Avatar>
-                    <div className="flex-1">
+                    <div className="flex flex-col items-center text-center w-full">
                       <h3 className="text-sm font-semibold text-gray-900">
                         {employee.name}
                       </h3>
-                      <div className="flex items-center gap-3 mt-1">
+                      <div className="flex items-center gap-2 mt-1">
                         <span className="text-xs text-gray-600">
                           {employee.branch}
                         </span>
