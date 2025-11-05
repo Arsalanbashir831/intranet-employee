@@ -1,6 +1,7 @@
 import { PageHeader } from "@/components/common/page-header";
 import { ROUTES } from "@/constants/routes";
 import TaskChecklistDetails from "@/components/common/task-checklist-details";
+import ExecutiveTable from "@/components/common/executive-table";
 
 export default function TrainingChecklist() {
 	return (
@@ -16,6 +17,7 @@ export default function TrainingChecklist() {
 				]}
 			/>
 			<TaskChecklistDetails heading="Training Checklist" type="training" />
+			<ExecutiveTable />
 		</div>
 	);
 }
