@@ -37,10 +37,12 @@ import {
 import { format } from "date-fns";
 import Image from "next/image";
 import type { PollVoter } from "@/services/polls";
+import { useAuth } from "@/contexts/auth-context";
 
 export default function PollDetail() {
   const params = useParams();
   const id = params.id as string;
+  const { user } = useAuth();
   const [activeTab, setActiveTab] = useState("detail");
   
   // Fetch poll data from API
@@ -184,12 +186,12 @@ export default function PollDetail() {
           { label: "Polls", href: `${ROUTES.DASHBOARD.COMPANY_HUB}?tab=polls` },
           { label: poll.title }
         ]}
-        tabs={[
+        tabs={user?.isExecutive ? [
           { key: "detail", label: "Detail" },
           { key: "stats", label: "Stats" },
-        ]}
-        activeTab={activeTab}
-        onTabChange={setActiveTab}
+        ] : undefined}
+        activeTab={user?.isExecutive ? activeTab : undefined}
+        onTabChange={user?.isExecutive ? setActiveTab : undefined}
         tabsPosition="right"
         tabsClassName="min-w-[250px]"
       />
@@ -279,7 +281,7 @@ export default function PollDetail() {
           </div>
 
           {/* Poll Content */}
-          {activeTab === "detail" ? (
+          {(!user?.isExecutive || activeTab === "detail") ? (
               <>
               {/* Poll Options */}
               <div className="py-6">
