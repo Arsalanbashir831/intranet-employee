@@ -85,25 +85,26 @@ export default function Home() {
         {/* ============ Announcements (desktop = horizontal scroll) ============ */}
         <LatestAnnouncements />
 
-        {/* ======================= Bottom area ======================= */}
-        <section className="pb-[calc(var(--gap)*1.5)]">
-          <div
-            className="grid w-full grid-cols-1 md:grid-cols-[390px_minmax(0,1fr)]
-            gap-[var(--gap)]"
-          >
-            {/* Left column */}
-            <div className="flex flex-col gap-[calc(var(--gap)*0.9)] w-full">
-              <Checklist
-                title="Training Checklist"
-                viewMoreLink={ROUTES.DASHBOARD.TRAINING_CHECKLIST}
-                type="training"
-              />
-              {/* keep your contact block */}
-              <div>
-                {/* ContactSection keeps its own padding */}
-                <ContactSection />
-              </div>
-            </div>
+				{/* ======================= Bottom area ======================= */}
+				<section className="pb-[calc(var(--gap)*1.5)]">
+					<div
+						className="grid w-full grid-cols-1 md:grid-cols-[390px_minmax(0,1fr)]
+            gap-[var(--gap)]">
+						{/* Left column */}
+						<div className="flex flex-col gap-[calc(var(--gap)*0.9)] w-full">
+					{!user?.isExecutive ? (
+							<Checklist
+								title="Training Checklist"
+								viewMoreLink={ROUTES.DASHBOARD.TRAINING_CHECKLIST}
+								type="training"
+							/>
+						) : null}
+							{/* keep your contact block */}
+							<div>
+								{/* ContactSection keeps its own padding */}
+								<ContactSection />
+							</div>
+						</div>
 
             {/* Right column */}
             <div className="flex flex-col gap-[calc(var(--gap)*0.9)] w-full">
