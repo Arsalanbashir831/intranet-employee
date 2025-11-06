@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useRef, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { ColumnDef, SortingState } from "@tanstack/react-table";
@@ -111,7 +111,17 @@ export default function ExecutiveTable() {
   }), [pagination]);
 
   // Fetch executive training checklists from API with filters and pagination
-  const { data, isLoading, isError } = useExecutiveTrainingChecklists(queryParams, paginationParams);
+  const { data, isLoading, isError, isFetching } = useExecutiveTrainingChecklists(queryParams, paginationParams);
+
+  // Track if we've ever successfully loaded data (to prevent full card loading after first load)
+  const hasEverLoadedRef = useRef(false);
+  
+  // Update ref when we successfully get data
+  useEffect(() => {
+    if (data?.training_checklists?.results && data.training_checklists.results.length > 0) {
+      hasEverLoadedRef.current = true;
+    }
+  }, [data]);
 
   // Transform API data to ExecutiveTask format
   const tasks = useMemo(() => {
@@ -189,8 +199,14 @@ export default function ExecutiveTable() {
     router.push(`/training-checklist/${task.id}`);
   };
 
-  // Show loading state
-  if (isLoading) {
+  // Show loading state only on true initial load (when we've never loaded data before)
+  // When filters change, we'll show loading overlay on the table instead
+  // Use ref to track if we've ever successfully loaded data
+  const hasData = !!data?.training_checklists?.results;
+  const isInitialLoading = isLoading && !hasEverLoadedRef.current;
+
+  // Show initial loading state (only on first load when there's absolutely no data)
+  if (isInitialLoading) {
     return (
       <div className="mx-auto w-full px-4 sm:px-6 md:px-8 py-6 sm:py-8 lg:py-10">
         <Card
@@ -273,7 +289,7 @@ export default function ExecutiveTable() {
         <CardTableColumnHeader column={column} title="Branch" />
       ),
       cell: ({ row }) => (
-        <span className="text-sm text-gray-700">{row.original.branch}</span>
+        <span className="text-sm text-gray-700">{row.original.branch || "-"}</span>
       ),
     },
     {
@@ -282,7 +298,7 @@ export default function ExecutiveTable() {
         <CardTableColumnHeader column={column} title="Department" />
       ),
       cell: ({ row }) => (
-        <span className="text-sm text-gray-700">{row.original.department}</span>
+        <span className="text-sm text-gray-700">{row.original.department || "-"}</span>
       ),
     },
     {
@@ -369,56 +385,64 @@ export default function ExecutiveTable() {
             }
             className="flex sm:flex-col sm:items-start"
           />
-          
-          {/* Branch and Department Filters */}
-         
         </div>
 
-        <div className="overflow-x-auto max-w-full pr-2 pb-2">
-          {sortedTasks.length === 0 ? (
-            <div className="text-center py-8 text-gray-500">
-              {searchQuery ? "No tasks match your search" : "No tasks found"}
-            </div>
-          ) : (
-            <div className="w-max min-w-full">
-              <CardTable
-                columns={columns}
-                data={sortedTasks}
-                headerClassName="grid-cols-[1.5fr_1fr_1fr_1fr_1fr_1fr_100px]"
-                rowClassName="hover:bg-[#FAFAFB] grid-cols-[1.5fr_1fr_1fr_1fr_1fr_1fr_100px] cursor-pointer"
-                sorting={sorting}
-                onSortingChange={setSorting}
-                onRowClick={(row) =>
-                  handleRowClick(row.original as ExecutiveTask)
-                }
-                noResultsContent={
-                  <div className="text-center py-8 text-gray-500">
-                    {searchQuery
-                      ? "No tasks match your search"
-                      : "No tasks found"}
-                  </div>
-                }
-                footer={(table) => {
-                  if (totalCount === 0) {
-                    return null;
+        {/* Table container with loading overlay */}
+        <div className="relative w-full">
+          <div className="relative overflow-x-auto w-full">
+            {/* Loading overlay when fetching - only covers table area */}
+            {/* Show overlay if: fetching AND (we have data OR we have tasks from previous render) */}
+            {isFetching && (hasData || sortedTasks.length > 0) && (
+              <div className="absolute inset-0 bg-white/60 backdrop-blur-sm z-10 flex items-center justify-center rounded-lg">
+                <div className="animate-pulse text-gray-500 text-sm">Loading...</div>
+              </div>
+            )}
+            
+            {sortedTasks.length === 0 && !isFetching ? (
+              <div className="text-center py-8 text-gray-500">
+                {searchQuery ? "No tasks match your search" : "No tasks found"}
+              </div>
+            ) : (
+              <div className="min-w-[1000px]">
+                <CardTable
+                  columns={columns}
+                  data={sortedTasks}
+                  headerClassName="grid-cols-[1.5fr_1fr_1fr_1fr_1fr_1fr_100px]"
+                  rowClassName="hover:bg-[#FAFAFB] grid-cols-[1.5fr_1fr_1fr_1fr_1fr_1fr_100px] cursor-pointer"
+                  sorting={sorting}
+                  onSortingChange={setSorting}
+                  onRowClick={(row) =>
+                    handleRowClick(row.original as ExecutiveTask)
                   }
+                  noResultsContent={
+                    <div className="text-center py-8 text-gray-500">
+                      {searchQuery
+                        ? "No tasks match your search"
+                        : "No tasks found"}
+                    </div>
+                  }
+                  footer={(table) => {
+                    if (totalCount === 0) {
+                      return null;
+                    }
 
-                  return (
-                    <CardTablePagination
-                      table={table}
-                      pageIndex={pagination.pageIndex}
-                      pageSize={pagination.pageSize}
-                      totalCount={totalCount}
-                      onPaginationChange={(newPagination) => {
-                        setPagination(newPagination);
-                      }}
-                      alwaysShow={true}
-                    />
-                  );
-                }}
-              />
-            </div>
-          )}
+                    return (
+                      <CardTablePagination
+                        table={table}
+                        pageIndex={pagination.pageIndex}
+                        pageSize={pagination.pageSize}
+                        totalCount={totalCount}
+                        onPaginationChange={(newPagination) => {
+                          setPagination(newPagination);
+                        }}
+                        alwaysShow={true}
+                      />
+                    );
+                  }}
+                />
+              </div>
+            )}
+          </div>
         </div>
       </Card>
     </div>

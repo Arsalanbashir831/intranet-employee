@@ -156,7 +156,7 @@ export default function TrainingChecklistDetails({
           year: "numeric",
         })
         .replace(" ", " "),
-      attachmentId: item.attachment,
+      attachmentId: item.id, // Use AttachmentStatus ID, not attachment foreign key
       status: item.status,
       detail: item.attachment_details.detail,
       files: item.attachment_details.files,
