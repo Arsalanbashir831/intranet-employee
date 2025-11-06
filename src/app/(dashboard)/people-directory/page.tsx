@@ -16,15 +16,10 @@ import { useDebounce } from "@/hooks/use-debounce";
 import {
 	useAllEmployees,
 } from "@/hooks/queries/use-employees";
-import { Button } from "@/components/ui/button";
-import {
-	DropdownMenu,
-	DropdownMenuContent,
-	DropdownMenuRadioGroup,
-	DropdownMenuRadioItem,
-	DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { ChevronDown, Users } from "lucide-react";
+import { RoleFilterDropdown } from "@/components/common/role-filter-dropdown";
+import { BranchFilterDropdown } from "@/components/common/branch-filter-dropdown";
+import { DepartmentFilterDropdown } from "@/components/common/department-filter-dropdown";
+import { useAuth } from "@/contexts/auth-context";
 
 
 /* ---------------- Types & Data ---------------- */
@@ -59,13 +54,16 @@ const columns = [
 ];
 
 export default function OrgChartDirectoryPage() {
+	const { user } = useAuth();
 	const [query, setQuery] = useState("");
 	const debouncedQuery = useDebounce(query, 400);
 	const [page, setPage] = useState(1);
 	const pageSize = 8;
 
-	// Role filter state
+	// Filter states
 	const [selectedRole, setSelectedRole] = useState<string>("__all__");
+	const [selectedBranch, setSelectedBranch] = useState<string>("__all__");
+	const [selectedDepartment, setSelectedDepartment] = useState<string>("__all__");
 
 	// Build query parameters
 	const queryParams: Record<string, string | number | boolean> = {
@@ -77,6 +75,16 @@ export default function OrgChartDirectoryPage() {
 	// Add role filter if selected
 	if (selectedRole && selectedRole !== "__all__") {
 		queryParams.role = selectedRole;
+	}
+
+	// Add branch filter if selected (only for executives)
+	if (user?.isExecutive && selectedBranch && selectedBranch !== "__all__") {
+		queryParams.branch = selectedBranch;
+	}
+
+	// Add department filter if selected (only for executives)
+	if (user?.isExecutive && selectedDepartment && selectedDepartment !== "__all__") {
+		queryParams.department = selectedDepartment;
 	}
 
 	// Use the single employees query with filters
@@ -174,48 +182,32 @@ export default function OrgChartDirectoryPage() {
 						</div>
 						<div className="flex flex-wrap gap-3 items-center">
 							{/* Role Filter Dropdown */}
-							<DropdownMenu>
-								<DropdownMenuTrigger asChild>
-									<Button variant="outline" className="gap-1 rounded-[4px]">
-										<Users className="size-3.5 mr-1" /> Filter by Role
-										<ChevronDown className="size-4" />
-									</Button>
-								</DropdownMenuTrigger>
-								<DropdownMenuContent align="end" className="w-56">
-									<DropdownMenuRadioGroup
-										value={selectedRole}
-										onValueChange={(value) => {
-											setSelectedRole(value);
+							<RoleFilterDropdown
+								selectedRole={selectedRole}
+								onRoleChange={(value) => {
+									setSelectedRole(value);
+									setPage(1); // Reset to first page when filtering
+								}}
+							/>
+							{/* Branch and Department Filters - Only for Executives */}
+							{user?.isExecutive && (
+								<>
+									<BranchFilterDropdown
+										selectedBranch={selectedBranch}
+										onBranchChange={(value) => {
+											setSelectedBranch(value);
 											setPage(1); // Reset to first page when filtering
-										}}>
-										<DropdownMenuRadioItem
-											value="__all__"
-											className="py-2 text-[15px]">
-											All Roles
-										</DropdownMenuRadioItem>
-										<DropdownMenuRadioItem
-											value="1"
-											className="py-2 text-[15px]">
-											Junior Staff
-										</DropdownMenuRadioItem>
-										<DropdownMenuRadioItem
-											value="2"
-											className="py-2 text-[15px]">
-											Mid Senior Staff
-										</DropdownMenuRadioItem>
-										<DropdownMenuRadioItem
-											value="3"
-											className="py-2 text-[15px]">
-											Senior Staff
-										</DropdownMenuRadioItem>
-										<DropdownMenuRadioItem
-											value="4"
-											className="py-2 text-[15px]">
-											Manager
-										</DropdownMenuRadioItem>
-									</DropdownMenuRadioGroup>
-								</DropdownMenuContent>
-							</DropdownMenu>
+										}}
+									/>
+									<DepartmentFilterDropdown
+										selectedDepartment={selectedDepartment}
+										onDepartmentChange={(value) => {
+											setSelectedDepartment(value);
+											setPage(1); // Reset to first page when filtering
+										}}
+									/>
+								</>
+							)}
 						</div>
 					</div>
 

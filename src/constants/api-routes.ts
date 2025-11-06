@@ -67,4 +67,10 @@ export const API_ROUTES = {
 			DETAIL: (id: number | string) => `/newhire/training-checklist/${id}/`,
 		},
 	},
+	ROLES: {
+		LIST: "/roles/",
+	},
+	BRANCHES: {
+		LIST: "/branches/",
+	},
 } as const;
