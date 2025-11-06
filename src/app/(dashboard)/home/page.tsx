@@ -92,11 +92,13 @@ export default function Home() {
             gap-[var(--gap)]">
 						{/* Left column */}
 						<div className="flex flex-col gap-[calc(var(--gap)*0.9)] w-full">
+					{!user?.isExecutive ? (
 							<Checklist
 								title="Training Checklist"
 								viewMoreLink={ROUTES.DASHBOARD.TRAINING_CHECKLIST}
 								type="training"
 							/>
+						) : null}
 							{/* keep your contact block */}
 							<div>
 								{/* ContactSection keeps its own padding */}
