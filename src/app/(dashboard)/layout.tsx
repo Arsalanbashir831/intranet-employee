@@ -17,7 +17,7 @@ export default function DashboardLayout({
 			<AuthProvider>
 				<div className="min-h-screen bg-[#F8F8F8]">
 					<Navbar />
-					<main className="mx-auto max-w-screen-2xl">
+					<main >
 						<Suspense>{children}</Suspense>
 					</main>
 				</div>

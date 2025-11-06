@@ -2,7 +2,6 @@
 
 import React from "react";
 import Image from "next/image";
-import { Badge } from "@/components/ui/badge";
 import { Announcement } from "@/services/announcements";
 
 interface AnnouncementDetailCardProps {
@@ -35,7 +34,7 @@ export default function AnnouncementDetailCard({
     : announcement.hash_tags || "";
 
   return (
-    <div className="mx-auto w-full px-4 sm:px-6 md:px-8 py-6 sm:py-8 lg:py-10">
+    <div className="w-full px-4 sm:px-6 md:px-8 py-6 sm:py-8 lg:py-10">
       <div className="bg-white rounded-lg shadow-sm p-4 sm:p-6 lg:p-5">
         <div
           className="
