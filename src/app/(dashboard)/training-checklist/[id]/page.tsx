@@ -13,6 +13,7 @@ import { useExecutiveTrainingChecklist } from "@/hooks/queries/use-new-hire";
 import type { ExecutiveTrainingChecklistEmployee } from "@/services/new-hire";
 import Image from "next/image";
 import { format } from "date-fns";
+import { Skeleton } from "@/components/ui/skeleton";
 
 function getStatusConfig(status: "to_do" | "in_progress" | "done") {
   const statusConfig = {
@@ -47,7 +48,7 @@ export default function TrainingDetailsPage() {
     user?.isExecutive ? trainingId : ""
   );
 
-  // Show loading state
+  // Show loading state with skeleton
   if (user?.isExecutive && isExecutiveLoading) {
     return (
       <div className="min-h-screen bg-[#F8F8F8]">
@@ -64,8 +65,61 @@ export default function TrainingDetailsPage() {
         />
         <div className="mx-auto w-full px-4 sm:px-1 md:px-2 py-6 sm:py-8 lg:py-10">
           <Card className="shadow-none border-[#FFF6F6] p-4 sm:p-5 md:p-5">
-            <div className="flex justify-center items-center h-[200px]">
-              <div className="animate-pulse text-gray-500">Loading training details...</div>
+            {/* Title Skeleton */}
+            <div className="mb-6">
+              <Skeleton className="h-8 w-3/4 mb-4" />
+              <Skeleton className="h-6 w-full mb-2" />
+              <Skeleton className="h-6 w-5/6 mb-2" />
+              <Skeleton className="h-6 w-4/6" />
+            </div>
+
+            {/* Description Skeleton */}
+            <div className="mb-6 space-y-3">
+              <Skeleton className="h-4 w-full" />
+              <Skeleton className="h-4 w-full" />
+              <Skeleton className="h-4 w-11/12" />
+              <Skeleton className="h-4 w-full" />
+              <Skeleton className="h-4 w-10/12" />
+              <Skeleton className="h-4 w-full" />
+            </div>
+
+            {/* Deadline and Attachments Skeleton */}
+            <div className="mb-6 space-y-4">
+              <div className="flex items-center gap-2">
+                <Skeleton className="h-4 w-16" />
+                <Skeleton className="h-6 w-24" />
+              </div>
+              <div className="space-y-2">
+                <Skeleton className="h-4 w-20" />
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                  <Skeleton className="h-12 sm:h-14 rounded-xl" />
+                  <Skeleton className="h-12 sm:h-14 rounded-xl" />
+                  <Skeleton className="h-12 sm:h-14 rounded-xl" />
+                </div>
+              </div>
+            </div>
+
+            {/* Separator */}
+            <div className="border-t border-gray-200 my-6"></div>
+
+            {/* Assigned Employees Skeleton */}
+            <div>
+              <Skeleton className="h-6 w-48 mb-4" />
+              <div className="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-4 gap-4">
+                {Array.from({ length: 8 }).map((_, index) => (
+                  <div
+                    key={index}
+                    className="flex flex-col items-center gap-3 p-4 border border-gray-200 rounded-lg"
+                  >
+                    <Skeleton className="size-16 rounded-full" />
+                    <div className="flex flex-col items-center text-center w-full gap-2">
+                      <Skeleton className="h-4 w-24" />
+                      <Skeleton className="h-3 w-32" />
+                    </div>
+                    <Skeleton className="h-6 w-20 rounded-md" />
+                  </div>
+                ))}
+              </div>
             </div>
           </Card>
         </div>

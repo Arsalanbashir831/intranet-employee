@@ -24,8 +24,6 @@ interface Employee {
   joinDate: string;
   department: string;
   reportingTo: string;
-  address: string;
-  city: string;
   branch: string;
   status: string;
   education: string;
@@ -56,8 +54,6 @@ export function EmployeeProfileCard({ employee }: EmployeeProfileCardProps) {
         reportingTo: apiEmployee.branch_departments?.[0]?.manager
           ? apiEmployee.branch_departments[0].manager.employee.emp_name
           : "--",
-        address: apiEmployee.address,
-        city: apiEmployee.city,
         branch: apiEmployee.branch_departments?.[0]?.branch?.branch_name || "",
         status: "Active Employee", // Default status
         education: apiEmployee.education || "",
@@ -231,16 +227,6 @@ export function EmployeeProfileCard({ employee }: EmployeeProfileCardProps) {
               icon: "/icons/manager.svg",
               label: "Reporting to",
               value: resolvedEmployee.reportingTo,
-            },
-            {
-              icon: "/icons/map-pin.svg",
-              label: "Address",
-              value: resolvedEmployee.address,
-            },
-            {
-              icon: "/icons/map-pin.svg",
-              label: "City",
-              value: resolvedEmployee.city,
             },
             {
               icon: "/icons/branch.svg",
