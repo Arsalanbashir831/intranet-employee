@@ -108,6 +108,14 @@ export type ExecutiveTrainingChecklistAssignedTo = {
   name: string;
   email: string;
   avatar: string | null;
+  branches: Array<{
+    id: number;
+    name: string;
+  }>;
+  departments: Array<{
+    id: number;
+    name: string;
+  }>;
 };
 
 export type ExecutiveTrainingChecklist = {
@@ -122,7 +130,12 @@ export type ExecutiveTrainingChecklist = {
 };
 
 export type ExecutiveTrainingChecklistListResponse = {
-  training_checklists: ExecutiveTrainingChecklist[];
+  training_checklists: {
+    count: number;
+    page: number;
+    page_size: number;
+    results: ExecutiveTrainingChecklist[];
+  };
 };
 
 // Executive Training Checklist Detail types
@@ -152,9 +165,35 @@ export type ExecutiveTrainingChecklistDetail = {
 };
 
 // Executive Training Checklist service functions
-export async function listExecutiveTrainingChecklists() {
+export async function listExecutiveTrainingChecklists(
+  params?: Record<string, string | number | boolean>,
+  pagination?: { page?: number; pageSize?: number }
+) {
+  const queryParams: Record<string, string> = {};
+  
+  // Add search and filter parameters
+  if (params) {
+    Object.entries(params).forEach(([key, value]) => {
+      queryParams[key] = String(value);
+    });
+  }
+  
+  // Add pagination parameters
+  if (pagination) {
+    if (pagination.page !== undefined) {
+      queryParams.page = String(pagination.page);
+    }
+    if (pagination.pageSize !== undefined) {
+      queryParams.page_size = String(pagination.pageSize);
+    }
+  }
+  
+  const query = Object.keys(queryParams).length > 0
+    ? `?${new URLSearchParams(queryParams)}`
+    : "";
+    
   const res = await apiCaller<ExecutiveTrainingChecklistListResponse>(
-    API_ROUTES.NEW_HIRE.TRAINING_CHECKLIST.LIST,
+    `${API_ROUTES.NEW_HIRE.TRAINING_CHECKLIST.LIST}${query}`,
     "GET"
   );
   return res.data;

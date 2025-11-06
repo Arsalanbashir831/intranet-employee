@@ -152,7 +152,27 @@ export default function TrainingDetailsPage() {
                 {training.title}
               </h1>
               <div 
-                className="text-sm text-gray-600 mb-4 prose prose-sm max-w-none [&_p]:my-2 [&_ul]:my-2 [&_ol]:my-2 [&_li]:my-1"
+                className="
+                  text-[#202124] leading-relaxed space-y-4
+                  text-sm sm:text-base md:text-lg font-extralight
+                  [&_p]:leading-relaxed [&_p]:mb-4
+                  [&_p_strong]:font-semibold [&_p_strong]:text-base [&_p_strong]:sm:text-lg [&_p_strong]:md:text-xl
+                  [&_p:only-child_strong]:block [&_p:only-child_strong]:mb-2
+                  [&_ol]:list-decimal [&_ol]:list-outside [&_ol]:space-y-2 [&_ol]:ml-4 [&_ol]:sm:ml-6 [&_ol]:md:ml-8 [&_ol]:mb-4 [&_ol]:mt-2
+                  [&_ol.list-decimal]:list-decimal [&_ol.list-inside]:list-outside [&_ol.list-inside]:pl-4
+                  [&_ol_li]:mb-3 [&_ol_li]:pl-2 [&_ol_li]:list-item [&_ol_li]:min-h-[1.5rem]
+                  [&_ol_li_p]:mb-0 [&_ol_li_p]:inline-block
+                  [&_ol_li_p_strong]:font-semibold
+                  [&_ol_li.list-item]:list-item
+                  [&_ul]:list-disc [&_ul]:list-outside [&_ul]:space-y-2 [&_ul]:ml-4 [&_ul]:sm:ml-6 [&_ul]:md:ml-8 [&_ul]:mb-4 [&_ul]:mt-2
+                  [&_ul.list-disc]:list-disc [&_ul.list-inside]:list-outside [&_ul.list-inside]:pl-4
+                  [&_ul_li]:mb-2 [&_ul_li]:pl-2 [&_ul_li]:list-item [&_ul_li]:min-h-[1.5rem]
+                  [&_ul_li_p]:mb-0
+                  [&_ul_li.list-item]:list-item
+                  [&_ol_li_ul]:list-disc [&_ol_li_ul]:list-outside [&_ol_li_ul]:ml-6 [&_ol_li_ul]:sm:ml-8 [&_ol_li_ul]:md:ml-10 [&_ol_li_ul]:mt-2 [&_ol_li_ul]:mb-2
+                  [&_ol_li_ul_li]:mb-1 [&_ol_li_ul_li]:pl-2
+                  [&_ol_li_ul_li_p]:mb-0
+                "
                 dangerouslySetInnerHTML={{ __html: training.description }}
               />
             </div>

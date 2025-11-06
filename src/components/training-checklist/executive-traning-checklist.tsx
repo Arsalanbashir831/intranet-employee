@@ -14,13 +14,16 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Eye } from "lucide-react";
 import { useExecutiveTrainingChecklists } from "@/hooks/queries/use-new-hire";
 import type { ExecutiveTrainingChecklist } from "@/services/new-hire";
+import { BranchFilterDropdown } from "@/components/common/branch-filter-dropdown";
+import { DepartmentFilterDropdown } from "@/components/common/department-filter-dropdown";
+import { useDebounce } from "@/hooks/use-debounce";
 
 export interface AssignedEmployee {
   id: string;
   name: string;
   profileImage?: string;
-  branch: string;
-  department: string;
+  branch?: string;
+  department?: string;
   status: "to_do" | "in_progress" | "done";
 }
 
@@ -28,6 +31,8 @@ export interface ExecutiveTask {
   id: string;
   title: string;
   description: string;
+  branch?: string;
+  department?: string;
   assignTo: AssignedEmployee[];
   assignBy: string;
 }
@@ -71,51 +76,82 @@ function AssignToAvatars({ employees }: { employees: AssignedEmployee[] }) {
 export default function ExecutiveTable() {
   const router = useRouter();
   const [searchQuery, setSearchQuery] = useState("");
+  const debouncedSearchQuery = useDebounce(searchQuery, 400);
+  const [selectedBranch, setSelectedBranch] = useState<string>("__all__");
+  const [selectedDepartment, setSelectedDepartment] = useState<string>("__all__");
   const [sorting, setSorting] = useState<SortingState>([]);
   const [pagination, setPagination] = useState({ pageIndex: 0, pageSize: 10 });
 
-  // Fetch executive training checklists from API
-  const { data, isLoading, isError } = useExecutiveTrainingChecklists();
+  // Build query parameters for training checklist API
+  const queryParams = useMemo(() => {
+    const params: Record<string, string | number> = {};
+    
+    // Add search filter (using debounced value)
+    if (debouncedSearchQuery) {
+      params.search = debouncedSearchQuery;
+    }
+    
+    // Add branch filter if selected
+    if (selectedBranch !== "__all__") {
+      params.branch = selectedBranch;
+    }
+    
+    // Add department filter if selected
+    if (selectedDepartment !== "__all__") {
+      params.department = selectedDepartment;
+    }
+    
+    return Object.keys(params).length > 0 ? params : undefined;
+  }, [debouncedSearchQuery, selectedBranch, selectedDepartment]);
+
+  // Build pagination parameters (page is 1-indexed in API)
+  const paginationParams = useMemo(() => ({
+    page: pagination.pageIndex + 1,
+    pageSize: pagination.pageSize,
+  }), [pagination]);
+
+  // Fetch executive training checklists from API with filters and pagination
+  const { data, isLoading, isError } = useExecutiveTrainingChecklists(queryParams, paginationParams);
 
   // Transform API data to ExecutiveTask format
   const tasks = useMemo(() => {
-    if (!data?.training_checklists || !Array.isArray(data.training_checklists)) {
+    if (!data?.training_checklists?.results || !Array.isArray(data.training_checklists.results)) {
       return [];
     }
-    return data.training_checklists.map((item: ExecutiveTrainingChecklist): ExecutiveTask => ({
-      id: item.id.toString(),
-      title: item.title || "Untitled",
-      description: item.description || "",
-      assignTo: (item.assigned_to || []).map((employee) => ({
-        id: employee.id.toString(),
-        name: employee.name || "Unknown",
-        profileImage: employee.avatar || undefined,
-        branch: "", // Not provided in API
-        department: "", // Not provided in API
-        status: "to_do" as const, // Default status, not provided in list API
-      })),
-      assignBy: item.assigned_by || "N/A",
-    }));
+    
+    return data.training_checklists.results.map((item: ExecutiveTrainingChecklist): ExecutiveTask => {
+      // Get branch and department from first assigned employee (for display in table)
+      const firstAssigned = item.assigned_to?.[0];
+      const branch = firstAssigned?.branches?.[0]?.name;
+      const department = firstAssigned?.departments?.[0]?.name;
+      
+      return {
+        id: item.id.toString(),
+        title: item.title || "Untitled",
+        description: item.description || "",
+        branch: branch,
+        department: department,
+        assignTo: (item.assigned_to || []).map((employee) => ({
+          id: employee.id.toString(),
+          name: employee.name || "Unknown",
+          profileImage: employee.avatar || undefined,
+          branch: employee.branches?.[0]?.name,
+          department: employee.departments?.[0]?.name,
+          status: "to_do" as const, // Default status, not provided in list API
+        })),
+        assignBy: item.assigned_by || "Admin",
+      };
+    });
   }, [data]);
 
-  // Filter and sort tasks
-  const filteredAndSortedTasks = useMemo(() => {
-    let filtered = tasks;
-
-    // Apply search filter
-    if (searchQuery) {
-      const query = searchQuery.toLowerCase();
-      filtered = filtered.filter(
-        (task) =>
-          task.title.toLowerCase().includes(query) ||
-          task.assignBy.toLowerCase().includes(query)
-      );
-    }
+  // Sort tasks (API handles filtering and pagination, but we do client-side sorting)
+  const sortedTasks = useMemo(() => {
+    let sorted = tasks;
 
     // Apply sorting
     if (sorting.length > 0) {
       const { id, desc } = sorting[0];
-      filtered = [...filtered].sort((a, b) => {
+      sorted = [...sorted].sort((a, b) => {
         let aValue: string | number;
         let bValue: string | number;
 
@@ -143,15 +179,11 @@ export default function ExecutiveTable() {
       });
     }
 
-    return filtered;
-  }, [tasks, searchQuery, sorting]);
+    return sorted;
+  }, [tasks, sorting]);
 
-  // Paginate tasks
-  const paginatedTasks = useMemo(() => {
-    const start = pagination.pageIndex * pagination.pageSize;
-    const end = start + pagination.pageSize;
-    return filteredAndSortedTasks.slice(start, end);
-  }, [filteredAndSortedTasks, pagination]);
+  // Get total count from API response
+  const totalCount = data?.training_checklists?.count || 0;
 
   const handleRowClick = (task: ExecutiveTask) => {
     router.push(`/training-checklist/${task.id}`);
@@ -195,17 +227,28 @@ export default function ExecutiveTable() {
     );
   }
 
+  // Helper function to get first 3 words
+  const getFirstThreeWords = (text: string): string => {
+    if (!text) return "";
+    const words = text.trim().split(/\s+/);
+    return words.slice(0, 3).join(" ") + (words.length > 3 ? "..." : "");
+  };
+
   const columns: ColumnDef<ExecutiveTask>[] = [
     {
       accessorKey: "title",
       header: ({ column }) => (
         <CardTableColumnHeader column={column} title="Title" />
       ),
-      cell: ({ row }) => (
-        <span className="text-sm font-medium text-gray-900">
-          {row.original.title}
-        </span>
-      ),
+      cell: ({ row }) => {
+        const title = row.original.title || "";
+        const truncatedTitle = getFirstThreeWords(title);
+        return (
+          <span className="text-sm font-medium text-gray-900" title={title}>
+            {truncatedTitle || "Untitled"}
+          </span>
+        );
+      },
     },
     {
       accessorKey: "description",
@@ -216,12 +259,31 @@ export default function ExecutiveTable() {
         // Strip HTML tags for display in table
         const description = row.original.description || "";
         const plainText = description.replace(/<[^>]*>/g, "").trim();
+        const truncatedDescription = getFirstThreeWords(plainText);
         return (
-          <span className="text-sm text-gray-700 line-clamp-2" title={plainText}>
-            {plainText || "No description"}
+          <span className="text-sm text-gray-700" title={plainText}>
+            {truncatedDescription || "No description"}
           </span>
         );
       },
+    },
+    {
+      accessorKey: "branch",
+      header: ({ column }) => (
+        <CardTableColumnHeader column={column} title="Branch" />
+      ),
+      cell: ({ row }) => (
+        <span className="text-sm text-gray-700">{row.original.branch}</span>
+      ),
+    },
+    {
+      accessorKey: "department",
+      header: ({ column }) => (
+        <CardTableColumnHeader column={column} title="Department" />
+      ),
+      cell: ({ row }) => (
+        <span className="text-sm text-gray-700">{row.original.department}</span>
+      ),
     },
     {
       accessorKey: "assignTo",
@@ -269,28 +331,51 @@ export default function ExecutiveTable() {
           "w-full h-full"
         )}
       >
-        <CardTableToolbar
-          title="Training Checklist"
-          placeholder="Search"
-          searchValue={searchQuery}
-          onSearchChange={setSearchQuery}
-          hasFilter={false}
-          sortOptions={[
-            { label: "Title", value: "title" },
-            { label: "Assign By", value: "assignBy" },
-          ]}
-          activeSort={sorting[0]?.id || "title"}
-          onSortChange={(value) => {
-            const currentSort = sorting[0];
-            const newDesc =
-              currentSort?.id === value ? !currentSort?.desc : false;
-            setSorting([{ id: value, desc: newDesc }]);
-          }}
-          className="flex sm:flex-col sm:items-start"
-        />
+        <div className="mb-4 space-y-3">
+          <CardTableToolbar
+            title="Training Checklist"
+            placeholder="Search by title"
+            searchValue={searchQuery}
+            onSearchChange={(value) => {
+              setSearchQuery(value);
+              setPagination({ pageIndex: 0, pageSize: pagination.pageSize });
+            }}
+            hasFilter={false}
+            hasSort={false}
+            activeSort={sorting[0]?.id || "title"}
+            onSortChange={(value) => {
+              const currentSort = sorting[0];
+              const newDesc =
+                currentSort?.id === value ? !currentSort?.desc : false;
+              setSorting([{ id: value, desc: newDesc }]);
+            }}
+            accessControl={
+              <div className="flex gap-2">
+              <BranchFilterDropdown
+                selectedBranch={selectedBranch}
+                onBranchChange={(branchId) => {
+                  setSelectedBranch(branchId);
+                  setPagination({ pageIndex: 0, pageSize: pagination.pageSize });
+                }}
+              />
+              <DepartmentFilterDropdown
+                selectedDepartment={selectedDepartment}
+                onDepartmentChange={(departmentId) => {
+                  setSelectedDepartment(departmentId);
+                  setPagination({ pageIndex: 0, pageSize: pagination.pageSize });
+                }}
+              />
+            </div>
+            }
+            className="flex sm:flex-col sm:items-start"
+          />
+          
+          {/* Branch and Department Filters */}
+         
+        </div>
 
         <div className="overflow-x-auto max-w-full pr-2 pb-2">
-          {paginatedTasks.length === 0 ? (
+          {sortedTasks.length === 0 ? (
             <div className="text-center py-8 text-gray-500">
               {searchQuery ? "No tasks match your search" : "No tasks found"}
             </div>
@@ -298,9 +383,9 @@ export default function ExecutiveTable() {
             <div className="w-max min-w-full">
               <CardTable
                 columns={columns}
-                data={paginatedTasks}
-                headerClassName="grid-cols-[1.5fr_2fr_1fr_1fr_100px]"
-                rowClassName="hover:bg-[#FAFAFB] grid-cols-[1.5fr_2fr_1fr_1fr_100px] cursor-pointer"
+                data={sortedTasks}
+                headerClassName="grid-cols-[1.5fr_1fr_1fr_1fr_1fr_1fr_100px]"
+                rowClassName="hover:bg-[#FAFAFB] grid-cols-[1.5fr_1fr_1fr_1fr_1fr_1fr_100px] cursor-pointer"
                 sorting={sorting}
                 onSortingChange={setSorting}
                 onRowClick={(row) =>
@@ -314,7 +399,7 @@ export default function ExecutiveTable() {
                   </div>
                 }
                 footer={(table) => {
-                  if (filteredAndSortedTasks.length === 0) {
+                  if (totalCount === 0) {
                     return null;
                   }
 
@@ -323,7 +408,7 @@ export default function ExecutiveTable() {
                       table={table}
                       pageIndex={pagination.pageIndex}
                       pageSize={pagination.pageSize}
-                      totalCount={filteredAndSortedTasks.length}
+                      totalCount={totalCount}
                       onPaginationChange={(newPagination) => {
                         setPagination(newPagination);
                       }}

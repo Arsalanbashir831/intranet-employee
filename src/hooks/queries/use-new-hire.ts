@@ -86,10 +86,13 @@ export function useAttachmentFileDeletions() {
 }
 
 // Executive Training Checklist hooks
-export function useExecutiveTrainingChecklists() {
+export function useExecutiveTrainingChecklists(
+  params?: Record<string, string | number | boolean>,
+  pagination?: { page?: number; pageSize?: number }
+) {
   return useQuery({
-    queryKey: ["executive-training-checklists"],
-    queryFn: () => listExecutiveTrainingChecklists(),
+    queryKey: ["executive-training-checklists", params, pagination],
+    queryFn: () => listExecutiveTrainingChecklists(params, pagination),
     staleTime: 60_000, // Cache for 1 minute
   });
 }

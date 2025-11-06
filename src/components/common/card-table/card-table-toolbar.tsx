@@ -14,6 +14,7 @@ export type CardTableToolbarProps = {
 	onSearchChange?: (value: string) => void;
 	onSortChange?: (value: string) => void;
 	onFilterClick?: () => void;
+	hasSort?: boolean;
 	hasFilter?: boolean;
 	className?: string;
 	sortOptions?: { label: string; value: string }[];
@@ -28,6 +29,7 @@ export function CardTableToolbar({
 	onSearchChange,
 	onSortChange,
 	onFilterClick,
+	hasSort = true,
 	hasFilter = true,
 	className,
 	sortOptions = [{ label: "Name", value: "folder" }],
@@ -51,11 +53,13 @@ export function CardTableToolbar({
 
 				{accessControl}
 
-				<SortingDropdown
+				{hasSort && (
+					<SortingDropdown
 					sortOptions={sortOptions}
 					activeSort={activeSort ?? "folder"}
 					onSortChange={onSortChange ?? (() => {})}
 				/>
+				)}
 
 				{hasFilter && (
 					<Button
