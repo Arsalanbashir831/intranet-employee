@@ -21,153 +21,151 @@ import { useRouter } from "next/navigation";
 import { useAuth } from "@/contexts/auth-context";
 
 export default function Home() {
-	const router = useRouter();
-	const { user } = useAuth();
-	const [pagination, setPagination] = useState<PaginationState>({
-		pageIndex: 0,
-		pageSize: 5,
-	});
-	const [searchTerm, setSearchTerm] = useState<string>("");
+  const router = useRouter();
+  const { user } = useAuth();
+  const [pagination, setPagination] = useState<PaginationState>({
+    pageIndex: 0,
+    pageSize: 5,
+  });
+  const [searchTerm, setSearchTerm] = useState<string>("");
 
-	const { data, isLoading, isError } = useKnowledgeFolders(
-		pageIndexToPageNumber(pagination.pageIndex),
-		pagination.pageSize,
-		searchTerm
-	);
+  const { data, isLoading, isError } = useKnowledgeFolders(
+    pageIndexToPageNumber(pagination.pageIndex),
+    pagination.pageSize,
+    searchTerm
+  );
 
-	// Convert API folder data to table row format
-	const convertFolderToRow = (folder: FolderTreeItem): KnowledgeBaseRow => ({
-		id: folder.id.toString(),
-		folder: folder.name,
-		createdByName: "Cartwright King",
-		createdByAvatar: "/images/logo-circle.png",
-		dateCreated: new Date(folder.created_at).toISOString().split("T")[0],
-		type: "folder",
-	});
+  // Convert API folder data to table row format
+  const convertFolderToRow = (folder: FolderTreeItem): KnowledgeBaseRow => ({
+    id: folder.id.toString(),
+    folder: folder.name,
+    createdByName: "Cartwright King",
+    createdByAvatar: "/images/logo-circle.png",
+    dateCreated: new Date(folder.created_at).toISOString().split("T")[0],
+    type: "folder",
+  });
 
-	// Transform API data to table rows
-	const tableData = useMemo(() => {
-		return data?.folders?.results?.map(convertFolderToRow) || [];
-	}, [data]);
+  // Transform API data to table rows
+  const tableData = useMemo(() => {
+    return data?.folders?.results?.map(convertFolderToRow) || [];
+  }, [data]);
 
-	const handlePaginationChange = (newPagination: PaginationState) => {
-		setPagination(newPagination);
-	};
+  const handlePaginationChange = (newPagination: PaginationState) => {
+    setPagination(newPagination);
+  };
 
-	const handleSearch = (term: string) => {
-		setSearchTerm(term);
-		// Reset to first page when searching
-		setPagination((prev) => ({ ...prev, pageIndex: 0 }));
-	};
+  const handleSearch = (term: string) => {
+    setSearchTerm(term);
+    // Reset to first page when searching
+    setPagination((prev) => ({ ...prev, pageIndex: 0 }));
+  };
 
-	const handleRowClick = (row: KnowledgeBaseRow) => {
-		if (row.type === "folder") {
-			// Navigate using folder ID
-			router.push(`${ROUTES.DASHBOARD.KNOWLEDGE_BASE}/${row.id}`);
-		} else if (row.type === "file" && row.fileUrl) {
-			window.open(row.fileUrl, "_blank");
-		}
-	};
+  const handleRowClick = (row: KnowledgeBaseRow) => {
+    if (row.type === "folder") {
+      // Navigate using folder ID
+      router.push(`${ROUTES.DASHBOARD.KNOWLEDGE_BASE}/${row.id}`);
+    } else if (row.type === "file" && row.fileUrl) {
+      window.open(row.fileUrl, "_blank");
+    }
+  };
 
-	return (
-		<div className="min-h-screen bg-[#F8F8F8]">
-			<BannerSection />
-			<PageHeader
-				title="Home"
-				crumbs={[
-					{ label: "Pages", href: "#" },
-					{ label: "Home", href: ROUTES.DASHBOARD.HOME },
-				]}
-			/>
+  return (
+    <div className="min-h-screen bg-[#F8F8F8]">
+      <BannerSection />
+      <PageHeader
+        title="Home"
+        crumbs={[
+          { label: "Pages", href: "#" },
+          { label: "Home", href: ROUTES.DASHBOARD.HOME },
+        ]}
+      />
 
-			{/* one gutter to rule them all */}
-			<main className="mx-auto  w-full px-4 sm:px-6 md:px-8 py-6 sm:py-8 lg:py-10 [--gap:1rem] sm:[--gap:1.125rem] lg:[--gap:1.25rem] space-y-[calc(var(--gap)*1.25)]">
-				{/* ============ Announcements (desktop = horizontal scroll) ============ */}
-				<LatestAnnouncements />
+      {/* one gutter to rule them all */}
+      <main className="mx-auto  w-full px-4 sm:px-6 md:px-8 py-6 sm:py-8 lg:py-10 [--gap:1rem] sm:[--gap:1.125rem] lg:[--gap:1.25rem] space-y-[calc(var(--gap)*1.25)]">
+        {/* ============ Announcements (desktop = horizontal scroll) ============ */}
+        <LatestAnnouncements />
 
-				{/* ======================= Bottom area ======================= */}
-				<section className="pb-[calc(var(--gap)*1.5)]">
-					<div
-						className="grid w-full grid-cols-1 md:grid-cols-[390px_minmax(0,1fr)]
-            gap-[var(--gap)]">
-						{/* Left column */}
-						<div className="flex flex-col gap-[calc(var(--gap)*0.9)] w-full">
-							<Checklist
-								title="Training Checklist"
-								viewMoreLink={ROUTES.DASHBOARD.TRAINING_CHECKLIST}
-								type="training"
-							/>
-							{/* keep your contact block */}
-							<div>
-								{/* ContactSection keeps its own padding */}
-								<ContactSection />
-							</div>
-						</div>
+        {/* ======================= Bottom area ======================= */}
+        <section className="pb-[calc(var(--gap)*1.5)]">
+          <div
+            className="grid w-full grid-cols-1 md:grid-cols-[390px_minmax(0,1fr)]
+            gap-[var(--gap)]"
+          >
+            {/* Left column */}
+            <div className="flex flex-col gap-[calc(var(--gap)*0.9)] w-full">
+              <Checklist
+                title="Training Checklist"
+                viewMoreLink={ROUTES.DASHBOARD.TRAINING_CHECKLIST}
+                type="training"
+              />
+              {/* keep your contact block */}
+              <div>
+                {/* ContactSection keeps its own padding */}
+                <ContactSection />
+              </div>
+            </div>
 
-						{/* Right column */}
-						<div className="flex flex-col gap-[calc(var(--gap)*0.9)] w-full">
-							<div className="w-full">
-								<QuickAccess />
-							</div>
+            {/* Right column */}
+            <div className="flex flex-col gap-[calc(var(--gap)*0.9)] w-full">
+              <div className="w-full">
+                <QuickAccess />
+              </div>
 
-							<div className="grid grid-cols-1 sm:grid-cols-2 gap-[var(--gap)] auto-rows-fr">
-								<section className="w-full overflow-hidden rounded-xl">
-									{user?.isExecutive ? (
-										<BranchesSection />
-									) : (
-										<TeamSection />
-									)}
-								</section>
-								<section className="w-full overflow-hidden rounded-xl">
-									<RecentPolicies />
-								</section>
-							</div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-[var(--gap)] auto-rows-fr">
+                <section className="w-full overflow-hidden rounded-xl">
+                  {user?.isExecutive ? <BranchesSection /> : <TeamSection />}
+                </section>
+                <section className="w-full overflow-hidden rounded-xl">
+                  <RecentPolicies />
+                </section>
+              </div>
 
-							{/* Knowledge Base */}
-							<div className="w-full">
-								<div className="rounded-xl h-auto overflow-hidden">
-									{isLoading ? (
-										<div className="bg-[#F9FFFF] p-4 sm:p-5 md:p-5 rounded-xl">
-											<div className="animate-pulse space-y-3">
-												<div className="h-6 bg-gray-200 rounded w-1/4"></div>
-												<div className="space-y-2">
-													{Array.from({ length: 5 }).map((_, i) => (
-														<div
-															key={i}
-															className="h-12 bg-gray-100 rounded"></div>
-													))}
-												</div>
-											</div>
-										</div>
-									) : isError ? (
-										<div className="bg-[#F9FFFF] p-4 sm:p-5 md:p-5 rounded-xl">
-											<div className="text-red-500">
-												Failed to load knowledge base data
-											</div>
-										</div>
-									) : (
-										<KnowledgeBaseTable
-											data={tableData}
-											showToolbar={true}
-											viewMoreHref={ROUTES.DASHBOARD.KNOWLEDGE_BASE}
-											className="bg-[#F9FFFF] w-full"
-											pagination={{
-												pageIndex: pagination.pageIndex,
-												pageSize: pagination.pageSize,
-												totalCount: data?.folders?.count || 0,
-												onPaginationChange: handlePaginationChange,
-											}}
-											onRowClick={handleRowClick}
-											onSearch={handleSearch}
-											searchTerm={searchTerm}
-										/>
-									)}
-								</div>
-							</div>
-						</div>
-					</div>
-				</section>
-			</main>
-		</div>
-	);
+              {/* Knowledge Base */}
+              <div className="w-full">
+                <div className="rounded-xl h-auto overflow-hidden">
+                  {isLoading ? (
+                    <div className="bg-[#F9FFFF] p-4 sm:p-5 md:p-5 rounded-xl">
+                      <div className="animate-pulse space-y-3">
+                        <div className="h-6 bg-gray-200 rounded w-1/4"></div>
+                        <div className="space-y-2">
+                          {Array.from({ length: 5 }).map((_, i) => (
+                            <div
+                              key={i}
+                              className="h-12 bg-gray-100 rounded"
+                            ></div>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+                  ) : isError ? (
+                    <div className="bg-[#F9FFFF] p-4 sm:p-5 md:p-5 rounded-xl">
+                      <div className="text-red-500">
+                        Failed to load knowledge base data
+                      </div>
+                    </div>
+                  ) : (
+                    <KnowledgeBaseTable
+                      data={tableData}
+                      showToolbar={true}
+                      viewMoreHref={ROUTES.DASHBOARD.KNOWLEDGE_BASE}
+                      className="bg-[#F9FFFF] w-full"
+                      pagination={{
+                        pageIndex: pagination.pageIndex,
+                        pageSize: pagination.pageSize,
+                        totalCount: data?.folders?.count || 0,
+                        onPaginationChange: handlePaginationChange,
+                      }}
+                      onRowClick={handleRowClick}
+                      onSearch={handleSearch}
+                      searchTerm={searchTerm}
+                    />
+                  )}
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+      </main>
+    </div>
+  );
 }

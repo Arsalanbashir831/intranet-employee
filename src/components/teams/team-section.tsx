@@ -148,7 +148,7 @@ export default function TeamSection() {
 
 						{/* Right */}
 						<Link
-							href={`/teams/${member.id}`}
+							href={`${ROUTES.DASHBOARD.ORG_CHAT_DIRECTORY}/${member.id}`}
 							className="underline font-medium text-[#E5004E] text-xs sm:text-sm flex-shrink-0">
 							View Profile
 						</Link>
