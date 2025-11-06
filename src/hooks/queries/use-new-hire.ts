@@ -2,7 +2,9 @@ import * as React from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { 
   listAttachmentStatus,
-  updateAttachmentStatus
+  updateAttachmentStatus,
+  listExecutiveTrainingChecklists,
+  getExecutiveTrainingChecklist
 } from "@/services/new-hire";
 import type { 
   AttachmentStatusUpdateRequest
@@ -81,4 +83,22 @@ export function useAttachmentFileDeletions() {
     unmarkForDeletion,
     clearDeletions
   };
+}
+
+// Executive Training Checklist hooks
+export function useExecutiveTrainingChecklists() {
+  return useQuery({
+    queryKey: ["executive-training-checklists"],
+    queryFn: () => listExecutiveTrainingChecklists(),
+    staleTime: 60_000, // Cache for 1 minute
+  });
+}
+
+export function useExecutiveTrainingChecklist(id: number | string) {
+  return useQuery({
+    queryKey: ["executive-training-checklist", String(id)],
+    queryFn: () => getExecutiveTrainingChecklist(id),
+    enabled: !!id,
+    staleTime: 60_000,
+  });
 }

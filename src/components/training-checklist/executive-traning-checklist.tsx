@@ -12,6 +12,8 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Eye } from "lucide-react";
+import { useExecutiveTrainingChecklists } from "@/hooks/queries/use-new-hire";
+import type { ExecutiveTrainingChecklist } from "@/services/new-hire";
 
 export interface AssignedEmployee {
   id: string;
@@ -72,165 +74,33 @@ export default function ExecutiveTable() {
   const [sorting, setSorting] = useState<SortingState>([]);
   const [pagination, setPagination] = useState({ pageIndex: 0, pageSize: 10 });
 
-  // Mock data with multiple employees per task
-  const mockData: ExecutiveTask[] = [
-    {
-      id: "1",
-      title: "Complete Annual Report",
-      description: "Prepare and review the annual financial report for Q4 2024",
-      assignTo: [
-        {
-          id: "1",
-          name: "John Smith",
-          profileImage: "/logos/profile-circle.svg",
-          branch: "IT",
-          department: "Finance",
-          status: "in_progress",
-        },
-        {
-          id: "2",
-          name: "Emily Davis",
-          profileImage: "/logos/profile-circle.svg",
-          branch: "IT",
-          department: "Finance",
-          status: "to_do",
-        },
-        {
-          id: "3",
-          name: "Robert Wilson",
-          profileImage: "/logos/profile-circle.svg",
-          branch: "IT",
-          department: "Finance",
-          status: "done",
-        },
-        {
-          id: "4",
-          name: "David Lee",
-          profileImage: "/logos/profile-circle.svg",
-          branch: "IT",
-          department: "Finance",
-          status: "to_do",
-        },
-      ],
-      assignBy: "Sarah Johnson",
-    },
-    {
-      id: "2",
-      title: "Update Company Policies",
-      description: "Review and update employee handbook and company policies",
-      assignTo: [
-        {
-          id: "5",
-          name: "Lisa Anderson",
-          profileImage: "/logos/profile-circle.svg",
-          branch: "HR",
-          department: "Human Resources",
-          status: "in_progress",
-        },
-        {
-          id: "6",
-          name: "James Taylor",
-          profileImage: "/logos/profile-circle.svg",
-          branch: "HR",
-          department: "Human Resources",
-          status: "to_do",
-        },
-      ],
-      assignBy: "Michael Brown",
-    },
-    {
-      id: "3",
-      title: "Client Presentation",
-      description: "Prepare presentation for upcoming client meeting",
-      assignTo: [
-        {
-          id: "7",
-          name: "Maria Garcia",
-          profileImage: "/logos/profile-circle.svg",
-          branch: "Sales",
-          department: "Sales & Marketing",
-          status: "done",
-        },
-        {
-          id: "8",
-          name: "Thomas Martinez",
-          profileImage: "/logos/profile-circle.svg",
-          branch: "Sales",
-          department: "Sales & Marketing",
-          status: "in_progress",
-        },
-        {
-          id: "9",
-          name: "Jennifer White",
-          profileImage: "/logos/profile-circle.svg",
-          branch: "Sales",
-          department: "Sales & Marketing",
-          status: "to_do",
-        },
-        {
-          id: "10",
-          name: "Christopher Brown",
-          profileImage: "/logos/profile-circle.svg",
-          branch: "Sales",
-          department: "Sales & Marketing",
-          status: "done",
-        },
-        {
-          id: "11",
-          name: "Amanda Green",
-          profileImage: "/logos/profile-circle.svg",
-          branch: "Sales",
-          department: "Sales & Marketing",
-          status: "in_progress",
-        },
-      ],
-      assignBy: "Sarah Johnson",
-    },
-    {
-      id: "4",
-      title: "System Maintenance",
-      description: "Perform scheduled maintenance on company servers",
-      assignTo: [
-        {
-          id: "12",
-          name: "Daniel Kim",
-          profileImage: "/logos/profile-circle.svg",
-          branch: "IT",
-          department: "IT Support",
-          status: "to_do",
-        },
-      ],
-      assignBy: "Michael Brown",
-    },
-    {
-      id: "5",
-      title: "Training Program",
-      description: "Organize training session for new employees",
-      assignTo: [
-        {
-          id: "13",
-          name: "Sarah Johnson",
-          profileImage: "/logos/profile-circle.svg",
-          branch: "HR",
-          department: "Human Resources",
-          status: "in_progress",
-        },
-        {
-          id: "14",
-          name: "Michael Brown",
-          profileImage: "/logos/profile-circle.svg",
-          branch: "HR",
-          department: "Human Resources",
-          status: "done",
-        },
-      ],
-      assignBy: "Sarah Johnson",
-    },
-  ];
+  // Fetch executive training checklists from API
+  const { data, isLoading, isError } = useExecutiveTrainingChecklists();
+
+  // Transform API data to ExecutiveTask format
+  const tasks = useMemo(() => {
+    if (!data?.training_checklists || !Array.isArray(data.training_checklists)) {
+      return [];
+    }
+    return data.training_checklists.map((item: ExecutiveTrainingChecklist): ExecutiveTask => ({
+      id: item.id.toString(),
+      title: item.title || "Untitled",
+      description: item.description || "",
+      assignTo: (item.assigned_to || []).map((employee) => ({
+        id: employee.id.toString(),
+        name: employee.name || "Unknown",
+        profileImage: employee.avatar || undefined,
+        branch: "", // Not provided in API
+        department: "", // Not provided in API
+        status: "to_do" as const, // Default status, not provided in list API
+      })),
+      assignBy: item.assigned_by || "N/A",
+    }));
+  }, [data]);
 
   // Filter and sort tasks
   const filteredAndSortedTasks = useMemo(() => {
-    let filtered = mockData;
+    let filtered = tasks;
 
     // Apply search filter
     if (searchQuery) {
@@ -274,7 +144,7 @@ export default function ExecutiveTable() {
     }
 
     return filtered;
-  }, [searchQuery, sorting]);
+  }, [tasks, searchQuery, sorting]);
 
   // Paginate tasks
   const paginatedTasks = useMemo(() => {
@@ -286,6 +156,44 @@ export default function ExecutiveTable() {
   const handleRowClick = (task: ExecutiveTask) => {
     router.push(`/training-checklist/${task.id}`);
   };
+
+  // Show loading state
+  if (isLoading) {
+    return (
+      <div className="mx-auto w-full px-4 sm:px-6 md:px-8 py-6 sm:py-8 lg:py-10">
+        <Card
+          className={cn(
+            "shadow-none border-[#FFF6F6] p-4 sm:p-5 md:p-5",
+            "w-full h-full"
+          )}
+        >
+          <div className="flex justify-center items-center h-[200px]">
+            <div className="animate-pulse text-gray-500">Loading training checklists...</div>
+          </div>
+        </Card>
+      </div>
+    );
+  }
+
+  // Show error state
+  if (isError) {
+    return (
+      <div className="mx-auto w-full px-4 sm:px-6 md:px-8 py-6 sm:py-8 lg:py-10">
+        <Card
+          className={cn(
+            "shadow-none border-[#FFF6F6] p-4 sm:p-5 md:p-5",
+            "w-full h-full"
+          )}
+        >
+          <div className="flex justify-center items-center h-[200px]">
+            <div className="text-red-500">
+              Failed to load training checklists. Please try again later.
+            </div>
+          </div>
+        </Card>
+      </div>
+    );
+  }
 
   const columns: ColumnDef<ExecutiveTask>[] = [
     {
@@ -304,11 +212,16 @@ export default function ExecutiveTable() {
       header: ({ column }) => (
         <CardTableColumnHeader column={column} title="Description" />
       ),
-      cell: ({ row }) => (
-        <span className="text-sm text-gray-700 line-clamp-2">
-          {row.original.description}
-        </span>
-      ),
+      cell: ({ row }) => {
+        // Strip HTML tags for display in table
+        const description = row.original.description || "";
+        const plainText = description.replace(/<[^>]*>/g, "").trim();
+        return (
+          <span className="text-sm text-gray-700 line-clamp-2" title={plainText}>
+            {plainText || "No description"}
+          </span>
+        );
+      },
     },
     {
       accessorKey: "assignTo",
@@ -357,7 +270,7 @@ export default function ExecutiveTable() {
         )}
       >
         <CardTableToolbar
-          title="Executive Tasks"
+          title="Training Checklist"
           placeholder="Search"
           searchValue={searchQuery}
           onSearchChange={setSearchQuery}

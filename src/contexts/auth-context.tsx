@@ -23,6 +23,7 @@ interface User {
   branchDepartmentId?: number | null; // Add this new field
   branchName?: string; // Add branch name
   departmentName?: string; // Add department name
+  isExecutive?: boolean; // Add is_executive flag
 }
 
 interface AuthContextType {
@@ -67,6 +68,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
               branchDepartmentId: meData.employee?.branch_department_ids?.[0] || null,
               branchName: meData.employee?.branch_departments?.[0]?.branch?.branch_name || undefined,
               departmentName: meData.employee?.branch_departments?.[0]?.department?.dept_name || undefined,
+              isExecutive: meData.employee?.is_executive || false,
             });
           } catch {
             // If me API fails, try to refresh token and try again
@@ -95,6 +97,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
                 branchDepartmentId: meData.employee?.branch_department_ids?.[0] || null,
                 branchName: meData.employee?.branch_departments?.[0]?.branch?.branch_name || undefined,
                 departmentName: meData.employee?.branch_departments?.[0]?.department?.dept_name || undefined,
+                isExecutive: meData.employee?.is_executive || false,
               });
             } catch (refreshError) {
               // Refresh failed, user is not authenticated
@@ -145,9 +148,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             name: meData.employee?.emp_name || meData.executive?.name || meData.user.username,
             profilePicture: meData.employee?.profile_picture || meData.executive?.profile_picture,
             role: meData.employee?.role || meData.executive?.role,
-            branchDepartmentId: meData.employee?.branch_department_ids?.[0] || null,
-            branchName: meData.employee?.branch_departments?.[0]?.branch?.branch_name || undefined,
-            departmentName: meData.employee?.branch_departments?.[0]?.department?.dept_name || undefined,
+              branchDepartmentId: meData.employee?.branch_department_ids?.[0] || null,
+              branchName: meData.employee?.branch_departments?.[0]?.branch?.branch_name || undefined,
+              departmentName: meData.employee?.branch_departments?.[0]?.department?.dept_name || undefined,
+              isExecutive: meData.employee?.is_executive || false,
           });
         } catch {
           // Token verification failed, try to refresh
@@ -176,6 +180,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
               branchDepartmentId: meData.employee?.branch_department_ids?.[0] || null,
               branchName: meData.employee?.branch_departments?.[0]?.branch?.branch_name || undefined,
               departmentName: meData.employee?.branch_departments?.[0]?.department?.dept_name || undefined,
+              isExecutive: meData.employee?.is_executive || false,
             });
           } catch (refreshError) {
             console.error("Token refresh failed:", refreshError);

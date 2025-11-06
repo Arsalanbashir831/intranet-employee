@@ -43,6 +43,7 @@ export type Employee = {
   bio: string;
   profile_picture: string | null;
   isAdmin: boolean;
+  is_executive: boolean;
   branch_departments: {
     id: number;
     branch: {

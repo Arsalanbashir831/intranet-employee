@@ -101,3 +101,69 @@ export async function updateAttachmentStatus(
   );
   return res.data;
 }
+
+// Executive Training Checklist types
+export type ExecutiveTrainingChecklistAssignedTo = {
+  id: number;
+  name: string;
+  email: string;
+  avatar: string | null;
+};
+
+export type ExecutiveTrainingChecklist = {
+  id: number;
+  title: string;
+  description: string;
+  deadline: string | null;
+  assigned_to: ExecutiveTrainingChecklistAssignedTo[];
+  assigned_by: string | null;
+  checklist_id: number;
+  created_at: string;
+};
+
+export type ExecutiveTrainingChecklistListResponse = {
+  training_checklists: ExecutiveTrainingChecklist[];
+};
+
+// Executive Training Checklist Detail types
+export type ExecutiveTrainingChecklistAttachment = {
+  id: number;
+  file: string;
+  uploaded_at: string;
+};
+
+export type ExecutiveTrainingChecklistEmployee = {
+  employee_id: number;
+  employee_name: string;
+  employee_email: string;
+  avatar: string | null;
+  status: AttachmentStatus;
+  status_display: string;
+  updated_at: string;
+};
+
+export type ExecutiveTrainingChecklistDetail = {
+  id: number;
+  title: string;
+  description: string;
+  deadline: string | null;
+  attachment: ExecutiveTrainingChecklistAttachment[];
+  employees: ExecutiveTrainingChecklistEmployee[];
+};
+
+// Executive Training Checklist service functions
+export async function listExecutiveTrainingChecklists() {
+  const res = await apiCaller<ExecutiveTrainingChecklistListResponse>(
+    API_ROUTES.NEW_HIRE.TRAINING_CHECKLIST.LIST,
+    "GET"
+  );
+  return res.data;
+}
+
+export async function getExecutiveTrainingChecklist(id: number | string) {
+  const res = await apiCaller<ExecutiveTrainingChecklistDetail>(
+    API_ROUTES.NEW_HIRE.TRAINING_CHECKLIST.DETAIL(id),
+    "GET"
+  );
+  return res.data;
+}

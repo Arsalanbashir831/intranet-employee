@@ -8,168 +8,13 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { ROUTES } from "@/constants/routes";
 import { cn } from "@/lib/utils";
-import type {
-  ExecutiveTask,
-  AssignedEmployee,
-} from "@/components/training-checklist/executive-traning-checklist";
+import { useAuth } from "@/contexts/auth-context";
+import { useExecutiveTrainingChecklist } from "@/hooks/queries/use-new-hire";
+import type { ExecutiveTrainingChecklistEmployee } from "@/services/new-hire";
+import Image from "next/image";
+import { format } from "date-fns";
 
-// Mock data - in real app, this would come from API
-const mockTasks: ExecutiveTask[] = [
-  {
-    id: "1",
-    title: "Complete Annual Report",
-    description: "Prepare and review the annual financial report for Q4 2024",
-    assignTo: [
-      {
-        id: "1",
-        name: "John Smith",
-        profileImage: "/logos/profile-circle.svg",
-        branch: "IT",
-        department: "Finance",
-        status: "in_progress",
-      },
-      {
-        id: "2",
-        name: "Emily Davis",
-        profileImage: "/logos/profile-circle.svg",
-        branch: "IT",
-        department: "Finance",
-        status: "to_do",
-      },
-      {
-        id: "3",
-        name: "Robert Wilson",
-        profileImage: "/logos/profile-circle.svg",
-        branch: "IT",
-        department: "Finance",
-        status: "done",
-      },
-      {
-        id: "4",
-        name: "David Lee",
-        profileImage: "/logos/profile-circle.svg",
-        branch: "IT",
-        department: "Finance",
-        status: "to_do",
-      },
-    ],
-    assignBy: "Sarah Johnson",
-  },
-  {
-    id: "2",
-    title: "Update Company Policies",
-    description: "Review and update employee handbook and company policies",
-    assignTo: [
-      {
-        id: "5",
-        name: "Lisa Anderson",
-        profileImage: "/logos/profile-circle.svg",
-        branch: "HR",
-        department: "Human Resources",
-        status: "in_progress",
-      },
-      {
-        id: "6",
-        name: "James Taylor",
-        profileImage: "/logos/profile-circle.svg",
-        branch: "HR",
-        department: "Human Resources",
-        status: "to_do",
-      },
-    ],
-    assignBy: "Michael Brown",
-  },
-  {
-    id: "3",
-    title: "Client Presentation",
-    description: "Prepare presentation for upcoming client meeting",
-    assignTo: [
-      {
-        id: "7",
-        name: "Maria Garcia",
-        profileImage: "/logos/profile-circle.svg",
-        branch: "Sales",
-        department: "Sales & Marketing",
-        status: "done",
-      },
-      {
-        id: "8",
-        name: "Thomas Martinez",
-        profileImage: "/logos/profile-circle.svg",
-        branch: "Sales",
-        department: "Sales & Marketing",
-        status: "in_progress",
-      },
-      {
-        id: "9",
-        name: "Jennifer White",
-        profileImage: "/logos/profile-circle.svg",
-        branch: "Sales",
-        department: "Sales & Marketing",
-        status: "to_do",
-      },
-      {
-        id: "10",
-        name: "Christopher Brown",
-        profileImage: "/logos/profile-circle.svg",
-        branch: "Sales",
-        department: "Sales & Marketing",
-        status: "done",
-      },
-      {
-        id: "11",
-        name: "Amanda Green",
-        profileImage: "/logos/profile-circle.svg",
-        branch: "Sales",
-        department: "Sales & Marketing",
-        status: "in_progress",
-      },
-    ],
-    assignBy: "Sarah Johnson",
-  },
-  {
-    id: "4",
-    title: "System Maintenance",
-    description: "Perform scheduled maintenance on company servers",
-    assignTo: [
-      {
-        id: "12",
-        name: "Daniel Kim",
-        profileImage: "/logos/profile-circle.svg",
-        branch: "IT",
-        department: "IT Support",
-        status: "to_do",
-      },
-    ],
-    assignBy: "Michael Brown",
-  },
-  {
-    id: "5",
-    title: "Training Program",
-    description: "Organize training session for new employees",
-    assignTo: [
-      {
-        id: "13",
-        name: "Sarah Johnson",
-        profileImage: "/logos/profile-circle.svg",
-        branch: "HR",
-        department: "Human Resources",
-        status: "in_progress",
-      },
-      {
-        id: "14",
-        name: "Michael Brown",
-        profileImage: "/logos/profile-circle.svg",
-        branch: "HR",
-        department: "Human Resources",
-        status: "done",
-      },
-    ],
-    assignBy: "Sarah Johnson",
-  },
-];
-
-function getStatusConfig(status: AssignedEmployee["status"]) {
+function getStatusConfig(status: "to_do" | "in_progress" | "done") {
   const statusConfig = {
     to_do: {
       label: "To Do",
@@ -190,118 +35,254 @@ function getStatusConfig(status: AssignedEmployee["status"]) {
 export default function TrainingDetailsPage() {
   const params = useParams();
   const router = useRouter();
+  const { user } = useAuth();
   const trainingId = params.id as string;
 
-  const training = mockTasks.find((t) => t.id === trainingId);
+  // Fetch executive training checklist if user is executive
+  const { 
+    data: executiveData, 
+    isLoading: isExecutiveLoading, 
+    isError: isExecutiveError 
+  } = useExecutiveTrainingChecklist(
+    user?.isExecutive ? trainingId : ""
+  );
 
-  if (!training) {
+  // Show loading state
+  if (user?.isExecutive && isExecutiveLoading) {
     return (
-      <div className="min-h-screen bg-[#F8F8F8] flex items-center justify-center">
-        <div className="text-center">
-          <h1 className="text-2xl font-semibold text-gray-900 mb-2">
-            Training Not Found
-          </h1>
-          <p className="text-gray-600 mb-4">
-            The training you&apos;re looking for doesn&apos;t exist.
-          </p>
-          <Button
-            onClick={() => router.push(ROUTES.DASHBOARD.TRAINING_CHECKLIST)}
-          >
-            Go Back
-          </Button>
+      <div className="min-h-screen bg-[#F8F8F8]">
+        <PageHeader
+          title="Training Details"
+          crumbs={[
+            { label: "Pages", href: "#" },
+            {
+              label: "Training Checklist",
+              href: ROUTES.DASHBOARD.TRAINING_CHECKLIST,
+            },
+            { label: "Training Details", href: "#" },
+          ]}
+        />
+        <div className="mx-auto w-full px-4 sm:px-1 md:px-2 py-6 sm:py-8 lg:py-10">
+          <Card className="shadow-none border-[#FFF6F6] p-4 sm:p-5 md:p-5">
+            <div className="flex justify-center items-center h-[200px]">
+              <div className="animate-pulse text-gray-500">Loading training details...</div>
+            </div>
+          </Card>
         </div>
       </div>
     );
   }
 
-  return (
-    <div className="min-h-screen bg-[#F8F8F8]">
-      <PageHeader
-        title="Training Details"
-        crumbs={[
-          { label: "Pages", href: "#" },
-          {
-            label: "Training Checklist",
-            href: ROUTES.DASHBOARD.TRAINING_CHECKLIST,
-          },
-          { label: "Training Details", href: "#" },
-        ]}
-      />
-
-      <div className="mx-auto w-full px-4 sm:px-1 md:px-2 py-6 sm:py-8 lg:py-10">
-        <Card className="shadow-none border-[#FFF6F6] p-4 sm:p-5 md:p-5">
-          {/* Training Information */}
-          <div className="mb-6">
+  // Show error state for executives
+  if (user?.isExecutive && isExecutiveError) {
+    return (
+      <div className="min-h-screen bg-[#F8F8F8]">
+        <PageHeader
+          title="Training Details"
+          crumbs={[
+            { label: "Pages", href: "#" },
+            {
+              label: "Training Checklist",
+              href: ROUTES.DASHBOARD.TRAINING_CHECKLIST,
+            },
+            { label: "Training Details", href: "#" },
+          ]}
+        />
+        <div className="min-h-screen bg-[#F8F8F8] flex items-center justify-center">
+          <div className="text-center">
             <h1 className="text-2xl font-semibold text-gray-900 mb-2">
-              {training.title}
+              Training Not Found
             </h1>
-            <p className="text-sm text-gray-600 mb-4">{training.description}</p>
-            <div className="flex items-center gap-4 text-sm text-gray-600">
-              <span>
-                <span className="font-medium">Assigned By:</span>{" "}
-                {training.assignBy}
-              </span>
-            </div>
+            <p className="text-gray-600 mb-4">
+              The training you&apos;re looking for doesn&apos;t exist or you don&apos;t have access to it.
+            </p>
+            <Button
+              onClick={() => router.push(ROUTES.DASHBOARD.TRAINING_CHECKLIST)}
+            >
+              Go Back
+            </Button>
           </div>
+        </div>
+      </div>
+    );
+  }
 
-          {/* Separator */}
-          <div className="border-t border-gray-200 my-6"></div>
+  // For executives, use executive data
+  if (user?.isExecutive && executiveData) {
+    const training = executiveData;
 
-          {/* Assigned Employees */}
-          <div>
-            <h2 className="text-lg font-semibold text-gray-900 mb-4">
-              Assigned Employees ({training.assignTo.length})
-            </h2>
-            <div className="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-4 gap-4">
-              {training.assignTo.map((employee) => {
-                const statusConfig = getStatusConfig(employee.status);
-                return (
-                  <div
-                    key={employee.id}
-                    className="flex flex-col items-center gap-3 p-4 border border-gray-200 rounded-lg hover:bg-gray-50"
-                  >
-                    <Avatar className="size-16">
-                      <AvatarImage
-                        src={
-                          employee.profileImage || "/logos/profile-circle.svg"
-                        }
-                        alt={employee.name}
-                      />
-                      <AvatarFallback className="bg-gray-100 text-gray-600">
-                        {employee.name
-                          .split(" ")
-                          .map((n) => n[0])
-                          .join("")}
-                      </AvatarFallback>
-                    </Avatar>
-                    <div className="flex flex-col items-center text-center w-full">
-                      <h3 className="text-sm font-semibold text-gray-900">
-                        {employee.name}
-                      </h3>
-                      <div className="flex items-center gap-2 mt-1">
-                        <span className="text-xs text-gray-600">
-                          {employee.branch}
-                        </span>
-                        <span className="text-xs text-gray-400">•</span>
-                        <span className="text-xs text-gray-600">
-                          {employee.department}
-                        </span>
-                      </div>
-                    </div>
-                    <Badge
-                      className={cn(
-                        "text-xs font-medium px-3 py-1 rounded-md",
-                        statusConfig.className
-                      )}
-                    >
-                      {statusConfig.label}
-                    </Badge>
+    const handleFileDownload = (fileUrl: string) => {
+      const link = document.createElement("a");
+      link.href = fileUrl;
+      link.target = "_blank";
+      link.download = "";
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    };
+
+    const formatDeadline = (deadline: string | null) => {
+      if (!deadline) return null;
+      try {
+        return format(new Date(deadline), "dd MMM yyyy");
+      } catch {
+        return deadline;
+      }
+    };
+
+    return (
+      <div className="min-h-screen bg-[#F8F8F8]">
+        <PageHeader
+          title="Training Details"
+          crumbs={[
+            { label: "Pages", href: "#" },
+            {
+              label: "Training Checklist",
+              href: ROUTES.DASHBOARD.TRAINING_CHECKLIST,
+            },
+            { label: "Training Details", href: "#" },
+          ]}
+        />
+
+        <div className="mx-auto w-full px-4 sm:px-1 md:px-2 py-6 sm:py-8 lg:py-10">
+          <Card className="shadow-none border-[#FFF6F6] p-4 sm:p-5 md:p-5">
+            {/* Training Information */}
+            <div className="mb-6">
+              <h1 className="text-2xl font-semibold text-gray-900 mb-2">
+                {training.title}
+              </h1>
+              <div 
+                className="text-sm text-gray-600 mb-4 prose prose-sm max-w-none [&_p]:my-2 [&_ul]:my-2 [&_ol]:my-2 [&_li]:my-1"
+                dangerouslySetInnerHTML={{ __html: training.description }}
+              />
+            </div>
+
+            {/* Deadline and Attachments Section */}
+            <div className="mb-6 space-y-4">
+              {/* Deadline */}
+              {training.deadline && (
+                <div className="flex items-center gap-2">
+                  <span className="text-xs sm:text-sm font-medium text-gray-400 flex items-center gap-1">
+                    <Image src="/icons/todo.svg" alt="deadline" width={14} height={14} className="sm:w-4 sm:h-4" />
+                    Deadline
+                  </span>
+                  <Badge className="text-[10px] sm:text-xs font-medium text-[#FF7979] bg-[#FF7979]/10 px-2 sm:px-3 py-1 rounded-md">
+                    {formatDeadline(training.deadline)}
+                  </Badge>
+                </div>
+              )}
+
+              {/* Attachments */}
+              {training.attachment && training.attachment.length > 0 && (
+                <div className="space-y-2">
+                  <p className="text-xs sm:text-sm font-medium text-gray-400 flex items-center gap-1">
+                    <Image src="/icons/todo.svg" alt="attachments" width={14} height={14} className="sm:w-4 sm:h-4" />
+                    Attachments
+                  </p>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                    {training.attachment.map((file) => {
+                      // Extract filename from URL
+                      const filename = file.file.split("/").pop() || "File";
+                      return (
+                        <Button
+                          key={file.id}
+                          variant="outline"
+                          className="h-12 sm:h-14 flex items-center rounded-xl justify-start gap-2 border-gray-200 p-2 sm:p-3"
+                          onClick={() => handleFileDownload(file.file)}
+                        >
+                          <div className="bg-[#E5004E] p-1.5 sm:p-2 rounded-sm flex items-center justify-center flex-shrink-0">
+                            <Image
+                              src="/icons/clipboard.svg"
+                              alt="clipboard"
+                              width={18}
+                              height={18}
+                              className="sm:w-[22px] sm:h-[22px]"
+                            />
+                          </div>
+                          <span className="text-xs sm:text-sm text-gray-700 truncate flex-1 text-left">
+                            {filename}
+                          </span>
+                        </Button>
+                      );
+                    })}
                   </div>
-                );
-              })}
+                </div>
+              )}
             </div>
-          </div>
-        </Card>
+
+            {/* Separator */}
+            <div className="border-t border-gray-200 my-6"></div>
+
+            {/* Assigned Employees */}
+            <div>
+              <h2 className="text-lg font-semibold text-gray-900 mb-4">
+                Assigned Employees ({training.employees.length})
+              </h2>
+              <div className="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-4 gap-4">
+                {training.employees.map((employee: ExecutiveTrainingChecklistEmployee) => {
+                  const statusConfig = getStatusConfig(employee.status);
+                  return (
+                    <div
+                      key={employee.employee_id}
+                      className="flex flex-col items-center gap-3 p-4 border border-gray-200 rounded-lg hover:bg-gray-50"
+                    >
+                      <Avatar className="size-16">
+                        <AvatarImage
+                          src={
+                            employee.avatar || "/logos/profile-circle.svg"
+                          }
+                          alt={employee.employee_name}
+                        />
+                        <AvatarFallback className="bg-gray-100 text-gray-600">
+                          {employee.employee_name
+                            .split(" ")
+                            .map((n) => n[0])
+                            .join("")}
+                        </AvatarFallback>
+                      </Avatar>
+                      <div className="flex flex-col items-center text-center w-full">
+                        <h3 className="text-sm font-semibold text-gray-900">
+                          {employee.employee_name}
+                        </h3>
+                        <p className="text-xs text-gray-500 mt-1">
+                          {employee.employee_email}
+                        </p>
+                      </div>
+                      <Badge
+                        className={cn(
+                          "text-xs font-medium px-3 py-1 rounded-md",
+                          statusConfig.className
+                        )}
+                      >
+                        {statusConfig.label}
+                      </Badge>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          </Card>
+        </div>
+      </div>
+    );
+  }
+
+  // For regular employees, redirect or show appropriate message
+  // Regular employees should use the existing attachment status flow
+  return (
+    <div className="min-h-screen bg-[#F8F8F8] flex items-center justify-center">
+      <div className="text-center">
+        <h1 className="text-2xl font-semibold text-gray-900 mb-2">
+          Training Not Found
+        </h1>
+        <p className="text-gray-600 mb-4">
+          The training you&apos;re looking for doesn&apos;t exist.
+        </p>
+        <Button
+          onClick={() => router.push(ROUTES.DASHBOARD.TRAINING_CHECKLIST)}
+        >
+          Go Back
+        </Button>
       </div>
     </div>
   );

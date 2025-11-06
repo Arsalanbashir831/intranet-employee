@@ -62,5 +62,9 @@ export const API_ROUTES = {
 				`/newhire/attachment-status/?employee_id=${id}`,
 			UPDATE: (id: number | string) => `/newhire/attachment-status/${id}/`,
 		},
+		TRAINING_CHECKLIST: {
+			LIST: "/newhire/training-checklist/",
+			DETAIL: (id: number | string) => `/newhire/training-checklist/${id}/`,
+		},
 	},
 } as const;
