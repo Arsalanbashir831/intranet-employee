@@ -7,6 +7,7 @@ import { ROUTES } from "@/constants/routes";
 import Checklist from "@/components/common/checklist";
 import QuickAccess from "@/components/common/quick-access";
 import TeamSection from "@/components/teams/team-section";
+import BranchesSection from "@/components/teams/branches-section";
 import RecentPolicies from "@/components/common/recent-policies";
 import KnowledgeBaseTable from "@/components/knowledge-base/knowledge-base-table";
 import ContactSection from "@/components/common/contact-section";
@@ -17,9 +18,11 @@ import { PaginationState, pageIndexToPageNumber } from "@/lib/pagination-utils";
 import { KnowledgeBaseRow } from "@/components/knowledge-base/knowledge-base-table";
 import { FolderTreeItem } from "@/services/knowledge-folders";
 import { useRouter } from "next/navigation";
+import { useAuth } from "@/contexts/auth-context";
 
 export default function Home() {
 	const router = useRouter();
+	const { user } = useAuth();
 	const [pagination, setPagination] = useState<PaginationState>({
 		pageIndex: 0,
 		pageSize: 5,
@@ -109,7 +112,11 @@ export default function Home() {
 
 							<div className="grid grid-cols-1 sm:grid-cols-2 gap-[var(--gap)] auto-rows-fr">
 								<section className="w-full overflow-hidden rounded-xl">
-									<TeamSection />
+									{user?.isExecutive ? (
+										<BranchesSection />
+									) : (
+										<TeamSection />
+									)}
 								</section>
 								<section className="w-full overflow-hidden rounded-xl">
 									<RecentPolicies />

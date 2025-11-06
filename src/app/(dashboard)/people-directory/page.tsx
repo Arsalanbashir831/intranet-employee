@@ -11,8 +11,9 @@ import {
 } from "@tanstack/react-table";
 import { TableSearch } from "@/components/common/card-table/table-search";
 import { CardTablePagination } from "@/components/common/card-table/card-table-pagination";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useDebounce } from "@/hooks/use-debounce";
+import { useSearchParams } from "next/navigation";
 import {
 	useAllEmployees,
 } from "@/hooks/queries/use-employees";
@@ -55,15 +56,27 @@ const columns = [
 
 export default function OrgChartDirectoryPage() {
 	const { user } = useAuth();
+	const searchParams = useSearchParams();
 	const [query, setQuery] = useState("");
 	const debouncedQuery = useDebounce(query, 400);
 	const [page, setPage] = useState(1);
 	const pageSize = 8;
 
-	// Filter states
+	// Filter states - Initialize from URL params if available
 	const [selectedRole, setSelectedRole] = useState<string>("__all__");
-	const [selectedBranch, setSelectedBranch] = useState<string>("__all__");
+	const [selectedBranch, setSelectedBranch] = useState<string>(
+		searchParams.get("branch") || "__all__"
+	);
 	const [selectedDepartment, setSelectedDepartment] = useState<string>("__all__");
+
+	// Update branch filter when URL param changes
+	useEffect(() => {
+		const branchParam = searchParams.get("branch");
+		if (branchParam) {
+			setSelectedBranch(branchParam);
+			setPage(1); // Reset to first page when branch filter is applied
+		}
+	}, [searchParams]);
 
 	// Build query parameters
 	const queryParams: Record<string, string | number | boolean> = {
