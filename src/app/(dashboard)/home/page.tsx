@@ -81,7 +81,7 @@ export default function Home() {
 			/>
 
 			{/* one gutter to rule them all */}
-			<main className=" mx-auto w-full px-4 sm:px-6 md:px-8 py-6 sm:py-8 lg:py-10 [--gap:1rem] sm:[--gap:1.125rem] lg:[--gap:1.25rem] max-w-[110rem] min-[2560px]:max-w-[140rem] space-y-[calc(var(--gap)*1.25)]">
+			<main className="mx-auto  w-full px-4 sm:px-6 md:px-8 py-6 sm:py-8 lg:py-10 [--gap:1rem] sm:[--gap:1.125rem] lg:[--gap:1.25rem] space-y-[calc(var(--gap)*1.25)]">
 				{/* ============ Announcements (desktop = horizontal scroll) ============ */}
 				<LatestAnnouncements />
 

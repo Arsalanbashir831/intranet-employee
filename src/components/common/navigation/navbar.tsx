@@ -81,7 +81,7 @@ export function Navbar() {
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-secondary text-white">
-      <div className="mx-auto flex max-w-screen-2xl items-center gap-4 sm:gap-6 lg:gap-8 px-4 h-24 sm:px-6 lg:px-8">
+      <div className="flex items-center gap-4 sm:gap-6 lg:gap-8 px-4 h-24 sm:px-6 lg:px-8">
         <div className="flex items-center gap-3">
           <Link
             href={ROUTES.DASHBOARD.HOME}
