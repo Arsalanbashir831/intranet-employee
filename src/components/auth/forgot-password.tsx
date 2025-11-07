@@ -21,7 +21,7 @@ export function ForgotPassword() {
 		setIsSubmitting(true);
 
 		try {
-			// Call the forgot password API
+			// Call the forgot password APIII
 			await apiCaller(API_ROUTES.AUTH.FORGOT_PASSWORD, "POST", { email });
 			
 			// Redirect to OTP verification page with email parameter
