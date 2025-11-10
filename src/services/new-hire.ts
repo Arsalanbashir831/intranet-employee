@@ -124,7 +124,7 @@ export type ExecutiveTrainingChecklist = {
   description: string;
   deadline: string | null;
   assigned_to: ExecutiveTrainingChecklistAssignedTo[];
-  assigned_by: string | null;
+  assigned_by: ExecutiveTrainingChecklistAssignedTo | null;
   checklist_id: number;
   created_at: string;
 };

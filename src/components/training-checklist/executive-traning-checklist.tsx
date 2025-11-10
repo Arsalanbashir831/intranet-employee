@@ -39,30 +39,41 @@ export interface ExecutiveTask {
 
 // Component to display avatars with +X count
 function AssignToAvatars({ employees }: { employees: AssignedEmployee[] }) {
+  // Safety check: ensure employees is an array
+  if (!Array.isArray(employees) || employees.length === 0) {
+    return <span className="text-sm text-gray-500">-</span>;
+  }
+
   const visibleEmployees = employees.slice(0, 3);
   const remainingCount = employees.length - 3;
 
   return (
     <div className="flex items-center gap-2">
       <div className="flex -space-x-2">
-        {visibleEmployees.map((employee, index) => (
-          <Avatar
-            key={employee.id}
-            className="size-8 border-2 border-white"
-            style={{ zIndex: visibleEmployees.length - index }}
-          >
-            <AvatarImage
-              src={employee.profileImage || "/logos/profile-circle.svg"}
-              alt={employee.name}
-            />
-            <AvatarFallback className="bg-gray-100 text-gray-600 text-xs">
-              {employee.name
-                .split(" ")
-                .map((n) => n[0])
-                .join("")}
-            </AvatarFallback>
-          </Avatar>
-        ))}
+        {visibleEmployees.map((employee, index) => {
+          // Safety check: ensure employee has required properties
+          if (!employee || typeof employee.id === "undefined" || !employee.name) {
+            return null;
+          }
+          return (
+            <Avatar
+              key={employee.id}
+              className="size-8 border-2 border-white"
+              style={{ zIndex: visibleEmployees.length - index }}
+            >
+              <AvatarImage
+                src={employee.profileImage || "/logos/profile-circle.svg"}
+                alt={employee.name}
+              />
+              <AvatarFallback className="bg-gray-100 text-gray-600 text-xs">
+                {employee.name
+                  .split(" ")
+                  .map((n) => n[0])
+                  .join("")}
+              </AvatarFallback>
+            </Avatar>
+          );
+        })}
       </div>
       {remainingCount > 0 && (
         <span className="text-xs text-gray-600 font-medium ml-1">
@@ -139,17 +150,19 @@ export default function ExecutiveTable() {
         id: item.id.toString(),
         title: item.title || "Untitled",
         description: item.description || "",
-        branch: branch,
-        department: department,
-        assignTo: (item.assigned_to || []).map((employee) => ({
-          id: employee.id.toString(),
-          name: employee.name || "Unknown",
-          profileImage: employee.avatar || undefined,
-          branch: employee.branches?.[0]?.name,
-          department: employee.departments?.[0]?.name,
-          status: "to_do" as const, // Default status, not provided in list API
-        })),
-        assignBy: item.assigned_by || "Admin",
+        branch: typeof branch === "string" ? branch : undefined,
+        department: typeof department === "string" ? department : undefined,
+        assignTo: (item.assigned_to || [])
+          .filter((employee) => employee && employee.id && employee.name)
+          .map((employee) => ({
+            id: employee.id.toString(),
+            name: employee.name || "Unknown",
+            profileImage: employee.avatar || undefined,
+            branch: employee.branches?.[0]?.name,
+            department: employee.departments?.[0]?.name,
+            status: "to_do" as const, // Default status, not provided in list API
+          })),
+        assignBy: item.assigned_by?.name || "Admin",
       };
     });
   }, [data]);
@@ -288,25 +301,39 @@ export default function ExecutiveTable() {
       header: ({ column }) => (
         <CardTableColumnHeader column={column} title="Branch" />
       ),
-      cell: ({ row }) => (
-        <span className="text-sm text-gray-700">{row.original.branch || "-"}</span>
-      ),
+      cell: ({ row }) => {
+        const branch = row.original.branch;
+        return (
+          <span className="text-sm text-gray-700">
+            {typeof branch === "string" ? branch : "-"}
+          </span>
+        );
+      },
     },
     {
       accessorKey: "department",
       header: ({ column }) => (
         <CardTableColumnHeader column={column} title="Department" />
       ),
-      cell: ({ row }) => (
-        <span className="text-sm text-gray-700">{row.original.department || "-"}</span>
-      ),
+      cell: ({ row }) => {
+        const department = row.original.department;
+        return (
+          <span className="text-sm text-gray-700">
+            {typeof department === "string" ? department : "-"}
+          </span>
+        );
+      },
     },
     {
-      accessorKey: "assignTo",
+      id: "assignTo",
       header: ({ column }) => (
         <CardTableColumnHeader column={column} title="Assign To" />
       ),
-      cell: ({ row }) => <AssignToAvatars employees={row.original.assignTo} />,
+      cell: ({ row }) => {
+        const employees = row.original.assignTo || [];
+        return <AssignToAvatars employees={employees} />;
+      },
+      enableSorting: false,
     },
     {
       accessorKey: "assignBy",

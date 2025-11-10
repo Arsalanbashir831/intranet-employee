@@ -17,6 +17,9 @@ export default function AnnouncementDetailCard({
       ? announcement.attachments[0].file_url
       : "/images/office-work.png";
 
+  // Check if the image is an external URL
+  const isExternalImage = heroImage.startsWith("http://") || heroImage.startsWith("https://");
+
   // Format the date
   const formattedDate = new Date(announcement.created_at).toLocaleDateString(
     "en-US",
@@ -47,7 +50,10 @@ export default function AnnouncementDetailCard({
             src={heroImage}
             alt={announcement.title}
             fill
+            priority={false}
+            loading="lazy"
             className="object-cover"
+            unoptimized={isExternalImage}
           />
         </div>
 

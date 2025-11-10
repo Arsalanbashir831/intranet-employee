@@ -11,6 +11,7 @@ const nextConfig: NextConfig = {
       ? [
         { protocol: "https", hostname: "api.lordevs.com" },
         { protocol: "https", hostname: "api.brilliant-ai.co.uk" },
+        { protocol: "https", hostname: "api.cartwrightking.work" },
       ]
       : [
         { protocol: "http", hostname: "localhost" },
@@ -18,6 +19,7 @@ const nextConfig: NextConfig = {
         { protocol: "http", hostname: "168.231.79.28" },
         { protocol: "http", hostname: "192.168.1.16" },
         { protocol: "https", hostname: "api.lordevs.com" },
+        { protocol: "https", hostname: "api.cartwrightking.work" },
       ],
   },
 

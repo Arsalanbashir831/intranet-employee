@@ -7,6 +7,7 @@ import { getFolderTree, FolderTreeItem } from "@/services/knowledge-folders";
 import { ROUTES } from "@/constants/routes";
 import KnowledgeBaseTable, { KnowledgeBaseRow } from "./knowledge-base-table";
 import { PageHeader } from "../common/page-header";
+import { getApiBaseUrl } from "@/lib/utils";
 
 // Utility functions for filtering and converting folder/file to row
 function filterFolderContents(
@@ -26,7 +27,7 @@ function convertFolderToRow(folder: FolderTreeItem): KnowledgeBaseRow {
 		id: String(folder.id),
 		folder: folder.name,
 		createdByName: folder.created_by?.emp_name || "Admin",
-		createdByAvatar: folder.created_by?.profile_picture || undefined,
+		createdByAvatar: folder.created_by?.profile_picture ? getApiBaseUrl() + folder.created_by?.profile_picture : undefined,
 		dateCreated: folder.created_at,
 		type: "folder",
 		createdBy: folder.created_by,
