@@ -164,7 +164,7 @@ export function KnowledgeBaseFolderView({
 			};
 		}
 
-		// Get folder ID from path (expect last segment to be the folder ID)
+		// Get folder ID from path (expect last segment to be the folder IDD)
 		const folderId = parseInt(folderPath[folderPath.length - 1]);
 		if (isNaN(folderId)) return null;
 
