@@ -2,7 +2,7 @@ import apiCaller from "@/lib/api-caller";
 import { API_ROUTES } from "@/constants/api-routes";
 import { generatePaginationParams } from "@/lib/pagination-utils";
 import type {
-	Comment,
+	ApiComment,
 	CommentListResponse,
 	CommentDetailResponse,
 	CreateCommentPayload,
@@ -53,7 +53,7 @@ export async function getComment(id: number | string) {
 }
 
 export async function createComment(payload: CreateCommentPayload) {
-  const res = await apiCaller<Comment>(
+  const res = await apiCaller<ApiComment>(
     API_ROUTES.KNOWLEDGE_BASE.COMMENTS.CREATE,
     "POST",
     payload
@@ -62,13 +62,16 @@ export async function createComment(payload: CreateCommentPayload) {
 }
 
 export async function updateComment(id: number | string, payload: UpdateCommentPayload) {
-  const res = await apiCaller<Comment>(
+  const res = await apiCaller<ApiComment>(
     API_ROUTES.KNOWLEDGE_BASE.COMMENTS.UPDATE(id),
     "PATCH",
     payload
   );
   return res.data;
 }
+
+// Export ApiComment type for use in other files
+export type { ApiComment };
 
 export async function deleteComment(id: number | string) {
   const res = await apiCaller<void>(

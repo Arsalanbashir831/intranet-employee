@@ -19,19 +19,15 @@ import { useAnnouncements } from "@/hooks/queries/use-announcements";
 import { usePolls } from "@/hooks/queries/use-polls";
 import { useAuth } from "@/contexts/auth-context";
 import { calculateTotalPages } from "@/lib/pagination-utils";
-import type { AnnouncementCard } from "@/types/announcements";
+import type { AnnouncementCard, CompanyHubItem } from "@/types/announcements";
 import type { PollCardData, PollCardOption } from "@/types/poll-card";
 
 /* ---------------- Types ---------------- */
-interface CompanyHubItem {
-	id: string;
-	title: string;
-	description: string;
-}
 // Extend AnnouncementCard to include createdAt for table sorting
 type Announcement = AnnouncementCard & {
 	createdAt: string;
 };
+// Policy for table display (simplified from CompanyHubItem)
 type Policy = CompanyHubItem;
 // Use existing PollCardData type instead of duplicating
 type Poll = PollCardData;

@@ -21,24 +21,11 @@ import { RoleFilterDropdown } from "@/components/common/role-filter-dropdown";
 import { BranchFilterDropdown } from "@/components/common/branch-filter-dropdown";
 import { DepartmentFilterDropdown } from "@/components/common/department-filter-dropdown";
 import { useAuth } from "@/contexts/auth-context";
+import type { EmployeeTableRow } from "@/types/employees";
 
 
 /* ---------------- Types & Data ---------------- */
-interface TeamMember {
-	id: string;
-	name: string;
-	designation: string;
-	role: string;
-	image: string;
-	email: string;
-	phone: string;
-	branch: string;
-	department: string;
-	education: string;
-	bio: string;
-}
-
-const columnHelper = createColumnHelper<TeamMember>();
+const columnHelper = createColumnHelper<EmployeeTableRow>();
 const columns = [
 	columnHelper.accessor("id", {
 		header: () => <span>ID</span>,
@@ -104,7 +91,7 @@ export default function OrgChartDirectoryPage() {
 	const { data, isLoading, isError } = useAllEmployees(queryParams);
 
 	// Transform API data to match component structure
-	const teamData: TeamMember[] =
+	const teamData: EmployeeTableRow[] =
 		data?.employees?.results?.map((employee) => ({
 			id: employee.id.toString(),
 			name: employee.emp_name,

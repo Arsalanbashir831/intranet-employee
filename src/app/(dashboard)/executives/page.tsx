@@ -13,21 +13,11 @@ import { CardTablePagination } from "@/components/common/card-table/card-table-p
 import { useState } from "react";
 import { useDebounce } from "@/hooks/use-debounce";
 import { useExecutives } from "@/hooks/queries/use-executive-members";
+import type { ExecutiveTableRow } from "@/types/executive-members";
+import { ROUTES } from "@/constants/routes";
 
 /* ---------------- Types & Data ---------------- */
-interface ExecutiveMember {
-	id: string;
-	name: string;
-	role: string;
-	image: string;
-	email: string;
-	phone: string;
-	address: string;
-	city: string;
-	education: string;
-}
-
-const columnHelper = createColumnHelper<ExecutiveMember>();
+const columnHelper = createColumnHelper<ExecutiveTableRow>();
 const columns = [
 	columnHelper.accessor("id", {
 		header: () => <span>ID</span>,
@@ -55,7 +45,7 @@ export default function Executives() {
 		search: debouncedQuery,
 	});
 
-	const executiveData: ExecutiveMember[] =
+	const executiveData: ExecutiveTableRow[] =
 		data?.results?.map((executive) => ({
 			id: executive.id.toString(),
 			name: executive.name,
@@ -110,7 +100,7 @@ export default function Executives() {
 				title="Executives"
 				crumbs={[
 					{ label: "Pages", href: "#" },
-					{ label: "Executives", href: "/executives" },
+					{ label: "Executives", href: ROUTES.DASHBOARD.EXECUTIVES },
 				]}
 			/>
 
@@ -136,7 +126,7 @@ export default function Executives() {
 					<div className="mt-6 grid min-w-0 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 lg:gap-8 content-start">
 						{pageItems.map((m) => (
 							<div key={m.id} className="w-full">
-								<Link href={`/executives/${m.id}`} className="block">
+								<Link href={`${ROUTES.DASHBOARD.EXECUTIVES}/${m.id}`} className="block">
 									<TeamsCard
 										image={m.image}
 										name={m.name}

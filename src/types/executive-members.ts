@@ -50,3 +50,16 @@ export type ExecutiveUpdateRequest = {
   education?: string;
   profile_picture?: File | string | null;
 };
+
+// Executive table row type (for executives page table display)
+export type ExecutiveTableRow = {
+  id: string;
+  name: string;
+  role: string;
+  image: string;
+  email: string;
+  phone: string;
+  address: string;
+  city: string;
+  education: string;
+};

@@ -38,10 +38,10 @@ export function useCreateComment() {
 
   return useMutation({
     mutationFn: (payload: CreateCommentPayload) => createComment(payload),
-    onSuccess: (data) => {
+    onSuccess: (data, variables) => {
       // Invalidate all comments queries for this announcement
       queryClient.invalidateQueries({
-        queryKey: ["comments", data.announcement]
+        queryKey: ["comments", variables.announcement]
       });
       // Also try to invalidate all comments queries
       queryClient.invalidateQueries({
@@ -68,9 +68,11 @@ export function useUpdateComment() {
       updateComment(id, payload),
     onSuccess: (data) => {
       // Invalidate all comments queries for this announcement
-      queryClient.invalidateQueries({
-        queryKey: ["comments", data.announcement]
-      });
+      if (data.announcement) {
+        queryClient.invalidateQueries({
+          queryKey: ["comments", data.announcement]
+        });
+      }
       // Also try to invalidate all comments queries
       queryClient.invalidateQueries({
         queryKey: ["comments"]

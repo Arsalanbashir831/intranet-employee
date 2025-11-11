@@ -99,3 +99,10 @@ export interface AnnouncementDetailCardProps {
 	announcement: Announcement;
 }
 
+// Company Hub base item type (for table display)
+export type CompanyHubItem = {
+	id: string;
+	title: string;
+	description: string;
+};
+

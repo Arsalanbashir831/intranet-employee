@@ -116,3 +116,18 @@ export interface EmployeeProfileCard {
 export interface EmployeeProfileCardProps {
   employee?: EmployeeProfileCard;
 }
+
+// Employee table row type (for people-directory table display)
+export type EmployeeTableRow = {
+  id: string;
+  name: string;
+  designation: string;
+  role: string;
+  image: string;
+  email: string;
+  phone: string;
+  branch: string;
+  department: string;
+  education: string;
+  bio: string;
+};
