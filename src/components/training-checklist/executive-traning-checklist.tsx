@@ -17,25 +17,10 @@ import type { ExecutiveTrainingChecklist } from "@/types/new-hire";
 import { BranchFilterDropdown } from "@/components/common/branch-filter-dropdown";
 import { DepartmentFilterDropdown } from "@/components/common/department-filter-dropdown";
 import { useDebounce } from "@/hooks/use-debounce";
-
-export interface AssignedEmployee {
-  id: string;
-  name: string;
-  profileImage?: string;
-  branch?: string;
-  department?: string;
-  status: "to_do" | "in_progress" | "done";
-}
-
-export interface ExecutiveTask {
-  id: string;
-  title: string;
-  description: string;
-  branch?: string;
-  department?: string;
-  assignTo: AssignedEmployee[];
-  assignBy: string;
-}
+import type {
+  AssignedEmployee,
+  ExecutiveTask,
+} from "@/types/training-checklist";
 
 // Component to display avatars with +X count
 function AssignToAvatars({ employees }: { employees: AssignedEmployee[] }) {
@@ -52,7 +37,11 @@ function AssignToAvatars({ employees }: { employees: AssignedEmployee[] }) {
       <div className="flex -space-x-2">
         {visibleEmployees.map((employee, index) => {
           // Safety check: ensure employee has required properties
-          if (!employee || typeof employee.id === "undefined" || !employee.name) {
+          if (
+            !employee ||
+            typeof employee.id === "undefined" ||
+            !employee.name
+          ) {
             return null;
           }
           return (
@@ -89,82 +78,95 @@ export default function ExecutiveTable() {
   const [searchQuery, setSearchQuery] = useState("");
   const debouncedSearchQuery = useDebounce(searchQuery, 400);
   const [selectedBranch, setSelectedBranch] = useState<string>("__all__");
-  const [selectedDepartment, setSelectedDepartment] = useState<string>("__all__");
+  const [selectedDepartment, setSelectedDepartment] =
+    useState<string>("__all__");
   const [sorting, setSorting] = useState<SortingState>([]);
   const [pagination, setPagination] = useState({ pageIndex: 0, pageSize: 10 });
 
   // Build query parameters for training checklist API
   const queryParams = useMemo(() => {
     const params: Record<string, string | number> = {};
-    
+
     // Add search filter (using debounced value)
     if (debouncedSearchQuery) {
       params.search = debouncedSearchQuery;
     }
-    
+
     // Add branch filter if selected
     if (selectedBranch !== "__all__") {
       params.branch = selectedBranch;
     }
-    
+
     // Add department filter if selected
     if (selectedDepartment !== "__all__") {
       params.department = selectedDepartment;
     }
-    
+
     return Object.keys(params).length > 0 ? params : undefined;
   }, [debouncedSearchQuery, selectedBranch, selectedDepartment]);
 
   // Build pagination parameters (page is 1-indexed in API)
-  const paginationParams = useMemo(() => ({
-    page: pagination.pageIndex + 1,
-    pageSize: pagination.pageSize,
-  }), [pagination]);
+  const paginationParams = useMemo(
+    () => ({
+      page: pagination.pageIndex + 1,
+      pageSize: pagination.pageSize,
+    }),
+    [pagination]
+  );
 
   // Fetch executive training checklists from API with filters and pagination
-  const { data, isLoading, isError, isFetching } = useExecutiveTrainingChecklists(queryParams, paginationParams);
+  const { data, isLoading, isError, isFetching } =
+    useExecutiveTrainingChecklists(queryParams, paginationParams);
 
   // Track if we've ever successfully loaded data (to prevent full card loading after first load)
   const hasEverLoadedRef = useRef(false);
-  
+
   // Update ref when we successfully get data
   useEffect(() => {
-    if (data?.training_checklists?.results && data.training_checklists.results.length > 0) {
+    if (
+      data?.training_checklists?.results &&
+      data.training_checklists.results.length > 0
+    ) {
       hasEverLoadedRef.current = true;
     }
   }, [data]);
 
   // Transform API data to ExecutiveTask format
   const tasks = useMemo(() => {
-    if (!data?.training_checklists?.results || !Array.isArray(data.training_checklists.results)) {
+    if (
+      !data?.training_checklists?.results ||
+      !Array.isArray(data.training_checklists.results)
+    ) {
       return [];
     }
-    
-    return data.training_checklists.results.map((item: ExecutiveTrainingChecklist): ExecutiveTask => {
-      // Get branch and department from first assigned employee (for display in table)
-      const firstAssigned = item.assigned_to?.[0];
-      const branch = firstAssigned?.branches?.[0]?.name;
-      const department = firstAssigned?.departments?.[0]?.name;
-      
-      return {
-        id: item.id.toString(),
-        title: item.title || "Untitled",
-        description: item.description || "",
-        branch: typeof branch === "string" ? branch : undefined,
-        department: typeof department === "string" ? department : undefined,
-        assignTo: (item.assigned_to || [])
-          .filter((employee) => employee && employee.id && employee.name)
-          .map((employee) => ({
-            id: employee.id.toString(),
-            name: employee.name || "Unknown",
-            profileImage: employee.avatar || undefined,
-            branch: employee.branches?.[0]?.name,
-            department: employee.departments?.[0]?.name,
-            status: "to_do" as const, // Default status, not provided in list API
-          })),
-        assignBy: item.assigned_by?.name || "Admin",
-      };
-    });
+
+    return data.training_checklists.results.map(
+      (item: ExecutiveTrainingChecklist): ExecutiveTask => {
+        // Get branch and department from first assigned employee (for display in table)
+        const firstAssigned = item.assigned_to?.[0];
+        const branch = firstAssigned?.branches?.[0]?.name;
+        const department = firstAssigned?.departments?.[0]?.name;
+
+        return {
+          id: item.id.toString(),
+          title: item.title || "Untitled",
+          description: item.description || "",
+          branch: typeof branch === "string" ? branch : undefined,
+          department: typeof department === "string" ? department : undefined,
+          assignTo: (item.assigned_to || [])
+            .filter((employee) => employee && employee.id && employee.name)
+            .map((employee) => ({
+              id: employee.id.toString(),
+              name: employee.name || "Unknown",
+              profileImage: employee.avatar || undefined,
+              branch: employee.branches?.[0]?.name,
+              department: employee.departments?.[0]?.name,
+              status: "to_do" as const, // Default status, not provided in list API
+            })),
+          assignBy: item.assigned_by?.name || "Admin",
+        };
+      }
+    );
   }, [data]);
 
   // Sort tasks (API handles filtering and pagination, but we do client-side sorting)
@@ -229,7 +231,9 @@ export default function ExecutiveTable() {
           )}
         >
           <div className="flex justify-center items-center h-[200px]">
-            <div className="animate-pulse text-gray-500">Loading training checklists...</div>
+            <div className="animate-pulse text-gray-500">
+              Loading training checklists...
+            </div>
           </div>
         </Card>
       </div>
@@ -394,21 +398,27 @@ export default function ExecutiveTable() {
             }}
             accessControl={
               <div className="flex gap-2">
-              <BranchFilterDropdown
-                selectedBranch={selectedBranch}
-                onBranchChange={(branchId) => {
-                  setSelectedBranch(branchId);
-                  setPagination({ pageIndex: 0, pageSize: pagination.pageSize });
-                }}
-              />
-              <DepartmentFilterDropdown
-                selectedDepartment={selectedDepartment}
-                onDepartmentChange={(departmentId) => {
-                  setSelectedDepartment(departmentId);
-                  setPagination({ pageIndex: 0, pageSize: pagination.pageSize });
-                }}
-              />
-            </div>
+                <BranchFilterDropdown
+                  selectedBranch={selectedBranch}
+                  onBranchChange={(branchId) => {
+                    setSelectedBranch(branchId);
+                    setPagination({
+                      pageIndex: 0,
+                      pageSize: pagination.pageSize,
+                    });
+                  }}
+                />
+                <DepartmentFilterDropdown
+                  selectedDepartment={selectedDepartment}
+                  onDepartmentChange={(departmentId) => {
+                    setSelectedDepartment(departmentId);
+                    setPagination({
+                      pageIndex: 0,
+                      pageSize: pagination.pageSize,
+                    });
+                  }}
+                />
+              </div>
             }
             className="flex sm:flex-col sm:items-start"
           />
@@ -421,10 +431,12 @@ export default function ExecutiveTable() {
             {/* Show overlay if: fetching AND (we have data OR we have tasks from previous render) */}
             {isFetching && (hasData || sortedTasks.length > 0) && (
               <div className="absolute inset-0 bg-white/60 backdrop-blur-sm z-10 flex items-center justify-center rounded-lg">
-                <div className="animate-pulse text-gray-500 text-sm">Loading...</div>
+                <div className="animate-pulse text-gray-500 text-sm">
+                  Loading...
+                </div>
               </div>
             )}
-            
+
             {sortedTasks.length === 0 && !isFetching ? (
               <div className="text-center py-8 text-gray-500">
                 {searchQuery ? "No tasks match your search" : "No tasks found"}

@@ -118,32 +118,6 @@ export type PollVoteError = {
  * Poll component types (UI-specific)
  */
 
-// Poll option for card display (different from API PollOption)
-export interface PollCardOption {
-  id: string;
-  text: string;
-  votes: number;
-  percentage: number;
-}
-
-// Poll for card display (UI representation)
-export interface PollCard {
-  id: string;
-  title: string;
-  description: string;
-  question: string;
-  options: PollCardOption[];
-  totalVotes: number;
-  isActive: boolean;
-  expiresAt: string;
-  createdAt: string;
-  userVoted?: boolean;
-  userVoteOptionId?: string;
-  badgeLines: [string, string, string];
-}
-
-// Poll card component props
-export interface PollCardProps {
-  poll: PollCard;
-  className?: string;
-}
+// Poll card types are now in poll-card.ts to avoid duplication
+// Import them if needed:
+// import type { PollCardOption, PollCardData, PollCardProps } from "@/types/poll-card";

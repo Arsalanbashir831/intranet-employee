@@ -116,21 +116,8 @@ export type ExecutiveTrainingChecklistDetail = {
  * Checklist component types
  */
 
-// Reusable file attachment type for checklists
-export type ChecklistFile = {
-  id: number;
-  file: string;
-  uploaded_at: string;
-};
-
-// Unified checklist props for dialog and drawer
-export interface ChecklistProps {
-  title: string;
-  subtitle?: string;
-  description: string;
-  date: string;
-  files?: ChecklistFile[];
-}
+// Import ChecklistFile from checklist.ts to avoid duplication
+import type { ChecklistFile } from "@/types/checklist";
 
 // Task type for training checklist details
 export interface ChecklistTask {

@@ -2,10 +2,10 @@
  * Utility functions for handling server-side pagination
  */
 
-import type { PaginationInfo } from "@/types/common";
+import type { PaginationInfo } from "@/types/pagination";
 
 // Re-export types for backward compatibility
-export type { PaginationInfo, PaginationState } from "@/types/common";
+export type { PaginationInfo, PaginationState } from "@/types/pagination";
 
 /**
  * Calculate total number of pages based on count and page size

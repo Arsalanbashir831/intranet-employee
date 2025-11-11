@@ -26,30 +26,11 @@ import {
 } from "@/components/ui/select";
 import { toast } from "sonner";
 import { AttachmentStatusDetail } from "@/types/new-hire";
-
-interface Task {
-  id: string;
-  title: string;
-  description: string;
-  date: string;
-  attachmentId: number;
-  status: "to_do" | "in_progress" | "done";
-  detail: string;
-  files: {
-    id: number;
-    file: string;
-    uploaded_at: string;
-  }[];
-}
-
-interface TaskChecklistDetailsProps {
-  heading?: string;
-  type?: "task" | "training";
-}
+import type { TrainingChecklistTask, TrainingChecklistDetailsProps } from "@/types/training-checklist";
 
 // Status Select Component
-function StatusSelect({ task }: { task: Task }) {
-  const [localStatus, setLocalStatus] = useState<Task["status"]>(task.status);
+function StatusSelect({ task }: { task: TrainingChecklistTask }) {
+  const [localStatus, setLocalStatus] = useState<TrainingChecklistTask["status"]>(task.status);
   const updateMutation = useUpdateAttachmentStatus(task.attachmentId);
 
   // Update local status when task prop changes
@@ -57,7 +38,7 @@ function StatusSelect({ task }: { task: Task }) {
     setLocalStatus(task.status);
   }, [task.status]);
 
-  const getStatusConfig = (status: Task["status"]) => {
+  const getStatusConfig = (status: TrainingChecklistTask["status"]) => {
     const statusConfig = {
       to_do: {
         label: "To Do",
@@ -128,10 +109,10 @@ function StatusSelect({ task }: { task: Task }) {
 export default function TrainingChecklistDetails({
   heading = "Task Checklist",
   type = "task",
-}: TaskChecklistDetailsProps) {
+}: TrainingChecklistDetailsProps) {
   const { user } = useAuth();
   const [open, setOpen] = useState(false);
-  const [selectedTask, setSelectedTask] = useState<Task | null>(null);
+  const [selectedTask, setSelectedTask] = useState<TrainingChecklistTask | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [sorting, setSorting] = useState<SortingState>([]);
   const [pagination, setPagination] = useState({ pageIndex: 0, pageSize: 10 });
@@ -142,10 +123,10 @@ export default function TrainingChecklistDetails({
     { type }
   );
 
-  // Transform API data to Task format
+  // Transform API data to TrainingChecklistTask format
   const tasks = useMemo(() => {
     if (!data?.results) return [];
-    return data.results.map((item: AttachmentStatusDetail) => ({
+    return data.results.map((item: AttachmentStatusDetail): TrainingChecklistTask => ({
       id: item.id.toString(),
       title: item.attachment_details.title,
       description: item.attachment_details.detail,
@@ -222,7 +203,7 @@ export default function TrainingChecklistDetails({
     return filteredAndSortedTasks.slice(start, end);
   }, [filteredAndSortedTasks, pagination]);
 
-  const handleViewClick = (task: Task, e: React.MouseEvent) => {
+  const handleViewClick = (task: TrainingChecklistTask, e: React.MouseEvent) => {
     e.stopPropagation();
     setSelectedTask(task);
     setOpen(true);
@@ -236,7 +217,7 @@ export default function TrainingChecklistDetails({
     return words.slice(0, maxWords).join(" ") + "...";
   };
 
-  const columns: ColumnDef<Task>[] = [
+  const columns: ColumnDef<TrainingChecklistTask>[] = [
     {
       accessorKey: "sr",
       header: ({ column }) => (
