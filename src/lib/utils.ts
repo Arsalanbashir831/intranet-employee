@@ -13,3 +13,16 @@ export const getApiBaseUrl = () => {
 	}
 	return "http://localhost:8000"; // fallback
 };
+
+/**
+ * Utility function to download a file by creating a temporary link
+ */
+export function handleFileDownload(fileUrl: string): void {
+	const link = document.createElement("a");
+	link.href = fileUrl;
+	link.target = "_blank";
+	link.download = "";
+	document.body.appendChild(link);
+	link.click();
+	document.body.removeChild(link);
+}

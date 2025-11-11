@@ -12,6 +12,7 @@ import {
   NavigationMenuLink,
   NavigationMenuList,
 } from "@/components/ui/navigation-menu";
+import type { NavIconProps } from "@/types/navigation";
 import UserMenu from "./user-menu";
 import MobileMenu from "./mobile-menu";
 
@@ -49,7 +50,7 @@ export const navItems = [
   // },
 ];
 
-function NavIcon({ src, className }: { src: string; className?: string }) {
+function NavIcon({ src, className }: NavIconProps) {
   return (
     <span
       className={cn("inline-block h-4 w-4 shrink-0", className)}

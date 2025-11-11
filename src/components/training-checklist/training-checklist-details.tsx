@@ -27,6 +27,7 @@ import {
 import { toast } from "sonner";
 import { AttachmentStatusDetail } from "@/types/new-hire";
 import type { TrainingChecklistTask, TrainingChecklistDetailsProps } from "@/types/training-checklist";
+import { getStatusConfig } from "@/lib/training-checklist-utils";
 
 // Status Select Component
 function StatusSelect({ task }: { task: TrainingChecklistTask }) {
@@ -38,23 +39,6 @@ function StatusSelect({ task }: { task: TrainingChecklistTask }) {
     setLocalStatus(task.status);
   }, [task.status]);
 
-  const getStatusConfig = (status: TrainingChecklistTask["status"]) => {
-    const statusConfig = {
-      to_do: {
-        label: "To Do",
-        className: "text-[#FF7979] bg-[#FF7979]/10",
-      },
-      in_progress: {
-        label: "In Progress",
-        className: "text-[#FFA048] bg-[#FFA048]/10",
-      },
-      done: {
-        label: "Done",
-        className: "text-[#78D700] bg-[#78D700]/10",
-      },
-    };
-    return statusConfig[status];
-  };
 
   const handleStatusChange = async (
     newStatus: "to_do" | "in_progress" | "done"

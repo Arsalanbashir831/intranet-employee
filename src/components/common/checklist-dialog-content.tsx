@@ -12,6 +12,7 @@ import { Button } from "@/components/ui/button";
 import { XIcon } from "lucide-react";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import type { ChecklistTaskDialogProps } from "@/types/checklist";
+import { handleFileDownload } from "@/lib/utils";
 
 export default function ChecklistDialogContent({
   title,
@@ -20,15 +21,6 @@ export default function ChecklistDialogContent({
   date,
   files = [],
 }: ChecklistTaskDialogProps) {
-  const handleFileDownload = (fileUrl: string) => {
-    const link = document.createElement("a");
-    link.href = fileUrl;
-    link.target = "_blank";
-    link.download = "";
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-  };
 
   return (
     <DialogContent

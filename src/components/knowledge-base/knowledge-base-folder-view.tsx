@@ -10,9 +10,9 @@ import type { KnowledgeBaseFolderViewProps } from "@/types/knowledge-base-folder
 import { ROUTES } from "@/constants/routes";
 import KnowledgeBaseTable from "./knowledge-base-table";
 import { PageHeader } from "../common/page-header";
-import { getApiBaseUrl } from "@/lib/utils";
+import { convertFolderToRow, convertFileToRow } from "@/lib/knowledge-base-utils";
 
-// Utility functions for filtering and converting folder/file to row
+// Utility function for filtering folder contents
 function filterFolderContents(
 	folder: FolderTreeItem,
 	searchTerm: string
@@ -23,28 +23,6 @@ function filterFolderContents(
 		...folder,
 		folders: folder.folders.filter((f: FolderTreeItem) => f.name.toLowerCase().includes(lower)),
 		files: folder.files.filter((f: FolderTreeFile) => f.name.toLowerCase().includes(lower)),
-	};
-}
-function convertFolderToRow(folder: FolderTreeItem): KnowledgeBaseRow {
-	return {
-		id: String(folder.id),
-		folder: folder.name,
-		createdByName: folder.created_by?.emp_name || "Admin",
-		createdByAvatar: folder.created_by?.profile_picture ? getApiBaseUrl() + folder.created_by?.profile_picture : undefined,
-		dateCreated: folder.created_at,
-		type: "folder",
-		createdBy: folder.created_by,
-	};
-}
-
-function convertFileToRow(file: FolderTreeFile): KnowledgeBaseRow {
-	return {
-		id: String(file.id),
-		folder: file.name,
-		createdByName: "",
-		dateCreated: file.uploaded_at || "",
-		type: "file",
-		fileUrl: file.file_url,
 	};
 }
 

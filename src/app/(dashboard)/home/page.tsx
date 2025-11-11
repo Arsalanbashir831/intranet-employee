@@ -16,6 +16,7 @@ import { useKnowledgeFolders } from "@/hooks/queries/use-knowledge-folders";
 import { useState, useMemo } from "react";
 import { PaginationState, pageIndexToPageNumber } from "@/lib/pagination-utils";
 import type { KnowledgeBaseRow, FolderTreeItem } from "@/types/knowledge-base";
+import { convertFolderToRow } from "@/lib/knowledge-base-utils";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/contexts/auth-context";
 
@@ -33,16 +34,6 @@ export default function Home() {
     pagination.pageSize,
     searchTerm
   );
-
-  // Convert API folder data to table row format
-  const convertFolderToRow = (folder: FolderTreeItem): KnowledgeBaseRow => ({
-    id: folder.id.toString(),
-    folder: folder.name,
-    createdByName: "Cartwright King",
-    createdByAvatar: "/images/logo-circle.png",
-    dateCreated: new Date(folder.created_at).toISOString().split("T")[0],
-    type: "folder",
-  });
 
   // Transform API data to table rows
   const tableData = useMemo(() => {

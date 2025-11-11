@@ -9,6 +9,7 @@ import {
 } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
 import type { ChecklistTaskDrawerProps } from "@/types/checklist";
+import { handleFileDownload } from "@/lib/utils";
 
 export default function ChecklistDrawerContent({
   title,
@@ -17,15 +18,6 @@ export default function ChecklistDrawerContent({
   date,
   files = [],
 }: ChecklistTaskDrawerProps) {
-  const handleFileDownload = (fileUrl: string) => {
-    const link = document.createElement("a");
-    link.href = fileUrl;
-    link.target = "_blank";
-    link.download = "";
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-  };
 
   return (
     <SheetContent

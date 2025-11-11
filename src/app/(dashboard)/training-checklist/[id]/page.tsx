@@ -7,31 +7,14 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { ROUTES } from "@/constants/routes";
-import { cn } from "@/lib/utils";
+import { cn, handleFileDownload } from "@/lib/utils";
+import { getStatusConfig } from "@/lib/training-checklist-utils";
 import { useAuth } from "@/contexts/auth-context";
 import { useExecutiveTrainingChecklist } from "@/hooks/queries/use-new-hire";
 import type { ExecutiveTrainingChecklistEmployee } from "@/types/new-hire";
 import Image from "next/image";
 import { format } from "date-fns";
 import { Skeleton } from "@/components/ui/skeleton";
-
-function getStatusConfig(status: "to_do" | "in_progress" | "done") {
-  const statusConfig = {
-    to_do: {
-      label: "To Do",
-      className: "text-[#FF7979] bg-[#FF7979]/10",
-    },
-    in_progress: {
-      label: "In Progress",
-      className: "text-[#FFA048] bg-[#FFA048]/10",
-    },
-    done: {
-      label: "Done",
-      className: "text-[#78D700] bg-[#78D700]/10",
-    },
-  };
-  return statusConfig[status];
-}
 
 export default function TrainingDetailsPage() {
   const params = useParams();
@@ -165,15 +148,6 @@ export default function TrainingDetailsPage() {
   if (user?.isExecutive && executiveData) {
     const training = executiveData;
 
-    const handleFileDownload = (fileUrl: string) => {
-      const link = document.createElement("a");
-      link.href = fileUrl;
-      link.target = "_blank";
-      link.download = "";
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-    };
 
     const formatDeadline = (deadline: string | null) => {
       if (!deadline) return null;
