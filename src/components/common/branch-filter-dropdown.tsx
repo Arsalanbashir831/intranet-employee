@@ -1,55 +1,47 @@
 "use client";
 
-import * as React from "react";
 import { Building2 } from "lucide-react";
 import { useBranches } from "@/hooks/queries/use-branches";
-import { useDebounce } from "@/hooks/use-debounce";
-import { SearchableFilterDropdown } from "./searchable-filter-dropdown";
-import type { FilterItem } from "@/types/searchable-filter-dropdown";
+import { EntityFilterDropdown } from "./entity-filter-dropdown";
 import type { BranchFilterDropdownProps } from "@/types/branch-filter-dropdown";
+import type { Branch } from "@/types/branches";
 
 export function BranchFilterDropdown({
   selectedBranch,
   onBranchChange,
   className,
 }: BranchFilterDropdownProps) {
-  const [searchQuery, setSearchQuery] = React.useState("");
-  const debouncedSearch = useDebounce(searchQuery, 400);
-
-  // Fetch branches with search
-  const { data, isLoading, isError } = useBranches(debouncedSearch, {
-    page: 1,
-    pageSize: 1000,
-  });
-
-  const branches: FilterItem[] = React.useMemo(
-    () =>
-      (data?.branches?.results || []).map((branch) => ({
-        id: branch.id,
-        name: branch.branch_name,
-      })),
-    [data]
-  );
-
   return (
-    <SearchableFilterDropdown
+    <EntityFilterDropdown<Branch>
       selectedValue={selectedBranch}
       onValueChange={onBranchChange}
       className={className}
-      icon={Building2}
-      items={branches}
-      isLoading={isLoading}
-      isError={isError}
-      searchPlaceholder="Search branches..."
-      allLabel="All Branches"
-      loadingLabel="Loading branches..."
-      errorLabel="Failed to load branches"
-      emptyLabel="No branches available."
-      emptySearchLabel="No branches found."
-      getItemId={(item) => item.id.toString()}
-      getItemName={(item) => item.name}
-      searchQuery={searchQuery}
-      onSearchChange={setSearchQuery}
+      config={{
+        icon: Building2,
+        useQuery: (searchTerm, pagination) => {
+          const result = useBranches(searchTerm as string, pagination);
+          return {
+            data: result.data,
+            isLoading: result.isLoading,
+            isError: result.isError,
+          };
+        },
+        getResults: (data) => {
+          if (data && "branches" in data) {
+            return data.branches?.results || [];
+          }
+          return [];
+        },
+        getItemId: (branch) => branch.id,
+        getItemName: (branch) => branch.branch_name,
+        searchPlaceholder: "Search branches...",
+        allLabel: "All Branches",
+        loadingLabel: "Loading branches...",
+        errorLabel: "Failed to load branches",
+        emptyLabel: "No branches available.",
+        emptySearchLabel: "No branches found.",
+        pageSize: 1000,
+      }}
     />
   );
 }
