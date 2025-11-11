@@ -15,7 +15,7 @@ import { LatestAnnouncements } from "@/components/dashboard/latest-announcements
 import { useKnowledgeFolders } from "@/hooks/queries/use-knowledge-folders";
 import { useState, useMemo } from "react";
 import { PaginationState, pageIndexToPageNumber } from "@/lib/pagination-utils";
-import type { KnowledgeBaseRow, FolderTreeItem } from "@/types/knowledge-base";
+import type { KnowledgeBaseRow } from "@/types/knowledge-base";
 import { convertFolderToRow } from "@/lib/knowledge-base-utils";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/contexts/auth-context";

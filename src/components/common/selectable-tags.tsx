@@ -1,7 +1,6 @@
 "use client";
 
 import * as React from "react";
-import { ReactNode } from "react";
 import { cn } from "@/lib/utils";
 import {
   Tags,

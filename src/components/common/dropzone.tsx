@@ -13,7 +13,6 @@ export const Dropzone = React.forwardRef<HTMLDivElement, DropzoneProps>(
     {
       onFileSelect,
       accept = "image/*",
-      maxSize = 800 * 400, // 800x400px default
       className,
       disabled = false,
       multiple = false,
@@ -111,11 +110,12 @@ export const Dropzone = React.forwardRef<HTMLDivElement, DropzoneProps>(
     };
 
     // Sync external previews and clean up on change/unmount
+    const initialPreviewUrlsKey = initialPreviewUrls?.join(",");
     React.useEffect(() => {
       if (initialPreviewUrls && initialPreviewUrls.length) {
         setPreviewUrls(initialPreviewUrls);
       }
-    }, [initialPreviewUrls?.join(",")]);
+    }, [initialPreviewUrls, initialPreviewUrlsKey]);
 
     React.useEffect(() => {
       return () => {

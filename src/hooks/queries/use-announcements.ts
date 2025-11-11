@@ -21,13 +21,15 @@ export function useAnnouncements(
 	}
 ) {
 	// Normalize params to ensure consistent query keys
+	const paramsKey = JSON.stringify(params);
+	const paginationKeyValue = JSON.stringify(pagination);
 	const normalizedParams = React.useMemo(
 		() => normalizeParams(params),
-		[JSON.stringify(params)]
+		[params, paramsKey]
 	);
 	const paginationKey = React.useMemo(
-		() => JSON.stringify(pagination),
-		[JSON.stringify(pagination)]
+		() => paginationKeyValue,
+		[pagination, paginationKeyValue]
 	);
 
 	return useQuery({
@@ -76,14 +78,15 @@ export function useLatestPolicies(employeeId: number, limit: number = 3) {
 	});
 }
 
-// Announcement Attachment hooks
+	// Announcement Attachment hooks
 export function useAnnouncementAttachments(
 	announcementId: number | string,
 	params?: Record<string, string | number | boolean>
 ) {
+	const paramsKey = JSON.stringify(params);
 	const normalizedParams = React.useMemo(
 		() => normalizeParams(params),
-		[JSON.stringify(params)]
+		[params, paramsKey]
 	);
 
 	return useQuery({

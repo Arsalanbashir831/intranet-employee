@@ -27,11 +27,6 @@ export default function AnnouncementDetailCard({
     }
   );
 
-  // Handle hash_tags - it can be a string or array
-  const hashTags = Array.isArray(announcement.hash_tags)
-    ? announcement.hash_tags.join(" ")
-    : announcement.hash_tags || "";
-
   return (
     <div className="w-full px-4 sm:px-6 md:px-8 py-6 sm:py-8 lg:py-10">
       <div className="bg-white rounded-lg shadow-sm p-4 sm:p-6 lg:p-5">

@@ -1,11 +1,9 @@
 "use client";
 
 import * as React from "react";
-import { Table } from "@tanstack/react-table";
 import { Button } from "@/components/ui/button";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { PaginationState } from "@/lib/pagination-utils";
 import { calculateTotalPages, generatePageNumbers } from "@/lib/pagination-utils";
 import type { CardTablePaginationProps } from "@/types/card-table";
 

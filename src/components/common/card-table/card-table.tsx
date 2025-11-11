@@ -2,14 +2,12 @@
 
 import * as React from "react";
 import {
-	ColumnDef,
 	flexRender,
 	getCoreRowModel,
 	getSortedRowModel,
 	getPaginationRowModel,
 	SortingState,
 	useReactTable,
-	Row,
 } from "@tanstack/react-table";
 import { cn } from "@/lib/utils";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";

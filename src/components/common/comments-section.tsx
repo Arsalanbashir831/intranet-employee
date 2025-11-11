@@ -54,43 +54,6 @@ const CommentItem: React.FC<CommentItemProps> = ({
   const [editContent, setEditContent] = useState(comment.content);
   const [isExpanded, setIsExpanded] = useState(comment.isExpanded ?? true);
 
-  // Recursive function to handle nested replies
-  const handleNestedReply = (
-    parentId: string,
-    content: string,
-    currentReplies: Comment[] = comment.replies || []
-  ): Comment[] => {
-    return currentReplies.map((reply) => {
-      if (reply.id === parentId) {
-        return {
-          ...reply,
-          replies: [
-            ...(reply.replies || []),
-            {
-              id:
-                Date.now().toString() + Math.random().toString(36).substr(2, 9),
-              author: {
-                name: currentUser?.name || "Anonymous User",
-                avatar: currentUser?.avatar,
-                role: currentUser?.role,
-                department: currentUser?.department,
-              },
-              content,
-              createdAt: new Date().toISOString(),
-              replies: [],
-            },
-          ],
-        };
-      } else if (reply.replies && reply.replies.length > 0) {
-        return {
-          ...reply,
-          replies: handleNestedReply(parentId, content, reply.replies),
-        };
-      }
-      return reply;
-    });
-  };
-
   const handleReply = () => {
     if (replyContent.trim()) {
       onReply(comment.id, replyContent.trim());
