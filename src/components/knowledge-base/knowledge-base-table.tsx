@@ -21,7 +21,7 @@ import {
 	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
-import type { KnowledgeBaseRow } from "@/types/components";
+import type { KnowledgeBaseRow } from "@/types/comment";
 
 type Props = {
 	data?: KnowledgeBaseRow[];

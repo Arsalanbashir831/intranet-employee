@@ -7,7 +7,7 @@ import type {
 	AttachmentStatusUpdateResponse,
 	ExecutiveTrainingChecklistListResponse,
 	ExecutiveTrainingChecklistDetail,
-} from "@/types/services/new-hire";
+} from "@/types/new-hire";
 
 // Attachment Status operations
 export async function listAttachmentStatus(

@@ -72,3 +72,48 @@ export type UpdateEmployeeResponse = {
 	employee: Employee;
 };
 
+/**
+ * Profile and employee form types
+ */
+
+// Org chart form initial values
+export type OrgChartInitialValues = {
+	name?: string;
+	address?: string;
+	city?: string;
+	phone?: string;
+	email?: string;
+	departmentIds?: string[];
+	branch?: string;
+	profileImageUrl?: string;
+	qualificationAndEducation?: string;
+	emp_role?: string;
+};
+
+// Employee profile card props (for teams/details component)
+export interface EmployeeProfileCard {
+	id: string;
+	name: string;
+	role: string;
+	address: string;
+	city: string;
+	branch: string;
+	status: string;
+	bio: string;
+	profileImage: string;
+	education: string;
+	email: string;
+	phone: string;
+	hireDate: string;
+	department: string;
+	manager?: {
+		name: string;
+		role: string;
+		profileImage: string;
+	};
+}
+
+export interface EmployeeProfileCardProps {
+	employee?: EmployeeProfileCard;
+}
+

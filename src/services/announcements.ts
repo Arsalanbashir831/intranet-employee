@@ -4,7 +4,7 @@ import { generatePaginationParams } from "@/lib/pagination-utils";
 import type {
 	AnnouncementListResponse,
 	AnnouncementDetailResponse,
-} from "@/types/services/announcements";
+} from "@/types/announcements";
 
 // Announcement CRUD operations (read-only for employee application)
 export async function listAnnouncements(

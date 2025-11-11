@@ -6,7 +6,7 @@ import {
   listExecutiveTrainingChecklists,
   getExecutiveTrainingChecklist
 } from "@/services/new-hire";
-import { AttachmentStatusUpdateRequest } from "@/types/services/new-hire";
+import { AttachmentStatusUpdateRequest } from "@/types/new-hire";
 
 // Attachment Status hooks
 export function useAttachmentStatus(

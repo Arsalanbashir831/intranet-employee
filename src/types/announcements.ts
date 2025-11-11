@@ -81,3 +81,21 @@ export type AnnouncementListResponse = {
 
 export type AnnouncementDetailResponse = Announcement;
 
+/**
+ * Announcement component types (UI-specific)
+ */
+
+// Announcement card for dashboard display
+export type AnnouncementCard = {
+	id: string;
+	image: string;
+	title: string;
+	description: string;
+	badgeLines: [string, string, string];
+};
+
+// Announcement detail card props
+export interface AnnouncementDetailCardProps {
+	announcement: Announcement;
+}
+

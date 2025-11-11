@@ -4,7 +4,7 @@ import {
 	listDepartments,
 } from "@/services/departments";
 import { normalizeParams } from "@/lib/query-utils";
-import { Department, DepartmentListResponse } from "@/types/services/departments";
+import { Department, DepartmentListResponse } from "@/types/departments";
 import { BranchDepartment } from "@/types/common";
 
 // Hook to fetch all departments

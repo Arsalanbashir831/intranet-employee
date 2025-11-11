@@ -45,7 +45,3 @@ export type BranchListResponse = {
 		results: Branch[];
 	};
 };
-
-// Re-export BranchDepartment for convenience
-export type { BranchDepartment } from "../common";
-

@@ -7,7 +7,7 @@ import {
 	getLatestAnnouncements,
 	getLatestPolicies,
 } from "@/services/announcements";
-import type { AnnouncementListResponse } from "@/types/services/announcements";
+import type { AnnouncementListResponse } from "@/types/announcements";
 import { normalizeParams } from "@/lib/query-utils";
 
 export function useAnnouncements(

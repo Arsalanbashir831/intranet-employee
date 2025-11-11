@@ -5,7 +5,7 @@ import type {
 	PollListResponse,
 	PollResultsResponse,
 	PollVoteResponse,
-} from "@/types/services/polls";
+} from "@/types/polls";
 
 // Poll CRUD operations
 export async function listPolls(

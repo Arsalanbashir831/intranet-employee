@@ -1,6 +1,6 @@
 import { useQuery, keepPreviousData } from "@tanstack/react-query";
 import { listBranches } from "@/services/branches";
-import type { BranchListResponse } from "@/types/services/branches";
+import type { BranchListResponse } from "@/types/branches";
 import { useDebounce } from "@/hooks/use-debounce";
 import { normalizeParams } from "@/lib/query-utils";
 import * as React from "react";

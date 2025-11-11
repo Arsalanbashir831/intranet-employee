@@ -3,7 +3,7 @@ import { API_ROUTES } from "@/constants/api-routes";
 import type {
 	ExecutiveListResponse,
 	ExecutiveDetailResponse,
-} from "@/types/services/executive-members";
+} from "@/types/executive-members";
 
 export async function listExecutives(
 	params?: Record<string, string | number | boolean>

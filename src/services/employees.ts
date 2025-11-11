@@ -5,7 +5,7 @@ import type {
 	EmployeeDetailResponse,
 	UpdateEmployeeRequest,
 	UpdateEmployeeResponse,
-} from "@/types/services/employees";
+} from "@/types/employees";
 
 // Fetch employees by department
 export async function getDepartmentEmployees(

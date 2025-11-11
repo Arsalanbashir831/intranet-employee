@@ -36,7 +36,7 @@ import {
 } from "recharts";
 import { format } from "date-fns";
 import Image from "next/image";
-import type { PollVoter } from "@/types/services/polls";
+import type { PollVoter } from "@/types/polls";
 import { useAuth } from "@/contexts/auth-context";
 
 export default function PollDetail() {

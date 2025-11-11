@@ -2,7 +2,7 @@
  * Profile-related utility functions
  */
 
-import type { Employee as ApiEmployee } from "@/types/services/auth";
+import type { Employee as ApiEmployee } from "@/types/auth";
 
 export interface EmployeeProfileData {
 	id: string;

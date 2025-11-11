@@ -1,7 +1,7 @@
 import * as React from "react";
 import { useQuery, keepPreviousData } from "@tanstack/react-query";
 import { listRoles } from "@/services/roles";
-import type { RoleListResponse } from "@/types/services/roles";
+import type { RoleListResponse } from "@/types/roles";
 import { useDebounce } from "@/hooks/use-debounce";
 import { normalizeParams } from "@/lib/query-utils";
 

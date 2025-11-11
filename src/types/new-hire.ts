@@ -112,3 +112,56 @@ export type ExecutiveTrainingChecklistDetail = {
 	employees: ExecutiveTrainingChecklistEmployee[];
 };
 
+/**
+ * Checklist component types
+ */
+
+// Reusable file attachment type for checklists
+export type ChecklistFile = {
+	id: number;
+	file: string;
+	uploaded_at: string;
+};
+
+// Unified checklist props for dialog and drawer
+export interface ChecklistProps {
+	title: string;
+	subtitle?: string;
+	description: string;
+	date: string;
+	files?: ChecklistFile[];
+}
+
+// Task type for training checklist details
+export interface ChecklistTask {
+	id: string;
+	title: string;
+	description: string;
+	date: string;
+	attachmentId: number;
+	status: AttachmentStatus;
+	detail: string;
+	files: ChecklistFile[];
+}
+
+// Assigned employee for executive training checklist
+export interface AssignedEmployee {
+	id: string;
+	name: string;
+	profileImage?: string;
+	branch?: string;
+	department?: string;
+	status: AttachmentStatus;
+}
+
+// Executive task type
+export interface ExecutiveTask {
+	id: string;
+	title: string;
+	description: string;
+	branch?: string;
+	department?: string;
+	assignTo: AssignedEmployee[];
+	assignBy: string;
+}
+

@@ -19,7 +19,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { cn } from "@/lib/utils";
-import type { Comment } from "@/types/components";
+import type { Comment } from "@/types/comment";
 
 interface CommentsSectionProps {
   comments: Comment[];

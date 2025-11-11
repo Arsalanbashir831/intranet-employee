@@ -2,7 +2,7 @@ import apiCaller from "@/lib/api-caller";
 import { API_ROUTES } from "@/constants/api-routes";
 import type {
 	FolderTreeResponse,
-} from "@/types/services/knowledge-base";
+} from "@/types/knowledge-base";
 
 export async function getFolderTree(employeeId?: number | string) {
   try {

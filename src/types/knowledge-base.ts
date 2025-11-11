@@ -60,3 +60,22 @@ export type FolderTreeResponse = {
 	folders: FolderTreeItem[];
 };
 
+export type KnowledgeBaseRow = {
+	id: string;
+	folder: string;
+	createdByName: string;
+	createdByAvatar?: string;
+	dateCreated: string; // YYYY-MM-DD
+	type?: "folder" | "file";
+	fileUrl?: string;
+	createdBy?: {
+		id: number | null;
+		emp_name: string;
+		email: string | null;
+		phone: string | null;
+		role: string | null;
+		profile_picture: string | null;
+		branch_department_ids: number[];
+		is_admin: boolean;
+	};
+};

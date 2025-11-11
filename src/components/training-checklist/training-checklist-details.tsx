@@ -25,7 +25,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { toast } from "sonner";
-import { AttachmentStatusDetail } from "@/types/services/new-hire";
+import { AttachmentStatusDetail } from "@/types/new-hire";
 
 interface Task {
   id: string;

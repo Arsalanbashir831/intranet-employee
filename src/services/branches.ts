@@ -1,7 +1,7 @@
 import apiCaller from "@/lib/api-caller";
 import { API_ROUTES } from "@/constants/api-routes";
 import { generatePaginationParams } from "@/lib/pagination-utils";
-import type { BranchListResponse } from "@/types/services/branches";
+import type { BranchListResponse } from "@/types/branches";
 
 // List branches with search and pagination
 export async function listBranches(

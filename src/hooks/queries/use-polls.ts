@@ -5,7 +5,7 @@ import {
   getPollResults,
   votePoll,
 } from "@/services/polls";
-import type { PollListResponse } from "@/types/services/polls";
+import type { PollListResponse } from "@/types/polls";
 import { normalizeParams } from "@/lib/query-utils";
 
 export function usePolls(

@@ -4,7 +4,7 @@ import { generatePaginationParams } from "@/lib/pagination-utils";
 import type {
 	DepartmentListResponse,
 	BranchDepartmentEmployeesResponse,
-} from "@/types/services/departments";
+} from "@/types/departments";
 
 export async function listDepartments(
 	params?: Record<string, string | number | boolean>,

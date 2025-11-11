@@ -3,7 +3,7 @@ import {
 	listExecutives,
 	getExecutive
 } from "@/services/executive-members";
-import { ExecutiveDetailResponse, ExecutiveListResponse } from "@/types/services/executive-members";
+import { ExecutiveDetailResponse, ExecutiveListResponse } from "@/types/executive-members";
 
 export function useExecutives(
 	params?: Record<string, string | number | boolean>

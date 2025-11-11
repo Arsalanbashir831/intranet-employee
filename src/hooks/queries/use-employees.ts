@@ -50,7 +50,7 @@ export function useAllEmployees(
 	});
 }
 import { useAuth } from "@/contexts/auth-context";
-import { EmployeeListResponse } from "@/types/services/employees";
+import { EmployeeListResponse } from "@/types/employees";
 
 // Query key factory
 export const employeeKeys = {

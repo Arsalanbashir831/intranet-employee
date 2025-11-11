@@ -1,7 +1,7 @@
 import apiCaller from "@/lib/api-caller";
 import { API_ROUTES } from "@/constants/api-routes";
 import { setAuthCookies } from "@/lib/cookies";
-import type { MeResponse } from "@/types/services/auth";
+import type { MeResponse } from "@/types/auth";
 import type {
 	LoginRequest,
 	LoginResponse,
