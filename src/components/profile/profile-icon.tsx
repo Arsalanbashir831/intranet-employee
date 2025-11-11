@@ -2,10 +2,7 @@
  * Reusable icon component with pink mask styling
  */
 
-interface PinkIconProps {
-	src: string;
-	size?: number;
-}
+import type { PinkIconProps } from "@/types/profile";
 
 export function PinkIcon({ src, size = 18 }: PinkIconProps) {
 	return (

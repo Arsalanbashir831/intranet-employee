@@ -5,7 +5,8 @@ import { useRouter } from "next/navigation";
 import { useAuth } from "@/contexts/auth-context";
 import { getFolderTree } from "@/services/knowledge-folders";
 import type { FolderTreeItem, FolderTreeFile } from "@/types/knowledge-base";
-import type { KnowledgeBaseRow } from "@/types/comment";
+import type { KnowledgeBaseRow } from "@/types/knowledge-base";
+import type { KnowledgeBaseFolderViewProps } from "@/types/knowledge-base-folder-view";
 import { ROUTES } from "@/constants/routes";
 import KnowledgeBaseTable from "./knowledge-base-table";
 import { PageHeader } from "../common/page-header";
@@ -49,9 +50,7 @@ function convertFileToRow(file: FolderTreeFile): KnowledgeBaseRow {
 
 export function KnowledgeBaseFolderView({
 	folderPath,
-}: {
-	folderPath: string[];
-}) {
+}: KnowledgeBaseFolderViewProps) {
 	const { user } = useAuth();
 	const router = useRouter();
 	const [folderTree, setFolderTree] = useState<FolderTreeItem | null>(null);

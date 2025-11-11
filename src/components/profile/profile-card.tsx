@@ -17,12 +17,9 @@ import {
 } from "@/lib/profile-utils";
 import { DETAIL_FIELDS, type DetailField } from "@/constants/profile";
 import { PinkIcon } from "./profile-icon";
+import type { EmployeeProfileCardProps } from "@/types/profile";
 
 const { DEFAULT_PROFILE_IMAGE, EMPTY_VALUE } = PROFILE_CONSTANTS;
-
-interface EmployeeProfileCardProps {
-	employee?: EmployeeProfileData;
-}
 
 function LoadingState() {
 	return (

@@ -14,8 +14,7 @@ import { Eye, EyeOff } from "lucide-react";
 import Image from "next/image";
 import { useChangePassword } from "@/hooks/queries/use-auth";
 import { toast } from "sonner";
-
-type Values = { current: string; next: string; confirm: string };
+import type { ChangePasswordDialogProps, ChangePasswordValues } from "@/types/profile";
 
 // Move Field component outside to prevent re-creation on each render
 const Field = React.memo(({
@@ -30,11 +29,11 @@ const Field = React.memo(({
 }: {
 	id: string;
 	label: string;
-	valueKey: keyof Values;
-	values: Values;
-	setValues: React.Dispatch<React.SetStateAction<Values>>;
+	valueKey: keyof ChangePasswordValues;
+	values: ChangePasswordValues;
+	setValues: React.Dispatch<React.SetStateAction<ChangePasswordValues>>;
 	show: { [k: string]: boolean };
-	toggle: (k: keyof Values) => void;
+	toggle: (k: keyof ChangePasswordValues) => void;
 	loading: boolean;
 }) => (
 	<div className="space-y-2">
@@ -82,12 +81,9 @@ Field.displayName = "Field";
 export function ChangePasswordDialog({
 	open,
 	onOpenChange,
-}: {
-	open: boolean;
-	onOpenChange: (v: boolean) => void;
-}) {
+}: ChangePasswordDialogProps) {
 	const [show, setShow] = React.useState<{ [k: string]: boolean }>({});
-	const [values, setValues] = React.useState<Values>({
+	const [values, setValues] = React.useState<ChangePasswordValues>({
 		current: "",
 		next: "",
 		confirm: "",
@@ -95,7 +91,7 @@ export function ChangePasswordDialog({
 	const [error, setError] = React.useState<string>("");
 	const { mutate: changePassword, isPending: loading } = useChangePassword();
 
-	const toggle = (k: keyof Values) => setShow((s) => ({ ...s, [k]: !s[k] }));
+	const toggle = (k: keyof ChangePasswordValues) => setShow((s) => ({ ...s, [k]: !s[k] }));
 
 	const handleSubmit = async (e: React.FormEvent) => {
 		e.preventDefault();

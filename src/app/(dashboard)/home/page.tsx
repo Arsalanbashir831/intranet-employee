@@ -15,8 +15,7 @@ import { LatestAnnouncements } from "@/components/dashboard/latest-announcements
 import { useKnowledgeFolders } from "@/hooks/queries/use-knowledge-folders";
 import { useState, useMemo } from "react";
 import { PaginationState, pageIndexToPageNumber } from "@/lib/pagination-utils";
-import { KnowledgeBaseRow } from "@/components/knowledge-base/knowledge-base-table";
-import { FolderTreeItem } from "@/services/knowledge-folders";
+import type { KnowledgeBaseRow, FolderTreeItem } from "@/types/knowledge-base";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/contexts/auth-context";
 
@@ -57,7 +56,7 @@ export default function Home() {
   const handleSearch = (term: string) => {
     setSearchTerm(term);
     // Reset to first page when searching
-    setPagination((prev) => ({ ...prev, pageIndex: 0 }));
+    setPagination((prev: PaginationState) => ({ ...prev, pageIndex: 0 }));
   };
 
   const handleRowClick = (row: KnowledgeBaseRow) => {

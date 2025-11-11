@@ -2,11 +2,7 @@
 
 import React from "react";
 import Image from "next/image";
-import { Announcement } from "@/services/announcements";
-
-interface AnnouncementDetailCardProps {
-  announcement: Announcement;
-}
+import type { AnnouncementDetailCardProps } from "@/types/announcements";
 
 export default function AnnouncementDetailCard({
   announcement,

@@ -12,7 +12,6 @@ import { CardTablePagination } from "@/components/common/card-table/card-table-p
 import { FolderIcon, FileIcon, MoreHorizontal, Edit, Trash2 } from "lucide-react";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
-import { PaginationState } from "@/lib/pagination-utils";
 import { useAuth } from "@/contexts/auth-context";
 import {
 	DropdownMenu,
@@ -21,25 +20,8 @@ import {
 	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
-import type { KnowledgeBaseRow } from "@/types/comment";
-
-type Props = {
-	data?: KnowledgeBaseRow[];
-	title?: string;
-	viewMoreHref?: string;
-	limit?: number;
-	showToolbar?: boolean;
-	className?: string;
-	onRowClick?: (row: KnowledgeBaseRow) => void; // Added onRowClick handler
-	pagination?: {
-		pageIndex: number;
-		pageSize: number;
-		totalCount: number;
-		onPaginationChange: (pagination: PaginationState) => void;
-	};
-	onSearch?: (searchTerm: string) => void; // Added search handler
-	searchTerm?: string; // Added search term prop
-};
+import type { KnowledgeBaseRow } from "@/types/knowledge-base";
+import type { KnowledgeBaseTableProps } from "@/types/knowledge-base-table";
 
 /* --------------- Demo rows --------------- */
 const defaultRows: KnowledgeBaseRow[] = [];
@@ -56,7 +38,7 @@ export function KnowledgeBaseTable({
 	pagination,
 	onSearch,
 	searchTerm = "",
-}: Props) {
+}: KnowledgeBaseTableProps) {
 	// Use the provided title prop directly
 	const displayTitle = title;
 	const { user } = useAuth();

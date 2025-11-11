@@ -11,19 +11,7 @@ import {
 import { RichTextEditor } from "@/components/common/rich-text-editor";
 import { toast } from "sonner";
 import { Card } from "../ui/card";
-
-export type OrgChartInitialValues = {
-  name?: string;
-  address?: string;
-  city?: string;
-  phone?: string;
-  email?: string;
-  departmentIds?: string[];
-  branch?: string;
-  profileImageUrl?: string;
-  qualificationAndEducation?: string;
-  emp_role?: string;
-};
+import type { OrgChartInitialValues } from "@/types/employees";
 
 const departments = [
   { id: 1, name: "Department 1" },

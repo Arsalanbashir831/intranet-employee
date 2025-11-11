@@ -6,15 +6,7 @@ import { useLatestAnnouncements } from "@/hooks/queries/use-announcements";
 import { useAuth } from "@/contexts/auth-context";
 import { useEffect, useState } from "react";
 import { ROUTES } from "@/constants/routes";
-
-// Define the card type
-type AnnouncementCard = {
-  id: string;
-  image: string;
-  title: string;
-  description: string;
-  badgeLines: [string, string, string];
-};
+import type { AnnouncementCard } from "@/types/announcements";
 
 export const LatestAnnouncements = () => {
     const { user } = useAuth();

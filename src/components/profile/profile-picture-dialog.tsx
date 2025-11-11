@@ -19,19 +19,7 @@ import { useUploadProfilePicture, useDeleteProfilePicture } from "@/hooks/querie
 import { useAuth } from "@/contexts/auth-context";
 import { toast } from "sonner";
 import { readFileAsDataUrl, cropToDataUrlAndFile } from "@/lib/image-utils";
-
-/* ---------------------- Types ---------------------- */
-type Props = {
-	image: string | null; // current profile image (can be null)
-	name: string;
-	onSave?: (payload: {
-		dataUrl: string; // cropped PNG data URL
-		file: File; // cropped PNG File (named)
-	}) => Promise<void> | void;
-	onDelete?: () => Promise<void> | void;
-	open?: boolean;
-	onOpenChange?: (open: boolean) => void;
-};
+import type { ProfilePictureDialogProps } from "@/types/profile";
 
 /* ---------------------- Component ---------------------- */
 export function ProfilePictureDialog({
@@ -41,7 +29,7 @@ export function ProfilePictureDialog({
 	onDelete,
 	open,
 	onOpenChange,
-}: Props) {
+}: ProfilePictureDialogProps) {
 	const { user } = useAuth();
 	const { mutate: uploadProfilePicture } = useUploadProfilePicture();
 	const { mutate: deleteProfilePicture } = useDeleteProfilePicture();
