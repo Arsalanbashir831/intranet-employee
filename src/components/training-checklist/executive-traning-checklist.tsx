@@ -13,7 +13,7 @@ import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Eye } from "lucide-react";
 import { useExecutiveTrainingChecklists } from "@/hooks/queries/use-new-hire";
-import type { ExecutiveTrainingChecklist } from "@/services/new-hire";
+import type { ExecutiveTrainingChecklist } from "@/types/services/new-hire";
 import { BranchFilterDropdown } from "@/components/common/branch-filter-dropdown";
 import { DepartmentFilterDropdown } from "@/components/common/department-filter-dropdown";
 import { useDebounce } from "@/hooks/use-debounce";

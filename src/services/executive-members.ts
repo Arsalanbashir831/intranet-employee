@@ -1,58 +1,9 @@
 import apiCaller from "@/lib/api-caller";
 import { API_ROUTES } from "@/constants/api-routes";
-
-// Executive type definition
-export type Executive = {
-	id: number;
-	name: string;
-	address: string;
-	city: string;
-	phone: string;
-	email: string;
-	role: string;
-	education: string;
-	bio?: string;
-	branch: string;
-	hire_date: string;
-	department: string;
-	profile_picture?: string | null;
-	created_at: string;
-	updated_at: string;
-};
-
-// Response types
-export type ExecutiveListResponse = {
-	count: number;
-	page: number;
-	page_size: number;
-	results: Executive[];
-};
-
-export type ExecutiveDetailResponse = Executive;
-
-// Form data request type for creating executives
-export type ExecutiveCreateRequest = {
-	name: string;
-	address: string;
-	city: string;
-	phone: string;
-	email: string;
-	role: string;
-	education: string;
-	profile_picture?: File | string | null;
-};
-
-// Form data request type for updating executives
-export type ExecutiveUpdateRequest = {
-	name?: string;
-	address?: string;
-	city?: string;
-	phone?: string;
-	email?: string;
-	role?: string;
-	education?: string;
-	profile_picture?: File | string | null; // Support null for removal
-};
+import type {
+	ExecutiveListResponse,
+	ExecutiveDetailResponse,
+} from "@/types/services/executive-members";
 
 export async function listExecutives(
 	params?: Record<string, string | number | boolean>

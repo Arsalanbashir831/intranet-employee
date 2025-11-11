@@ -1,53 +1,13 @@
 import apiCaller from "@/lib/api-caller";
 import { API_ROUTES } from "@/constants/api-routes";
-
-// Define types based on the API response
-export type CommentAuthor = {
-  id: number;
-  emp_name: string;
-  email: string;
-  phone: string;
-  role: string;
-  profile_picture: string | null;
-  branch_department_ids: number[];
-};
-
-export type Comment = {
-  id: number;
-  announcement: number;
-  author: number;
-  parent: number | null;
-  content: string;
-  created_at: string;
-  updated_at: string;
-  is_edited: boolean;
-  author_details: CommentAuthor;
-  replies: Comment[];
-  can_edit: boolean;
-  can_delete: boolean;
-  reply_count: number;
-};
-
-export type CommentListResponse = {
-  comments: {
-    count: number;
-    page: number;
-    page_size: number;
-    results: Comment[];
-  };
-};
-
-export type CommentDetailResponse = Comment;
-
-export type CreateCommentPayload = {
-  announcement: number;
-  content: string;
-  parent?: number | null;
-};
-
-export type UpdateCommentPayload = {
-  content: string;
-};
+import { generatePaginationParams } from "@/lib/pagination-utils";
+import type {
+	Comment,
+	CommentListResponse,
+	CommentDetailResponse,
+	CreateCommentPayload,
+	UpdateCommentPayload,
+} from "@/types/services/comments";
 
 // Comment CRUD operations
 export async function listComments(
@@ -64,10 +24,10 @@ export async function listComments(
   
   // Add pagination parameters
   if (pagination) {
-    const paginationParams = {
-      page: (pagination.page || 1).toString(),
-      page_size: (pagination.pageSize || 10).toString(),
-    };
+    const paginationParams = generatePaginationParams(
+      pagination.page ? pagination.page - 1 : 0,
+      pagination.pageSize || 10
+    );
     Object.assign(queryParams, paginationParams);
   }
   

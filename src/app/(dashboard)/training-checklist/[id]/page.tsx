@@ -10,7 +10,7 @@ import { ROUTES } from "@/constants/routes";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/contexts/auth-context";
 import { useExecutiveTrainingChecklist } from "@/hooks/queries/use-new-hire";
-import type { ExecutiveTrainingChecklistEmployee } from "@/services/new-hire";
+import type { ExecutiveTrainingChecklistEmployee } from "@/types/services/new-hire";
 import Image from "next/image";
 import { format } from "date-fns";
 import { Skeleton } from "@/components/ui/skeleton";

@@ -1,23 +1,7 @@
 import apiCaller from "@/lib/api-caller";
 import { API_ROUTES } from "@/constants/api-routes";
 import { generatePaginationParams } from "@/lib/pagination-utils";
-
-// Role type definition
-export type Role = {
-	id: number;
-	name: string;
-	is_manager: boolean;
-	is_executive: boolean;
-};
-
-export type RoleListResponse = {
-	roles: {
-		count: number;
-		page: number;
-		page_size: number;
-		results: Role[];
-	};
-};
+import type { RoleListResponse } from "@/types/services/roles";
 
 // List roles with search and pagination
 export async function listRoles(

@@ -1,11 +1,11 @@
 import { useQuery, keepPreviousData } from "@tanstack/react-query";
 import {
-	BranchDepartment,
-	Department,
-	DepartmentListResponse,
 	getBranchDepartmentEmployees,
 	listDepartments,
 } from "@/services/departments";
+import { normalizeParams } from "@/lib/query-utils";
+import { Department, DepartmentListResponse } from "@/types/services/departments";
+import { BranchDepartment } from "@/types/common";
 
 // Hook to fetch all departments
 export function useDepartments(
@@ -61,15 +61,6 @@ export function useBranchDepartments(
 
 	return { data: allBranchDepartments, isLoading, error };
 }
-
-// Helpers
-const normalizeParams = (
-	params?: Record<string, string | number | boolean>
-) => {
-	if (!params) return undefined;
-	const entries = Object.entries(params).sort(([a], [b]) => (a > b ? 1 : -1));
-	return Object.fromEntries(entries);
-};
 
 export function useBranchDepartmentEmployees(
 	branchDepartmentId: number | string,

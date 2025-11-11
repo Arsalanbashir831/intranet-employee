@@ -1,52 +1,7 @@
 import apiCaller from "@/lib/api-caller";
 import { API_ROUTES } from "@/constants/api-routes";
 import { generatePaginationParams } from "@/lib/pagination-utils";
-
-// Branch type definition
-export type Branch = {
-	id: number;
-	branch_name: string;
-	employee_count: number;
-	departments: BranchDepartment[];
-};
-
-export type BranchDepartment = {
-	id: number;
-	dept_name: string;
-	branch_department_id: number;
-	employee_count: number;
-	manager: {
-		id: number;
-		employee: {
-			id: number;
-			emp_name: string;
-			profile_picture: string;
-			email: string;
-			role: string;
-			role_id: number;
-		};
-		branch_department: {
-			id: number;
-			branch: {
-				id: number;
-				branch_name: string;
-			};
-			department: {
-				id: number;
-				dept_name: string;
-			};
-		};
-	} | null;
-};
-
-export type BranchListResponse = {
-	branches: {
-		count: number;
-		page: number;
-		page_size: number;
-		results: Branch[];
-	};
-};
+import type { BranchListResponse } from "@/types/services/branches";
 
 // List branches with search and pagination
 export async function listBranches(

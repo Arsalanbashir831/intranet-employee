@@ -7,7 +7,6 @@ import {
 	listAllEmployees,
 	getDepartmentEmployees,
 	getBranchDepartmentEmployees,
-	type EmployeeListResponse,
 } from "@/services/employees";
 // Hook to list employees by department
 export function useDepartmentEmployees(
@@ -51,6 +50,7 @@ export function useAllEmployees(
 	});
 }
 import { useAuth } from "@/contexts/auth-context";
+import { EmployeeListResponse } from "@/types/services/employees";
 
 // Query key factory
 export const employeeKeys = {

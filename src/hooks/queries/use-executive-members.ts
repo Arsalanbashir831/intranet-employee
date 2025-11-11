@@ -1,10 +1,9 @@
 import { useQuery } from "@tanstack/react-query";
 import {
 	listExecutives,
-	getExecutive,
-	type ExecutiveListResponse,
-	type ExecutiveDetailResponse,
+	getExecutive
 } from "@/services/executive-members";
+import { ExecutiveDetailResponse, ExecutiveListResponse } from "@/types/services/executive-members";
 
 export function useExecutives(
 	params?: Record<string, string | number | boolean>

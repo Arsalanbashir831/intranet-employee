@@ -1,100 +1,15 @@
 import apiCaller from "@/lib/api-caller";
 import { API_ROUTES } from "@/constants/api-routes";
 import { setAuthCookies } from "@/lib/cookies";
-
-// Define types for the me API response
-export type User = {
-  id: number;
-  username: string;
-  email: string;
-  first_name: string;
-  last_name: string;
-  is_active: boolean;
-  is_staff: boolean;
-  is_superuser: boolean;
-};
-
-export type Executive = {
-  id: number;
-  name: string;
-  address: string;
-  city: string;
-  phone: string;
-  email: string;
-  role: string;
-  education: string;
-  bio: string;
-  profile_picture: string;
-  created_at: string;
-  updated_at: string;
-};
-
-export type Employee = {
-  id: number;
-  emp_name: string;
-  branch_department_ids: number[];
-  hire_date: string;
-  address: string;
-  city: string;
-  phone: string;
-  email: string;
-  role: string;
-  education: string;
-  bio: string;
-  profile_picture: string | null;
-  isAdmin: boolean;
-  is_executive: boolean;
-  branch_departments: {
-    id: number;
-    branch: {
-      id: number;
-      branch_name: string;
-    };
-    department: {
-      id: number;
-      dept_name: string;
-    };
-    manager: {
-      id: number;
-      employee: {
-        id: number;
-        emp_name: string;
-        profile_picture: string | null;
-        email: string;
-        role: string;
-      };
-      branch_department: {
-        id: number;
-        branch: {
-          id: number;
-          branch_name: string;
-        };
-        department: {
-          id: number;
-          dept_name: string;
-        };
-      };
-    } | null;
-  }[];
-};
-
-export type MeResponse = {
-  user: User;
-  employee: Employee | null;
-  executive: Executive | null;
-};
-
-// Align with backend: obtain token expects username and password and returns access/refresh
-export type LoginRequest = { username: string; password: string };
-export type LoginResponse = { access: string; refresh: string };
-export type RefreshRequest = { refresh: string };
-export type RefreshResponse = {
-  access: string;
-  refresh?: string;
-};
-export type VerifyRequest = { token: string };
-export type ForgotPasswordRequest = { email: string };
-export type ResetPasswordWithOTPRequest = { email: string; otp: string; new_password: string };
+import type { MeResponse } from "@/types/services/auth";
+import type {
+	LoginRequest,
+	LoginResponse,
+	RefreshResponse,
+	VerifyRequest,
+	ForgotPasswordRequest,
+	ResetPasswordWithOTPRequest,
+} from "@/types/api";
 
 export async function login(credentials: LoginRequest) {
   const res = await apiCaller<LoginResponse>(API_ROUTES.AUTH.OBTAIN_TOKEN, "POST", credentials, {}, "json");

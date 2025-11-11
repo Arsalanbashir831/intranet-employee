@@ -19,25 +19,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { cn } from "@/lib/utils";
-
-// Types
-export interface Comment {
-  id: string;
-  author: {
-    name: string;
-    avatar?: string;
-    role?: string;
-    department?: string;
-  };
-  content: string;
-  createdAt: string;
-  isEdited?: boolean;
-  replies?: Comment[];
-  isExpanded?: boolean;
-  canEdit?: boolean;
-  canDelete?: boolean;
-  replyCount?: number;
-}
+import type { Comment } from "@/types/components";
 
 interface CommentsSectionProps {
   comments: Comment[];

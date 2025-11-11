@@ -7,20 +7,8 @@ import {
 	getLatestAnnouncements,
 	getLatestPolicies,
 } from "@/services/announcements";
-import type { AnnouncementListResponse } from "@/services/announcements";
-
-// Helper to create stable query keys
-const normalizeParams = (
-	params?: Record<string, string | number | boolean>
-) => {
-	if (!params) return undefined;
-	// Sort keys to ensure consistent query key ordering
-	const entries = Object.entries(params).sort(([a], [b]) => (a > b ? 1 : -1));
-	return Object.fromEntries(entries) as Record<
-		string,
-		string | number | boolean
-	>;
-};
+import type { AnnouncementListResponse } from "@/types/services/announcements";
+import { normalizeParams } from "@/lib/query-utils";
 
 export function useAnnouncements(
 	params?: Record<string, string | number | boolean>,

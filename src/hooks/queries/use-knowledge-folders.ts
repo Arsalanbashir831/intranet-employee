@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { getFolderTree } from "@/services/knowledge-folders";
 import { useAuth } from "@/contexts/auth-context";
-import { FolderTreeItem, FolderTreeFile } from "@/services/knowledge-folders";
+import { FolderTreeFile, FolderTreeItem } from "@/types/services/knowledge-base";
 
 // Query key factory
 export const knowledgeFoldersKeys = {

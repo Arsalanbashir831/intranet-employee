@@ -1,80 +1,10 @@
 import apiCaller from "@/lib/api-caller";
 import { API_ROUTES } from "@/constants/api-routes";
-
-// Define types based on the API response
-export type Announcement = {
-  id: number;
-  title: string;
-  body: string;
-  type: string;
-  hash_tags: string | null;
-  is_active: boolean;
-  inherits_parent_permissions: boolean;
-  permitted_branches: number[];
-  permitted_departments: number[];
-  permitted_employees: number[];
-  created_by: number | null;
-  created_at: string;
-  updated_at: string;
-  attachments: AnnouncementAttachment[];
-  effective_permissions: {
-    branches: number[];
-    departments: number[];
-    employees: number[];
-  };
-  permitted_branches_details: Array<{ id: number; branch_name: string; location: string | null }>;
-  permitted_departments_details: Array<{ id: number; dept_name: string }>;
-  permitted_employees_details: Array<{ 
-    id: number; 
-    emp_name: string; 
-    email: string; 
-    phone: string;
-    role: string;
-    profile_picture: string | null;
-  }>;
-  created_by_details: {
-    id: number;
-    username: string;
-    email: string;
-    first_name: string;
-    last_name: string;
-    is_active: boolean;
-    is_staff: boolean;
-    is_superuser: boolean;
-  } | null;
-};
-
-export type AnnouncementAttachment = {
-  id: number;
-  announcement: number;
-  name: string;
-  description: string;
-  file: string;
-  file_url: string;
-  inherits_parent_permissions: boolean;
-  permitted_branches: number[];
-  permitted_departments: number[];
-  permitted_employees: number[];
-  uploaded_by: number | null;
-  uploaded_at: string;
-  size: number;
-  content_type: string;
-  effective_permissions: {
-    branches: number[];
-    departments: number[];
-    employees: number[];
-  };
-};
-
-export type AnnouncementListResponse = {
-  announcements: {
-    count: number;
-    page: number;
-    page_size: number;
-    results: Announcement[];
-  };
-};
-export type AnnouncementDetailResponse = Announcement;
+import { generatePaginationParams } from "@/lib/pagination-utils";
+import type {
+	AnnouncementListResponse,
+	AnnouncementDetailResponse,
+} from "@/types/services/announcements";
 
 // Announcement CRUD operations (read-only for employee application)
 export async function listAnnouncements(
@@ -86,11 +16,10 @@ export async function listAnnouncements(
   
   // Add pagination parameters
   if (pagination) {
-    // Convert 1-based page number to 1-based for API (no conversion needed)
-    const paginationParams = {
-      page: (pagination.page || 1).toString(),
-      page_size: (pagination.pageSize || 10).toString(),
-    };
+    const paginationParams = generatePaginationParams(
+      pagination.page ? pagination.page - 1 : 0,
+      pagination.pageSize || 10
+    );
     Object.assign(queryParams, paginationParams);
   }
   

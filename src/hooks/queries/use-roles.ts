@@ -1,21 +1,9 @@
 import * as React from "react";
 import { useQuery, keepPreviousData } from "@tanstack/react-query";
 import { listRoles } from "@/services/roles";
-import type { RoleListResponse } from "@/services/roles";
+import type { RoleListResponse } from "@/types/services/roles";
 import { useDebounce } from "@/hooks/use-debounce";
-
-// Helper to create stable query keys
-const normalizeParams = (
-	params?: Record<string, string | number | boolean>
-) => {
-	if (!params) return undefined;
-	// Sort keys to ensure consistent query key ordering
-	const entries = Object.entries(params).sort(([a], [b]) => (a > b ? 1 : -1));
-	return Object.fromEntries(entries) as Record<
-		string,
-		string | number | boolean
-	>;
-};
+import { normalizeParams } from "@/lib/query-utils";
 
 export function useRoles(
 	searchTerm?: string,

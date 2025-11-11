@@ -1,5 +1,11 @@
 import apiCaller from "@/lib/api-caller";
 import { API_ROUTES } from "@/constants/api-routes";
+import type {
+	EmployeeListResponse,
+	EmployeeDetailResponse,
+	UpdateEmployeeRequest,
+	UpdateEmployeeResponse,
+} from "@/types/services/employees";
 
 // Fetch employees by department
 export async function getDepartmentEmployees(
@@ -42,15 +48,6 @@ export async function getBranchDepartmentEmployees(
 	);
 	return res.data;
 }
-// List all employees (API returns { employees: { ... } })
-export type EmployeeListResponse = {
-	employees: {
-		count: number;
-		page: number;
-		page_size: number;
-		results: Employee[];
-	};
-};
 
 export async function listAllEmployees(
 	params?: Record<string, string | number | boolean>
@@ -69,70 +66,6 @@ export async function listAllEmployees(
 	);
 	return res.data;
 }
-
-// Define types based on the API response
-export type Employee = {
-	id: number;
-	emp_name: string;
-	branch_department_ids: number[];
-	hire_date: string;
-	address: string;
-	city: string;
-	phone: string;
-	email: string;
-	role: string;
-	education: string;
-	bio: string | null;
-	profile_picture: string | null;
-	isAdmin: boolean;
-	branch_departments: {
-		id: number;
-		branch: {
-			id: number;
-			branch_name: string;
-		};
-		department: {
-			id: number;
-			dept_name: string;
-		};
-		manager: {
-			id: number;
-			employee: {
-				id: number;
-				emp_name: string;
-				profile_picture: string | null;
-				email: string;
-				role: string;
-			};
-			branch_department: {
-				id: number;
-				branch: {
-					id: number;
-					branch_name: string;
-				};
-				department: {
-					id: number;
-					dept_name: string;
-				};
-			};
-		} | null;
-	}[];
-};
-
-export type EmployeeDetailResponse = {
-	employee: Employee;
-};
-
-// Type for updating employee data
-export type UpdateEmployeeRequest = {
-	bio?: string | null;
-	education?: string;
-	// Add other fields that can be updated as needed
-};
-
-export type UpdateEmployeeResponse = {
-	employee: Employee;
-};
 
 export async function getEmployee(id: number | string) {
 	const res = await apiCaller<EmployeeDetailResponse>(

@@ -2,16 +2,10 @@
  * Utility functions for handling server-side pagination
  */
 
-export interface PaginationInfo {
-  count: number;
-  page: number;
-  page_size: number;
-}
+import type { PaginationInfo } from "@/types/common";
 
-export interface PaginationState {
-  pageIndex: number;
-  pageSize: number;
-}
+// Re-export types for backward compatibility
+export type { PaginationInfo, PaginationState } from "@/types/common";
 
 /**
  * Calculate total number of pages based on count and page size

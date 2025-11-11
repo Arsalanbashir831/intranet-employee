@@ -5,20 +5,8 @@ import {
   getPollResults,
   votePoll,
 } from "@/services/polls";
-import type { PollListResponse } from "@/services/polls";
-
-// Helper to create stable query keys
-const normalizeParams = (
-  params?: Record<string, string | number | boolean>
-) => {
-  if (!params) return undefined;
-  // Sort keys to ensure consistent query key ordering
-  const entries = Object.entries(params).sort(([a], [b]) => (a > b ? 1 : -1));
-  return Object.fromEntries(entries) as Record<
-    string,
-    string | number | boolean
-  >;
-};
+import type { PollListResponse } from "@/types/services/polls";
+import { normalizeParams } from "@/lib/query-utils";
 
 export function usePolls(
   params?: Record<string, string | number | boolean>,

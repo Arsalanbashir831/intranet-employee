@@ -3,9 +3,11 @@
 import React, { useState, useEffect, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/contexts/auth-context";
-import { getFolderTree, FolderTreeItem } from "@/services/knowledge-folders";
+import { getFolderTree } from "@/services/knowledge-folders";
+import type { FolderTreeItem, FolderTreeFile } from "@/types/services/knowledge-base";
+import type { KnowledgeBaseRow } from "@/types/components";
 import { ROUTES } from "@/constants/routes";
-import KnowledgeBaseTable, { KnowledgeBaseRow } from "./knowledge-base-table";
+import KnowledgeBaseTable from "./knowledge-base-table";
 import { PageHeader } from "../common/page-header";
 import { getApiBaseUrl } from "@/lib/utils";
 
@@ -18,8 +20,8 @@ function filterFolderContents(
 	const lower = searchTerm.toLowerCase();
 	return {
 		...folder,
-		folders: folder.folders.filter((f) => f.name.toLowerCase().includes(lower)),
-		files: folder.files.filter((f) => f.name.toLowerCase().includes(lower)),
+		folders: folder.folders.filter((f: FolderTreeItem) => f.name.toLowerCase().includes(lower)),
+		files: folder.files.filter((f: FolderTreeFile) => f.name.toLowerCase().includes(lower)),
 	};
 }
 function convertFolderToRow(folder: FolderTreeItem): KnowledgeBaseRow {
@@ -33,7 +35,7 @@ function convertFolderToRow(folder: FolderTreeItem): KnowledgeBaseRow {
 		createdBy: folder.created_by,
 	};
 }
-import type { FolderTreeFile } from "@/services/knowledge-folders";
+
 function convertFileToRow(file: FolderTreeFile): KnowledgeBaseRow {
 	return {
 		id: String(file.id),

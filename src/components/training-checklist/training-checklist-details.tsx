@@ -14,7 +14,6 @@ import {
   useUpdateAttachmentStatus,
 } from "@/hooks/queries/use-new-hire";
 import { useAuth } from "@/contexts/auth-context";
-import { AttachmentStatusDetail } from "@/services/new-hire";
 import { Eye } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -26,6 +25,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { toast } from "sonner";
+import { AttachmentStatusDetail } from "@/types/services/new-hire";
 
 interface Task {
   id: string;

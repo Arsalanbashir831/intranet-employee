@@ -6,9 +6,8 @@ import {
   createComment, 
   updateComment, 
   deleteComment,
-  type CreateCommentPayload,
-  type UpdateCommentPayload
 } from "@/services/comments";
+import { CreateCommentPayload, UpdateCommentPayload } from "@/types/services/comments";
 
 // List comments for an announcement
 export function useComments(

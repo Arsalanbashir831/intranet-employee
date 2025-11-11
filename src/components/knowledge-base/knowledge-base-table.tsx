@@ -21,27 +21,7 @@ import {
 	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
-
-/* ---------------- Types ---------------- */
-export type KnowledgeBaseRow = {
-	id: string;
-	folder: string;
-	createdByName: string;
-	createdByAvatar?: string;
-	dateCreated: string; // YYYY-MM-DD
-	type?: "folder" | "file"; // Added type to distinguish between folders and files
-	fileUrl?: string; // Added file URL for downloading files
-	createdBy?: {
-		id: number | null;
-		emp_name: string;
-		email: string | null;
-		phone: string | null;
-		role: string | null;
-		profile_picture: string | null;
-		branch_department_ids: number[];
-		is_admin: boolean;
-	};
-};
+import type { KnowledgeBaseRow } from "@/types/components";
 
 type Props = {
 	data?: KnowledgeBaseRow[];
