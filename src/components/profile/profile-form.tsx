@@ -197,7 +197,6 @@ export function OrgChartForm({
           </Label>
           <div className="col-span-12 md:col-span-10">
             <Dropzone
-              onFileSelect={(files) => console.log("Files selected:", files)}
               accept="image/*"
               maxSize={800 * 400}
               initialPreviewUrls={

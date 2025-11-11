@@ -185,7 +185,6 @@ export function KnowledgeBaseTable({
 									onClick={(e) => {
 										e.stopPropagation();
 										// TODO: Implement edit functionality
-										console.log("Edit folder:", row.original.id);
 									}}>
 									<Edit className="mr-2 h-4 w-4" />
 									Edit
@@ -194,7 +193,6 @@ export function KnowledgeBaseTable({
 									onClick={(e) => {
 										e.stopPropagation();
 										// TODO: Implement delete functionality
-										console.log("Delete folder:", row.original.id);
 									}}
 									className="text-red-600">
 									<Trash2 className="mr-2 h-4 w-4" />
