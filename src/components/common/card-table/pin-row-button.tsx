@@ -1,14 +1,6 @@
 import { Pin } from "lucide-react";
 import { Button } from "../../ui/button";
-import { Row } from "@tanstack/react-table";
-
-type RowWithId = { id: string };
-
-type PinRowButtonProps<TData extends RowWithId> = {
-	row: Row<TData>;
-	pinnedIds: Set<string>;
-	togglePin: (id: string) => void;
-};
+import type { PinRowButtonProps, RowWithId } from "@/types/card-table";
 
 export function PinRowButton<TData extends RowWithId>({
 	row,

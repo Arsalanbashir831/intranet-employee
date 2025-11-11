@@ -6,21 +6,7 @@ import { Filter } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { TableSearch } from "./table-search";
 import { SortingDropdown } from "./sorting-dropdown";
-
-export type CardTableToolbarProps = {
-	title: string;
-	placeholder?: string;
-	searchValue?: string;
-	onSearchChange?: (value: string) => void;
-	onSortChange?: (value: string) => void;
-	onFilterClick?: () => void;
-	hasSort?: boolean;
-	hasFilter?: boolean;
-	className?: string;
-	sortOptions?: { label: string; value: string }[];
-	activeSort?: string;
-	accessControl?: React.ReactNode; // optional control like AccessLevelDropdown
-};
+import type { CardTableToolbarProps } from "@/types/card-table";
 
 export function CardTableToolbar({
 	title,

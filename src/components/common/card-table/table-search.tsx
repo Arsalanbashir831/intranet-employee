@@ -3,12 +3,7 @@
 import { useEffect, useRef } from "react";
 import { CommandIcon, Search } from "lucide-react";
 import { Input } from "@/components/ui/input";
-
-type TableSearchProps = {
-	placeholder?: string;
-	value?: string;
-	onChange?: (value: string) => void;
-};
+import type { TableSearchProps } from "@/types/card-table";
 
 export function TableSearch({
 	placeholder = "Search",

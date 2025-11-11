@@ -7,7 +7,7 @@ import type {
 	CommentDetailResponse,
 	CreateCommentPayload,
 	UpdateCommentPayload,
-} from "@/types/comments";
+} from "@/types/comments-sections";
 
 // Comment CRUD operations
 export async function listComments(

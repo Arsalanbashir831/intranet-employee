@@ -8,12 +8,7 @@ import {
 	DropdownMenuLabel,
 } from "@/components/ui/dropdown-menu";
 import { ChevronDown, ListFilter } from "lucide-react";
-
-type SortingDropdownProps = {
-	sortOptions: { label: string; value: string }[];
-	activeSort: string;
-	onSortChange: (value: string) => void;
-};
+import type { SortingDropdownProps } from "@/types/card-table";
 
 export function SortingDropdown(props: SortingDropdownProps) {
 	const { sortOptions, activeSort, onSortChange } = props;

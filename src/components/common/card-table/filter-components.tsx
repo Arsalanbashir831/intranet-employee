@@ -14,12 +14,11 @@ import {
 	useDepartments,
 	useBranchDepartments,
 } from "@/hooks/queries/use-departments";
-
-interface DepartmentFilterProps {
-	value?: string;
-	onValueChange: (value: string) => void;
-	placeholder?: string;
-}
+import type {
+	DepartmentFilterProps,
+	BranchDepartmentFilterProps,
+	SearchFilterProps,
+} from "@/types/card-table";
 
 export function DepartmentFilter({
 	value,
@@ -70,11 +69,6 @@ export function DepartmentFilter({
 	);
 }
 
-interface BranchDepartmentFilterProps {
-	value?: string;
-	onValueChange: (value: string) => void;
-	placeholder?: string;
-}
 
 export function BranchDepartmentFilter({
 	value,
@@ -134,12 +128,6 @@ export function BranchDepartmentFilter({
 	);
 }
 
-interface SearchFilterProps {
-	value?: string;
-	onValueChange: (value: string) => void;
-	placeholder?: string;
-	label?: string;
-}
 
 export function SearchFilter({
 	value,

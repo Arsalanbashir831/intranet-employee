@@ -15,28 +15,10 @@ import {
   TagsItem,
 } from "@/components/ui/tags";
 import { CircleX } from "lucide-react";
-
-export interface SelectableItem {
-  id: string;
-  label: string;
-}
-
-export interface SelectableTagsProps {
-  items: SelectableItem[];
-  selectedItems: string[];
-  onSelectionChange: (selectedItems: string[]) => void;
-  placeholder?: string;
-  searchPlaceholder?: string;
-  emptyMessage?: string;
-  className?: string;
-  disabled?: boolean;
-  maxHeight?: string;
-  allowCreate?: boolean;
-  onCreateTag?: (label: string) => void;
-  icon?: ReactNode;
-  // Optional custom renderer to display selected items inside the trigger
-  renderSelected?: (id: string) => ReactNode;
-}
+import type {
+  SelectableItem,
+  SelectableTagsProps,
+} from "@/types/selectable-tags";
 
 export function SelectableTags({
   items,
@@ -100,8 +82,8 @@ export function SelectableTags({
   return (
     <div className={cn("w-full", className)}>
       <Tags>
-        <TagsTrigger 
-          className="w-full min-h-10 h-auto border-[#E2E8F0] rounded-[8px]" 
+        <TagsTrigger
+          className="w-full min-h-10 h-auto border-[#E2E8F0] rounded-[8px]"
           disabled={disabled}
           placeholder={placeholder}
           icon={icon}
@@ -137,7 +119,10 @@ export function SelectableTags({
             );
           })}
         </TagsTrigger>
-        <TagsContent className="w-[var(--radix-popover-trigger-width)] p-0" align="start">
+        <TagsContent
+          className="w-[var(--radix-popover-trigger-width)] p-0"
+          align="start"
+        >
           <TagsInput
             placeholder={searchPlaceholder}
             value={searchValue}
@@ -157,15 +142,20 @@ export function SelectableTags({
                   {item.label}
                 </TagsItem>
               ))}
-              {allowCreate && searchValue.trim() && !items.some(item => item.label.toLowerCase() === searchValue.toLowerCase()) && (
-                <TagsItem
-                  onSelect={handleCreateTag}
-                  value={`create-${searchValue}`}
-                  className="cursor-pointer text-primary"
-                >
-                  Create &ldquo;{searchValue}&rdquo;
-                </TagsItem>
-              )}
+              {allowCreate &&
+                searchValue.trim() &&
+                !items.some(
+                  (item) =>
+                    item.label.toLowerCase() === searchValue.toLowerCase()
+                ) && (
+                  <TagsItem
+                    onSelect={handleCreateTag}
+                    value={`create-${searchValue}`}
+                    className="cursor-pointer text-primary"
+                  >
+                    Create &ldquo;{searchValue}&rdquo;
+                  </TagsItem>
+                )}
             </TagsGroup>
           </TagsList>
         </TagsContent>

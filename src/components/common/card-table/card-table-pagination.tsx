@@ -7,15 +7,7 @@ import { ChevronLeft, ChevronRight } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { PaginationState } from "@/lib/pagination-utils";
 import { calculateTotalPages, generatePageNumbers } from "@/lib/pagination-utils";
-
-interface CardTablePaginationProps<TData> {
-  table?: Table<TData>;
-  pageIndex?: number;
-  pageSize?: number;
-  totalCount?: number;
-  onPaginationChange?: (pagination: PaginationState) => void;
-  alwaysShow?: boolean; // Show pagination even for single page
-}
+import type { CardTablePaginationProps } from "@/types/card-table";
 
 export function CardTablePagination<TData>({ 
   table, 

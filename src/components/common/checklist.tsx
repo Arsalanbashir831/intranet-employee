@@ -6,12 +6,7 @@ import Image from "next/image";
 import ChecklistDialog from "./checklist-dialog";
 import { useAttachmentStatus } from "@/hooks/queries/use-new-hire";
 import { useAuth } from "@/contexts/auth-context";
-
-interface ChecklistProps {
-  title: string;
-  viewMoreLink?: string;
-  type: "task" | "training";
-}
+import type { ChecklistProps } from "@/types/checklist";
 
 export default function Checklist({
   title,

@@ -3,10 +3,10 @@
  */
 
 export type Role = {
-	id: number;
-	name: string;
-	is_manager: boolean;
-	is_executive: boolean;
+  id: number;
+  name: string;
+  is_manager: boolean;
+  is_executive: boolean;
 };
 
 export type RoleListResponse = {

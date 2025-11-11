@@ -6,34 +6,28 @@ import { ImagePlusIcon, XIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import Image from "next/image";
-
-export interface DropzoneProps {
-  onFileSelect?: (files: FileList | null) => void;
-  accept?: string;
-  maxSize?: number; // in bytes
-  className?: string;
-  disabled?: boolean;
-  multiple?: boolean;
-  children?: React.ReactNode;
-  showPreview?: boolean;
-  initialPreviewUrls?: string[]; // pre-loaded previews (e.g., existing images in edit mode)
-}
+import type { DropzoneProps } from "@/types/dropzone";
 
 export const Dropzone = React.forwardRef<HTMLDivElement, DropzoneProps>(
-  ({
-    onFileSelect,
-    accept = "image/*",
-    maxSize = 800 * 400, // 800x400px default
-    className,
-    disabled = false,
-    multiple = false,
-    children,
-    showPreview = true,
-    initialPreviewUrls = [],
-    ...props
-  }, ref) => {
+  (
+    {
+      onFileSelect,
+      accept = "image/*",
+      maxSize = 800 * 400, // 800x400px default
+      className,
+      disabled = false,
+      multiple = false,
+      children,
+      showPreview = true,
+      initialPreviewUrls = [],
+      ...props
+    },
+    ref
+  ) => {
     const [isDragOver, setIsDragOver] = React.useState(false);
-    const [previewUrls, setPreviewUrls] = React.useState<string[]>(initialPreviewUrls ?? []);
+    const [previewUrls, setPreviewUrls] = React.useState<string[]>(
+      initialPreviewUrls ?? []
+    );
     const fileInputRef = React.useRef<HTMLInputElement>(null);
 
     const handleDragOver = (e: React.DragEvent) => {
@@ -48,7 +42,6 @@ export const Dropzone = React.forwardRef<HTMLDivElement, DropzoneProps>(
       setIsDragOver(false);
     };
 
-
     const handleClick = () => {
       if (!disabled) {
         fileInputRef.current?.click();
@@ -61,15 +54,15 @@ export const Dropzone = React.forwardRef<HTMLDivElement, DropzoneProps>(
         onFileSelect?.(files);
 
         // Generate preview URLs for images
-        if (showPreview && accept.includes('image')) {
+        if (showPreview && accept.includes("image")) {
           const newUrls: string[] = [];
-          Array.from(files).forEach(file => {
-            if (file.type.startsWith('image/')) {
+          Array.from(files).forEach((file) => {
+            if (file.type.startsWith("image/")) {
               newUrls.push(URL.createObjectURL(file));
             }
           });
           if (multiple) {
-            setPreviewUrls(prev => [...prev, ...newUrls]);
+            setPreviewUrls((prev) => [...prev, ...newUrls]);
           } else {
             // Replace previous preview with the latest selected image when multiple=false
             setPreviewUrls(newUrls.slice(0, 1));
@@ -79,7 +72,7 @@ export const Dropzone = React.forwardRef<HTMLDivElement, DropzoneProps>(
 
       // Clear the input value so the same file can be selected again
       if (fileInputRef.current) {
-        fileInputRef.current.value = '';
+        fileInputRef.current.value = "";
       }
     };
 
@@ -94,15 +87,15 @@ export const Dropzone = React.forwardRef<HTMLDivElement, DropzoneProps>(
         onFileSelect?.(files);
 
         // Generate preview URLs for images
-        if (showPreview && accept.includes('image')) {
+        if (showPreview && accept.includes("image")) {
           const newUrls: string[] = [];
-          Array.from(files).forEach(file => {
-            if (file.type.startsWith('image/')) {
+          Array.from(files).forEach((file) => {
+            if (file.type.startsWith("image/")) {
               newUrls.push(URL.createObjectURL(file));
             }
           });
           if (multiple) {
-            setPreviewUrls(prev => [...prev, ...newUrls]);
+            setPreviewUrls((prev) => [...prev, ...newUrls]);
           } else {
             setPreviewUrls(newUrls.slice(0, 1));
           }
@@ -111,7 +104,9 @@ export const Dropzone = React.forwardRef<HTMLDivElement, DropzoneProps>(
     };
 
     const clearAllImages = () => {
-      previewUrls.forEach(url => { if (url.startsWith('blob:')) URL.revokeObjectURL(url) });
+      previewUrls.forEach((url) => {
+        if (url.startsWith("blob:")) URL.revokeObjectURL(url);
+      });
       setPreviewUrls([]);
     };
 
@@ -124,7 +119,7 @@ export const Dropzone = React.forwardRef<HTMLDivElement, DropzoneProps>(
 
     React.useEffect(() => {
       return () => {
-        previewUrls.forEach(url => {
+        previewUrls.forEach((url) => {
           // Only revoke blob URLs; skip absolute URLs passed in
           if (url.startsWith("blob:")) URL.revokeObjectURL(url);
         });
@@ -134,10 +129,7 @@ export const Dropzone = React.forwardRef<HTMLDivElement, DropzoneProps>(
     return (
       <div
         ref={ref}
-        className={cn(
-          "flex items-center gap-4",
-          className
-        )}
+        className={cn("flex items-center gap-4", className)}
         {...props}
       >
         {/* Upload Icon Button */}
@@ -163,7 +155,8 @@ export const Dropzone = React.forwardRef<HTMLDivElement, DropzoneProps>(
           <div className="flex-1 rounded-md border border-[#E2E8F0] p-4">
             <div className="flex items-center justify-between mb-3">
               <span className="text-sm text-muted-foreground">
-                {previewUrls.length} image{previewUrls.length !== 1 ? 's' : ''} selected
+                {previewUrls.length} image{previewUrls.length !== 1 ? "s" : ""}{" "}
+                selected
               </span>
               <Button
                 variant="link"
@@ -186,7 +179,7 @@ export const Dropzone = React.forwardRef<HTMLDivElement, DropzoneProps>(
                   />
                   <Button
                     type="button"
-                    size='icon'
+                    size="icon"
                     onClick={() => {
                       const newUrls = previewUrls.filter((_, i) => i !== index);
                       setPreviewUrls(newUrls);

@@ -5,20 +5,7 @@ import { Drawer, DrawerContent, DrawerHeader, DrawerTitle, DrawerDescription, Dr
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Filter } from "lucide-react";
-
-interface FilterDrawerProps {
-    open: boolean;
-    onOpenChange: (open: boolean) => void;
-    onApply?: (filters: Record<string, unknown>) => void;
-    onReset?: () => void;
-    showFilterButton?: boolean;
-    showResetButton?: boolean;
-    children: React.ReactNode;
-    title?: string;
-    description?: string;
-    applyText?: string;
-    resetText?: string;
-}
+import type { FilterDrawerProps, FilterTriggerProps } from "@/types/card-table";
 
 export function FilterDrawer({
     open,
@@ -65,12 +52,6 @@ export function FilterDrawer({
     );
 }
 
-interface FilterTriggerProps {
-    onClick: () => void;
-    isActive?: boolean;
-    className?: string;
-    children?: React.ReactNode;
-}
 
 export function FilterTrigger({ onClick, className, children }: FilterTriggerProps) {
     return (

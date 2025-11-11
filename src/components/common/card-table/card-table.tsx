@@ -13,21 +13,7 @@ import {
 } from "@tanstack/react-table";
 import { cn } from "@/lib/utils";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
-
-type CardTableProps<TData, TValue> = {
-	columns: ColumnDef<TData, TValue>[];
-	data: TData[];
-	className?: string;
-	toolbar?: React.ReactNode;
-	footer?: (table: ReturnType<typeof useReactTable<TData>>) => React.ReactNode;
-	rowClassName?: string;
-	sorting?: SortingState;
-	onSortingChange?: (state: SortingState) => void;
-	headerClassName?: string;
-	onRowClick?: (row: Row<TData>) => void;
-	noResultsContent?: React.ReactNode;
-	wrapRow?: (rowElement: React.ReactNode, row: Row<TData>) => React.ReactNode;
-};
+import type { CardTableProps } from "@/types/card-table";
 
 export function CardTable<TData, TValue>({
 	columns,

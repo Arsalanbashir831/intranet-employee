@@ -3,14 +3,9 @@
 import * as React from "react";
 import { Button } from "@/components/ui/button";
 import { ChevronsUpDown } from "lucide-react";
-import { Column } from "@tanstack/react-table";
+import type { CardTableColumnHeaderProps } from "@/types/card-table";
 
-type Props<TData> = {
-	column: Column<TData, unknown>;
-	title: string;
-};
-
-export function CardTableColumnHeader<TData>({ column, title }: Props<TData>) {
+export function CardTableColumnHeader<TData>({ column, title }: CardTableColumnHeaderProps<TData>) {
 	if (!column.getCanSort()) {
 		return <span>{title}</span>;
 	}
