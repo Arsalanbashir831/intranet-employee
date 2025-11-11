@@ -13,7 +13,7 @@ export default function AnnouncementDetailCard({
       ? announcement.attachments[0].file_url
       : "/images/office-work.png";
 
-  // Check if the image is an external URL
+  // Check if the image is an external URLL
   const isExternalImage = heroImage.startsWith("http://") || heroImage.startsWith("https://");
 
   // Format the date
