@@ -72,9 +72,7 @@ export function OrgChartForm({
       >
         {/* First Name */}
         <div className="grid grid-cols-12 items-center gap-4">
-          <Label className="col-span-12 md:col-span-2 text-sm ">
-            Name:
-          </Label>
+          <Label className="col-span-12 md:col-span-2 text-sm ">Name:</Label>
           <div className="col-span-12 md:col-span-10">
             <Input
               name="name"
@@ -86,9 +84,7 @@ export function OrgChartForm({
         </div>
         {/* Address */}
         <div className="grid grid-cols-12 items-center gap-4">
-          <Label className="col-span-12 md:col-span-2 text-sm ">
-            Address:
-          </Label>
+          <Label className="col-span-12 md:col-span-2 text-sm ">Address:</Label>
           <div className="col-span-12 md:col-span-10">
             <Input
               name="address"
@@ -100,9 +96,7 @@ export function OrgChartForm({
         </div>
 
         <div className="grid grid-cols-12 items-center gap-4">
-          <Label className="col-span-12 md:col-span-2 text-sm ">
-            City:
-          </Label>
+          <Label className="col-span-12 md:col-span-2 text-sm ">City:</Label>
           <div className="col-span-12 md:col-span-10">
             <Input
               name="user_city"
@@ -128,7 +122,6 @@ export function OrgChartForm({
         </div>
 
         <div className="grid grid-cols-12 items-center gap-4">
-        
           <Label className="col-span-12 md:col-span-2 text-sm ">
             Email Id:
           </Label>
@@ -142,7 +135,7 @@ export function OrgChartForm({
             />
           </div>
         </div>
- 
+
         {/* Department */}
         <div className="grid grid-cols-12 items-center gap-4 border-t border-[#E9EAEB] pt-4">
           <Label className="col-span-12 md:col-span-2 text-sm ">
@@ -162,8 +155,8 @@ export function OrgChartForm({
             />
           </div>
         </div>
-         
-          <div className="grid grid-cols-12 items-center gap-4">
+
+        <div className="grid grid-cols-12 items-center gap-4">
           <Label className="col-span-12 md:col-span-2 text-sm ">
             Role/Position:
           </Label>

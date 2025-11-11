@@ -3,35 +3,13 @@
 import { Card } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "../ui/badge";
-
-interface Employee {
-  id: string;
-  name: string;
-  role: string;
-  address: string;
-  city: string;
-  branch: string;
-  status: string;
-  bio: string;
-  profileImage: string;
-  education: string;
-  email: string;
-  phone: string;
-  hireDate: string;
-  department: string;
-  manager?: {
-    name: string;
-    role: string;
-    profileImage: string;
-  };
-}
-
-interface EmployeeProfileCardProps {
-  employee?: Employee;
-}
+import type {
+  EmployeeProfileCard,
+  EmployeeProfileCardProps,
+} from "@/types/employees";
 
 /* Demo fallback */
-const data: Employee = {
+const data: EmployeeProfileCard = {
   id: "1",
   name: "Jocelyn Schleifer",
   role: "Manager",
@@ -55,7 +33,7 @@ const data: Employee = {
 
 export function TeamsDetailsCard({ employee }: EmployeeProfileCardProps) {
   const e = employee ?? data;
-  const resolved: Employee = {
+  const resolved: EmployeeProfileCard = {
     ...e,
     status: e.status === "ACTIVE" ? "Active Employee" : "Inactive",
   };
