@@ -3,13 +3,14 @@
 import React from "react";
 import AnnouncementDetailCard from "@/components/company-hub/announcement-details";
 import { PageHeader } from "@/components/common/page-header";
-import CommentsSection, { Comment } from "@/components/common/comments-section";
+import CommentsSection from "@/components/common/comments-section";
 import { ROUTES } from "@/constants/routes";
 import { useAnnouncement } from "@/hooks/queries/use-announcements";
 import { useComments, useCreateComment, useUpdateComment, useDeleteComment } from "@/hooks/queries/use-comments";
 import { useParams } from "next/navigation";
 import { useAuth } from "@/contexts/auth-context";
-import { Comment as ApiComment } from "@/services/comments";
+import type { ApiComment } from "@/services/comments";
+import type { Comment } from "@/types/comments-sections";
 
 export default function CompanySlug() {
 	const params = useParams();
@@ -28,28 +29,28 @@ export default function CompanySlug() {
 	
 	// Transform API comments to component format
 	const transformComment = (apiComment: ApiComment): Comment => {
+		const authorDetails = apiComment.created_by_details;
 		return {
 			id: apiComment.id.toString(),
-		author: {
-			name: apiComment.author_details.emp_name,
-			avatar: apiComment.author_details.profile_picture ? 
-				`${process.env.NEXT_PUBLIC_API_BASE_URL}${apiComment.author_details.profile_picture}` : 
-				undefined,
-			role: apiComment.author_details.role,
-			department: apiComment.author_details.branch_department_ids.length > 0 ? 
-				`Department ${apiComment.author_details.branch_department_ids[0]}` : undefined
-		},
+			author: {
+				name: authorDetails 
+					? `${authorDetails.first_name} ${authorDetails.last_name}`.trim() || authorDetails.username
+					: "Unknown",
+				avatar: authorDetails?.profile_picture || undefined,
+				role: undefined, // Not available in API response
+				department: undefined, // Not available in API response
+			},
 			content: apiComment.content,
 			createdAt: apiComment.created_at,
-			isEdited: apiComment.is_edited,
+			isEdited: apiComment.updated_at !== apiComment.created_at,
 			replies: apiComment.replies?.map(transformComment) || [],
-			canEdit: apiComment.can_edit,
-			canDelete: apiComment.can_delete,
-			replyCount: apiComment.reply_count
+			canEdit: false, // Not available in API response, set based on user
+			canDelete: false, // Not available in API response, set based on user
+			replyCount: apiComment.replies?.length || 0,
 		};
 	};
 	
-	const comments: Comment[] = commentsData?.comments.results?.map(transformComment) || [];
+	const comments: Comment[] = commentsData?.results?.map(transformComment) || [];
 
 	// Comment handlers
 	const handleAddComment = (content: string, parentId?: string) => {
