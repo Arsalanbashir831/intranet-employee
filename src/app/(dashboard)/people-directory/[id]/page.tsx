@@ -6,28 +6,7 @@ import { TeamsDetailsCard } from "@/components/teams/teams-details";
 import { ROUTES } from "@/constants/routes";
 import { useEmployee } from "@/hooks/queries/use-employees";
 import { useParams } from "next/navigation";
-
-interface EmployeeData {
-	id: string;
-	name: string;
-	role: string;
-	address: string;
-	city: string;
-	branch: string;
-	status: string;
-	bio: string;
-	profileImage: string;
-	education: string;
-	email: string;
-	phone: string;
-	hireDate: string;
-	department: string;
-	manager?: {
-		name: string;
-		role: string;
-		profileImage: string;
-	};
-}
+import type { EmployeeProfileCard } from "@/types/employees";
 
 export default function OrgChartDirectoryDetailPage() {
 	const params = useParams();
@@ -36,7 +15,7 @@ export default function OrgChartDirectoryDetailPage() {
 	const { data, isLoading, isError, error } = useEmployee(id);
 
 	// Transform API data to match component structure
-	const employee: EmployeeData | undefined = data?.employee
+	const employee: EmployeeProfileCard | undefined = data?.employee
 		? {
 				id: data.employee.id.toString(),
 				name: data.employee.emp_name,

@@ -17,6 +17,7 @@ import type { ExecutiveTrainingChecklist } from "@/types/new-hire";
 import { BranchFilterDropdown } from "@/components/common/branch-filter-dropdown";
 import { DepartmentFilterDropdown } from "@/components/common/department-filter-dropdown";
 import { useDebounce } from "@/hooks/use-debounce";
+import { ROUTES } from "@/constants/routes";
 import type {
   AssignedEmployee,
   ExecutiveTask,
@@ -211,7 +212,7 @@ export default function ExecutiveTable() {
   const totalCount = data?.training_checklists?.count || 0;
 
   const handleRowClick = (task: ExecutiveTask) => {
-    router.push(`/training-checklist/${task.id}`);
+    router.push(`${ROUTES.DASHBOARD.TRAINING_CHECKLIST}/${task.id}`);
   };
 
   // Show loading state only on true initial load (when we've never loaded data before)

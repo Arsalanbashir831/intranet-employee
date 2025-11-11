@@ -75,7 +75,7 @@ export async function listAnnouncementAttachments(
   announcementId: number | string,
   params?: Record<string, string | number | boolean>
 ) {
-  const url = "/knowledge/announcement-attachments/";
+  const url = API_ROUTES.KNOWLEDGE_BASE.ANNOUNCEMENTS.ATTACHMENTS;
   const queryParams: Record<string, string> = {
     announcement: String(announcementId)
   };

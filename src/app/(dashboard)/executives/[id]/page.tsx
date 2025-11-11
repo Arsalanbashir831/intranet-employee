@@ -6,23 +6,7 @@ import { TeamsDetailsCard } from "@/components/teams/teams-details";
 import { ROUTES } from "@/constants/routes";
 import { useExecutive } from "@/hooks/queries/use-executive-members";
 import { useParams } from "next/navigation";
-
-interface ExecutiveData {
-	id: string;
-	name: string;
-	role: string;
-	address: string;
-	city: string;
-	status: string;
-	bio: string;
-	profileImage: string;
-	education: string;
-	email: string;
-	phone: string;
-	branch: string;
-	hireDate: string;
-	department: string;
-}
+import type { EmployeeProfileCard } from "@/types/employees";
 
 export default function ExecutiveSlug() {
 	const params = useParams();
@@ -31,7 +15,7 @@ export default function ExecutiveSlug() {
 	const { data, isLoading, isError, error } = useExecutive(id);
 
 	// Transform API data to match component structure
-	const executive: ExecutiveData | undefined = data
+	const executive: EmployeeProfileCard | undefined = data
 		? {
 				id: data.id.toString(),
 				name: data.name,

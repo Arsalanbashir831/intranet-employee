@@ -41,6 +41,7 @@ export const API_ROUTES = {
 		ANNOUNCEMENTS: {
 			LIST: "/knowledge/announcements/",
 			DETAIL: (id: number | string) => `/knowledge/announcements/${id}/`,
+			ATTACHMENTS: "/knowledge/announcement-attachments/",
 		},
 		POLLS: {
 			LIST: "/knowledge/polls/",

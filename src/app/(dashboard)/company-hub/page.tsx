@@ -19,6 +19,8 @@ import { useAnnouncements } from "@/hooks/queries/use-announcements";
 import { usePolls } from "@/hooks/queries/use-polls";
 import { useAuth } from "@/contexts/auth-context";
 import { calculateTotalPages } from "@/lib/pagination-utils";
+import type { AnnouncementCard } from "@/types/announcements";
+import type { PollCardData, PollCardOption } from "@/types/poll-card";
 
 /* ---------------- Types ---------------- */
 interface CompanyHubItem {
@@ -26,31 +28,13 @@ interface CompanyHubItem {
 	title: string;
 	description: string;
 }
-interface Announcement extends CompanyHubItem {
-	image: string;
-	badgeLines: [string, string, string];
+// Extend AnnouncementCard to include createdAt for table sorting
+type Announcement = AnnouncementCard & {
 	createdAt: string;
-}
+};
 type Policy = CompanyHubItem;
-
-interface PollOption {
-	id: string;
-	text: string;
-	votes: number;
-	percentage: number;
-}
-
-interface Poll extends CompanyHubItem {
-	question: string;
-	options: PollOption[];
-	totalVotes: number;
-	isActive: boolean;
-	expiresAt: string;
-	createdAt: string;
-	userVoted?: boolean;
-	userVoteOptionId?: string;
-	badgeLines: [string, string, string];
-}
+// Use existing PollCardData type instead of duplicating
+type Poll = PollCardData;
 
 /* ---------------- Table scaffold (for pagination UI) ---------------- */
 const columnHelper = createColumnHelper<CompanyHubItem>();
@@ -176,7 +160,7 @@ export default function CompanyHub() {
 			title: poll.title,
 			description: poll.subtitle || poll.question,
 			question: poll.question,
-			options: (poll.options_details || []).map((option: { id: number; option_text: string; vote_count: number }) => ({
+			options: (poll.options_details || []).map((option: { id: number; option_text: string; vote_count: number }): PollCardOption => ({
 				id: option.id.toString(),
 				text: option.option_text,
 				votes: option.vote_count,

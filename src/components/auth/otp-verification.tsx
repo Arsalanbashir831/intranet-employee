@@ -106,7 +106,7 @@ export function OTPVerification() {
 							asChild
 							variant="link"
 							className="p-0 h-auto text-blue-500 hover:underline font-normal">
-							<Link href="/forgot-password">Change it</Link>
+							<Link href={ROUTES.AUTH.FORGOT_PASSWORD}>Change it</Link>
 						</Button>
 					</p>
 				</div>
