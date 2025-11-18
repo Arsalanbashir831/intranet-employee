@@ -94,14 +94,14 @@ export interface EmployeeProfileCard {
   role: string;
   address: string;
   city: string;
-  branch: string;
+  branches: string[];
   status: string;
   bio: string;
   profileImage: string;
   email: string;
   phone: string;
   hireDate: string;
-  department: string;
+  departments: string[];
   manager?: {
     name: string;
     role: string;
@@ -122,7 +122,7 @@ export type EmployeeTableRow = {
   image: string;
   email: string;
   phone: string;
-  branch: string;
-  department: string;
+  branches: string[];
+  departments: string[];
   bio: string;
 };

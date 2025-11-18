@@ -11,8 +11,8 @@ export default function TeamsCard({
   name,
   designation,
   role,
-  branch,
-  department,
+  branches,
+  departments,
   href,
   className,
   topClassName,
@@ -47,21 +47,23 @@ export default function TeamsCard({
         <h3 className="text-[#E5004E] text-lg font-semibold">{name}</h3>
         <p className="text-[#49A2A6] text-sm">{designation}</p>
 
-        {/* Show role, branch and department */}
+        {/* Show role, branches and departments */}
         <div className="mt-2 space-y-1">
           {role && (
             <p className="text-[#5F6980] text-xs">
               <span className="font-medium">Role:</span> {role}
             </p>
           )}
-          {branch && (
+          {branches && branches.length > 0 && (
             <p className="text-[#5F6980] text-xs">
-              <span className="font-medium">Branch:</span> {branch}
+              <span className="font-medium">Branch{branches.length > 1 ? "es" : ""}:</span>{" "}
+              {branches.join(", ")}
             </p>
           )}
-          {department && (
+          {departments && departments.length > 0 && (
             <p className="text-[#5F6980] text-xs">
-              <span className="font-medium">Department:</span> {department}
+              <span className="font-medium">Department{departments.length > 1 ? "s" : ""}:</span>{" "}
+              {departments.join(", ")}
             </p>
           )}
         </div>

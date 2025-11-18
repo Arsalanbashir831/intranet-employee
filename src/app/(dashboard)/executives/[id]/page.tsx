@@ -27,9 +27,9 @@ export default function ExecutiveSlug() {
 				profileImage: data.profile_picture || "/images/default-profile.png",
 				email: data.email,
 				phone: data.phone,
-				branch: data.branch || "-",
+				branches: data.branch ? [data.branch] : [],
 				hireDate: data.hire_date || "-",
-				department: data.department || "-",
+				departments: data.department ? [data.department] : [],
 		  }
 		: undefined;
 

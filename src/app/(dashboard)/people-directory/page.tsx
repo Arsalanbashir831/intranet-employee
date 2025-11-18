@@ -92,18 +92,36 @@ export default function OrgChartDirectoryPage() {
 
 	// Transform API data to match component structure
 	const teamData: EmployeeTableRow[] =
-		data?.employees?.results?.map((employee) => ({
-			id: employee.id.toString(),
-			name: employee.emp_name,
-			designation: employee.role,
-			image: employee.profile_picture || "/logos/profile-circle.svg",
-			email: employee.email,
-			phone: employee.phone,
-			role: employee.role,
-			branch: employee.branch_departments?.[0]?.branch?.branch_name || "",
-			department: employee.branch_departments?.[0]?.department?.dept_name || "",
-			bio: employee?.bio || "",
-		})) || [];
+		data?.employees?.results?.map((employee) => {
+			// Collect all unique branches and departments
+			const branches = Array.from(
+				new Set(
+					employee.branch_departments
+						?.map((bd) => bd.branch?.branch_name)
+						.filter((name): name is string => Boolean(name)) || []
+				)
+			);
+			const departments = Array.from(
+				new Set(
+					employee.branch_departments
+						?.map((bd) => bd.department?.dept_name)
+						.filter((name): name is string => Boolean(name)) || []
+				)
+			);
+
+			return {
+				id: employee.id.toString(),
+				name: employee.emp_name,
+				designation: employee.role,
+				image: employee.profile_picture || "/logos/profile-circle.svg",
+				email: employee.email,
+				phone: employee.phone,
+				role: employee.role,
+				branches,
+				departments,
+				bio: employee?.bio || "",
+			};
+		}) || [];
 
 	const pageCount = data?.employees
 		? Math.max(1, Math.ceil(data.employees.count / pageSize))
@@ -225,8 +243,8 @@ export default function OrgChartDirectoryPage() {
 												name={m.name}
 												designation={m.designation}
 												role={m.role}
-												branch={m.branch}
-												department={m.department}
+												branches={m.branches}
+												departments={m.departments}
 												className="w-full mx-auto xl:max-w-[320px] xl:h-[370px]"
 												topClassName="relative w-full aspect-[4/3] sm:aspect-[16/10] xl:aspect-auto xl:h-[230px]"
 												imgClassName="object-cover"

@@ -22,7 +22,13 @@ export default function OrgChartDirectoryDetailPage() {
 				role: data.employee.role,
 				address: data.employee.address,
 				city: data.employee.city,
-				branch: data.employee.branch_departments?.[0]?.branch?.branch_name || "",
+				branches: Array.from(
+					new Set(
+						data.employee.branch_departments
+							?.map((bd) => bd.branch?.branch_name)
+							.filter((name): name is string => Boolean(name)) || []
+					)
+				),
 				status: "ACTIVE", // Default status
 				bio: data.employee.bio || "No bio available",
 				profileImage:
@@ -30,7 +36,13 @@ export default function OrgChartDirectoryDetailPage() {
 				email: data.employee.email,
 				phone: data.employee.phone,
 				hireDate: data.employee.hire_date,
-				department: data.employee.branch_departments?.[0]?.department?.dept_name || "",
+				departments: Array.from(
+					new Set(
+						data.employee.branch_departments
+							?.map((bd) => bd.department?.dept_name)
+							.filter((name): name is string => Boolean(name)) || []
+					)
+				),
 				manager: data.employee.branch_departments?.[0]?.manager
 					? {
 							name: data.employee.branch_departments[0].manager.employee.emp_name,

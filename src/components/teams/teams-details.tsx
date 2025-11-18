@@ -15,14 +15,14 @@ const data: EmployeeProfileCard = {
   role: "Manager",
   address: "3890 Poplar Dr.",
   city: "Lahore",
-  branch: "Lahore",
+  branches: ["Lahore"],
   status: "ACTIVE",
   bio: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua...",
   profileImage: "https://via.placeholder.com/150",
   email: "jocelyn@example.com",
   phone: "03001234567",
   hireDate: "2025-10-01",
-  department: "IT",
+  departments: ["IT"],
   manager: {
     name: "John Manager",
     role: "Senior Manager",
@@ -85,26 +85,37 @@ export function TeamsDetailsCard({ employee }: EmployeeProfileCardProps) {
                   {resolved.name}
                 </h1>
                 <p className="text-sm text-[#667085]">{resolved.role}</p>
-                <div className="mt-3">
-                  {[
-                    {
-                      iconSrc: "/icons/branch.svg",
-                      label: "Branch",
-                      value: resolved.branch,
-                    },
-                  ].map((item) => (
-                    <div key={item.label} className="flex items-center gap-3">
+                <div className="mt-3 space-y-2">
+                  {resolved.branches && resolved.branches.length > 0 && (
+                    <div className="flex items-start gap-3">
                       <div className="size-9 rounded-full bg-[#F0F1F3] grid place-items-center flex-shrink-0">
-                        <PublicIcon src={item.iconSrc} />
+                        <PublicIcon src="/icons/branch.svg" />
                       </div>
                       <div className="min-w-0">
-                        <p className="text-xs text-gray-500">{item.label}</p>
-                        <p className="text-xs font-medium text-gray-800 truncate">
-                          {item.value || "--"}
+                        <p className="text-xs text-gray-500">
+                          Branch{resolved.branches.length > 1 ? "es" : ""}
+                        </p>
+                        <p className="text-xs font-medium text-gray-800">
+                          {resolved.branches.join(", ")}
                         </p>
                       </div>
                     </div>
-                  ))}
+                  )}
+                  {resolved.departments && resolved.departments.length > 0 && (
+                    <div className="flex items-start gap-3">
+                      <div className="size-9 rounded-full bg-[#F0F1F3] grid place-items-center flex-shrink-0">
+                        <PublicIcon src="/icons/hierarchy.svg" />
+                      </div>
+                      <div className="min-w-0">
+                        <p className="text-xs text-gray-500">
+                          Department{resolved.departments.length > 1 ? "s" : ""}
+                        </p>
+                        <p className="text-xs font-medium text-gray-800">
+                          {resolved.departments.join(", ")}
+                        </p>
+                      </div>
+                    </div>
+                  )}
                 </div>
               </div>
 

@@ -23,8 +23,8 @@ export type TeamsCardProps = {
   name: string;
   designation: string;
   role?: string;
-  branch?: string;
-  department?: string;
+  branches?: string[];
+  departments?: string[];
   href?: string;
   className?: string;
   topClassName?: string; // image wrapper
