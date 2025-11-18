@@ -7,7 +7,7 @@ import type { AnnouncementDetailCardProps } from "@/types/announcements";
 export default function AnnouncementDetailCard({
   announcement,
 }: AnnouncementDetailCardProps) {
-  // Use the first attachment as the hero image, or a default image
+  // Use the first attachment as the hero image, or a default images
   const heroImage =
     announcement.attachments.length > 0
       ? announcement.attachments[0].file_url
