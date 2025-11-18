@@ -132,6 +132,12 @@ const CommentItem: React.FC<CommentItemProps> = ({
                   <Textarea
                     value={editContent}
                     onChange={(e) => setEditContent(e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter" && !e.shiftKey) {
+                        e.preventDefault();
+                        handleEdit();
+                      }
+                    }}
                     className="min-h-[80px] resize-none"
                     placeholder="Edit your comment..."
                   />
@@ -205,6 +211,12 @@ const CommentItem: React.FC<CommentItemProps> = ({
                   <Textarea
                     value={replyContent}
                     onChange={(e) => setReplyContent(e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter" && !e.shiftKey) {
+                        e.preventDefault();
+                        handleReply();
+                      }
+                    }}
                     placeholder={`Reply to ${comment.author.name}...`}
                     className="min-h-[80px] resize-none"
                   />
@@ -357,6 +369,12 @@ export const CommentsSection: React.FC<CommentsSectionProps> = ({
               <Textarea
                 value={newComment}
                 onChange={(e) => setNewComment(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" && !e.shiftKey) {
+                    e.preventDefault();
+                    handleSubmitComment();
+                  }
+                }}
                 placeholder="Share your thoughts..."
                 className="min-h-[80px] sm:min-h-[100px] resize-none text-sm"
               />

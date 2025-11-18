@@ -29,28 +29,26 @@ export default function CompanySlug() {
 	
 	// Transform API comments to component format
 	const transformComment = (apiComment: ApiComment): Comment => {
-		const authorDetails = apiComment.created_by_details;
+		const authorDetails = apiComment.author_details;
 		return {
 			id: apiComment.id.toString(),
 			author: {
-				name: authorDetails 
-					? `${authorDetails.first_name} ${authorDetails.last_name}`.trim() || authorDetails.username
-					: "Unknown",
+				name: authorDetails?.emp_name || "Unknown",
 				avatar: authorDetails?.profile_picture || undefined,
-				role: undefined, // Not available in API response
+				role: authorDetails?.role || undefined,
 				department: undefined, // Not available in API response
 			},
 			content: apiComment.content,
 			createdAt: apiComment.created_at,
-			isEdited: apiComment.updated_at !== apiComment.created_at,
+			isEdited: apiComment.is_edited,
 			replies: apiComment.replies?.map(transformComment) || [],
-			canEdit: false, // Not available in API response, set based on user
-			canDelete: false, // Not available in API response, set based on user
-			replyCount: apiComment.replies?.length || 0,
+			canEdit: apiComment.can_edit,
+			canDelete: apiComment.can_delete,
+			replyCount: apiComment.reply_count,
 		};
 	};
 	
-	const comments: Comment[] = commentsData?.results?.map(transformComment) || [];
+	const comments: Comment[] = commentsData?.comments?.results?.map(transformComment) || [];
 
 	// Comment handlers
 	const handleAddComment = (content: string, parentId?: string) => {

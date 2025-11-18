@@ -6,20 +6,26 @@
 export type ApiComment = {
   id: number;
   announcement: number;
+  author: number;
+  parent: number | null;
   content: string;
   created_at: string;
   updated_at: string;
-  created_by: number | null;
-  parent: number | null;
-  replies?: ApiComment[];
-  created_by_details?: {
+  is_edited: boolean;
+  author_details: {
     id: number;
-    username: string;
+    emp_name: string;
     email: string;
-    first_name: string;
-    last_name: string;
-    profile_picture?: string | null;
+    phone: string;
+    role: string;
+    role_id: number;
+    profile_picture: string | null;
+    branch_department_ids: number[];
   };
+  replies?: ApiComment[];
+  can_edit: boolean;
+  can_delete: boolean;
+  reply_count: number;
 };
 
 // Component-specific Comment type (different from API Comment type)
@@ -68,10 +74,10 @@ export type CommentItemProps = {
 
 // API Response types
 export type CommentListResponse = {
-  count: number;
-  page: number;
-  page_size: number;
-  results: ApiComment[];
+  comments: {
+    count: number;
+    results: ApiComment[];
+  };
 };
 
 export type CommentDetailResponse = ApiComment;
