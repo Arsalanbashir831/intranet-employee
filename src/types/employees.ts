@@ -12,7 +12,6 @@ export type Employee = {
   phone: string;
   email: string;
   role: string;
-  education: string;
   bio: string | null;
   profile_picture: string | null;
   isAdmin: boolean;
@@ -65,7 +64,6 @@ export type EmployeeDetailResponse = {
 
 export type UpdateEmployeeRequest = {
   bio?: string | null;
-  education?: string;
 };
 
 export type UpdateEmployeeResponse = {
@@ -86,7 +84,6 @@ export type OrgChartInitialValues = {
   departmentIds?: string[];
   branch?: string;
   profileImageUrl?: string;
-  qualificationAndEducation?: string;
   emp_role?: string;
 };
 
@@ -101,7 +98,6 @@ export interface EmployeeProfileCard {
   status: string;
   bio: string;
   profileImage: string;
-  education: string;
   email: string;
   phone: string;
   hireDate: string;
@@ -128,6 +124,5 @@ export type EmployeeTableRow = {
   phone: string;
   branch: string;
   department: string;
-  education: string;
   bio: string;
 };

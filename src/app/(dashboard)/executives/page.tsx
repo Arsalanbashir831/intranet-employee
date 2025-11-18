@@ -55,7 +55,6 @@ export default function Executives() {
 			phone: executive.phone,
 			address: executive.address,
 			city: executive.city,
-			education: executive.education,
 		})) || [];
 
 	const pageCount = data ? Math.max(1, Math.ceil(data.count / pageSize)) : 1;
@@ -131,7 +130,6 @@ export default function Executives() {
 										image={m.image}
 										name={m.name}
 										designation={m.role}
-										// description={m.education}
 										className="w-full mx-auto xl:max-w-[320px] xl:h-[370px]"
 										topClassName="relative w-full aspect-[4/3] sm:aspect-[16/10] xl:aspect-auto xl:h-[230px]"
 										imgClassName="object-cover"

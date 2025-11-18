@@ -25,7 +25,6 @@ export default function ExecutiveSlug() {
 				status: "ACTIVE", // Default status
 				bio: data.bio || "No bio available",
 				profileImage: data.profile_picture || "/images/default-profile.png",
-				education: data.education,
 				email: data.email,
 				phone: data.phone,
 				branch: data.branch || "-",

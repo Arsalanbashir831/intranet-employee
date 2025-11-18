@@ -40,9 +40,6 @@ export function OrgChartForm({
   const [selectedLocationId, setSelectedLocationId] = React.useState<
     string | undefined
   >(initialValues?.branch);
-  const [qualificationHtml, setQualificationHtml] = React.useState<
-    string | undefined
-  >(initialValues?.qualificationAndEducation);
 
   const formRef = React.useRef<HTMLFormElement | null>(null);
 
@@ -204,21 +201,6 @@ export function OrgChartForm({
                   ? [initialValues.profileImageUrl]
                   : []
               }
-            />
-          </div>
-        </div>
-        {/* Qualification */}
-        <div className="grid grid-cols-12 items-start gap-4">
-          <Label className="col-span-12 md:col-span-2 text-sm ">
-            Qualification and Education
-          </Label>
-          <div className="col-span-12 md:col-span-10">
-            <RichTextEditor
-              content={qualificationHtml}
-              placeholder="Write Qualification and Education"
-              minHeight="200px"
-              maxHeight="400px"
-              onChange={(html) => setQualificationHtml(html)}
             />
           </div>
         </div>

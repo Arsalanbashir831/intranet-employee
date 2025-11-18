@@ -14,7 +14,6 @@ export type AttachmentStatusDetail = {
     email: string;
     phone: string;
     role: string;
-    education: string | null;
     bio: string | null;
     profile_picture: string | null;
     branch_department: number;

@@ -15,7 +15,6 @@ export interface EmployeeProfileData {
 	reportingTo: string;
 	branch: string;
 	status: string;
-	education: string;
 	bio: string;
 	profileImage: string;
 }
@@ -62,7 +61,6 @@ export function transformApiEmployeeToProfileData(
 			branchDepartment?.manager?.employee.emp_name || EMPTY_VALUE,
 		branch: branchDepartment?.branch?.branch_name || "",
 		status: DEFAULT_STATUS,
-		education: apiEmployee.education || "",
 		bio: apiEmployee.bio || "",
 		profileImage: apiEmployee.profile_picture || DEFAULT_PROFILE_IMAGE,
 	};

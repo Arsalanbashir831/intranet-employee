@@ -19,7 +19,6 @@ const data: EmployeeProfileCard = {
   status: "ACTIVE",
   bio: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua...",
   profileImage: "https://via.placeholder.com/150",
-  education: "<p>Qualified</p>",
   email: "jocelyn@example.com",
   phone: "03001234567",
   hireDate: "2025-10-01",
@@ -123,18 +122,6 @@ export function TeamsDetailsCard({ employee }: EmployeeProfileCardProps) {
                 )}
               </div>
             </div>
-          </section>
-
-          {/* Qualifications Section */}
-          <section className="mt-6 sm:mt-8">
-            <h3 className="text-base sm:text-lg lg:text-xl font-bold text-gray-800 pb-2 border-b border-[#E5E7EB]">
-              QUALIFICATION
-            </h3>
-
-            <div
-              className="mt-4 sm:mt-5 text-[#535862] leading-relaxed prose prose-sm sm:prose-base focus:outline-none prose-p:leading-relaxed prose-pre:p-0 prose-ul:my-2 prose-ol:my-2 prose-li:my-1 [&_ul_li_p]:inline [&_ol_li_p]:inline [&_ul_li_p]:m-0 [&_ol_li_p]:m-0"
-              dangerouslySetInnerHTML={{ __html: e.education }}
-            />
           </section>
         </Card>
       </main>

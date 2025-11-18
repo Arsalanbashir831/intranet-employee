@@ -53,12 +53,6 @@ function LoadingState() {
               </div>
             ))}
           </div>
-
-          {/* Qualification section skeleton */}
-          <section className="mt-2 sm:mt-2">
-            <Skeleton className="h-6 w-32 mb-4" />
-            <Skeleton className="h-24 w-full" />
-          </section>
         </div>
       </Card>
     </div>
@@ -115,31 +109,6 @@ function BioSection({ bio }: { bio: string }) {
       readOnly
       className="min-h-[50px] resize-none border-[#E2E8F0] w-full"
     />
-  );
-}
-
-function EducationSection({ education }: { education: string }) {
-  if (!education) {
-    return (
-      <div className="text-[#6B7280]">
-        No qualifications and education information available
-      </div>
-    );
-  }
-
-  if (isHtmlContent(education)) {
-    return (
-      <div
-        className="text-[#535862] leading-relaxed prose prose-sm sm:prose-base focus:outline-none prose-p:leading-relaxed prose-pre:p-0 prose-ul:my-2 prose-ol:my-2 prose-li:my-1 [&_ul_li_p]:inline [&_ol_li_p]:inline [&_ul_li_p]:m-0 [&_ol_li_p]:m-0"
-        dangerouslySetInnerHTML={{ __html: education }}
-      />
-    );
-  }
-
-  return (
-    <div className="text-[#535862] leading-relaxed whitespace-pre-wrap">
-      {education}
-    </div>
   );
 }
 
@@ -265,16 +234,6 @@ export function EmployeeProfileCard({ employee }: EmployeeProfileCardProps) {
         <Separator className="my-5 sm:my-6 bg-[#E7E9EE]" />
 
         <ProfileDetails employee={resolvedEmployee} />
-
-        {/* Qualification Section */}
-        <section className="mt-2 sm:mt-2">
-          <h3 className="text-base sm:text-lg lg:text-xl font-bold text-gray-800 pb-2 border-b border-[#E5E7EB]">
-            QUALIFICATION
-          </h3>
-          <div className="mt-4 sm:mt-5">
-            <EducationSection education={resolvedEmployee.education} />
-          </div>
-        </section>
       </Card>
     </div>
   );

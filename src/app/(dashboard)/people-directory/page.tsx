@@ -103,7 +103,6 @@ export default function OrgChartDirectoryPage() {
 			branch: employee.branch_departments?.[0]?.branch?.branch_name || "",
 			department: employee.branch_departments?.[0]?.department?.dept_name || "",
 			bio: employee?.bio || "",
-			education: employee?.education || "",
 		})) || [];
 
 	const pageCount = data?.employees
@@ -164,10 +163,6 @@ export default function OrgChartDirectoryPage() {
 			{/* Page rails and breathing room (matches figma spacing at all widths) */}
 			<main className="mx-auto w-full px-4 sm:px-6 md:px-8 py-6 sm:py-8 lg:py-10">
 				<section className="bg-white rounded-2xl shadow-sm p-6 sm:p-6 lg:p-4">
-					<h1 className="text-2xl font-semibold text-[#1F2937]">
-						My Team
-					</h1>
-
 					{/* Controls row */}
 					<div className="mt-4 flex flex-col gap-2 md:gap-0 md:flex-row md:items-center">
 						<div className="flex-1 max-w-sm">

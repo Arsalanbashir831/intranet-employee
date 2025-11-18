@@ -27,7 +27,6 @@ export default function OrgChartDirectoryDetailPage() {
 				bio: data.employee.bio || "No bio available",
 				profileImage:
 					data.employee.profile_picture || "/images/default-profile.png",
-				education: data.employee.education,
 				email: data.employee.email,
 				phone: data.employee.phone,
 				hireDate: data.employee.hire_date,

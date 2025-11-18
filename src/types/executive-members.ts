@@ -10,7 +10,6 @@ export type Executive = {
   phone: string;
   email: string;
   role: string;
-  education: string;
   bio?: string;
   branch: string;
   hire_date: string;
@@ -36,7 +35,6 @@ export type ExecutiveCreateRequest = {
   phone: string;
   email: string;
   role: string;
-  education: string;
   profile_picture?: File | string | null;
 };
 
@@ -47,7 +45,6 @@ export type ExecutiveUpdateRequest = {
   phone?: string;
   email?: string;
   role?: string;
-  education?: string;
   profile_picture?: File | string | null;
 };
 
@@ -61,5 +58,4 @@ export type ExecutiveTableRow = {
   phone: string;
   address: string;
   city: string;
-  education: string;
 };

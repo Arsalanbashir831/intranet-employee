@@ -21,7 +21,6 @@ export type Executive = {
 	phone: string;
 	email: string;
 	role: string;
-	education: string;
 	bio: string;
 	profile_picture: string;
 	created_at: string;
@@ -38,7 +37,6 @@ export type Employee = {
 	phone: string;
 	email: string;
 	role: string;
-	education: string;
 	bio: string;
 	profile_picture: string | null;
 	isAdmin: boolean;
