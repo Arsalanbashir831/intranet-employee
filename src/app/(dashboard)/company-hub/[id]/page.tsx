@@ -11,6 +11,7 @@ import { useParams } from "next/navigation";
 import { useAuth } from "@/contexts/auth-context";
 import type { ApiComment } from "@/services/comments";
 import type { Comment } from "@/types/comments-sections";
+import { getApiBaseUrl } from "@/lib/utils";
 
 export default function CompanySlug() {
 	const params = useParams();
@@ -34,7 +35,11 @@ export default function CompanySlug() {
 			id: apiComment.id.toString(),
 			author: {
 				name: authorDetails?.emp_name || "Unknown",
-				avatar: authorDetails?.profile_picture || undefined,
+				avatar: authorDetails?.profile_picture
+					? authorDetails.profile_picture.startsWith("http")
+						? authorDetails.profile_picture
+						: `${getApiBaseUrl()}${authorDetails.profile_picture}`
+					: undefined,
 				role: authorDetails?.role || undefined,
 				department: undefined, // Not available in API response
 			},
