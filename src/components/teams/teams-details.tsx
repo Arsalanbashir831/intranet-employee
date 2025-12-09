@@ -120,7 +120,7 @@ export function TeamsDetailsCard({ employee }: EmployeeProfileCardProps) {
               </div>
 
               {/* Right: Bio */}
-              <div className="min-w-0">
+              {/* <div className="min-w-0">
                 {resolved.bio && resolved.bio !== "null" ? (
                   <div
                     className="text-sm sm:text-[15px] text-[#535862] leading-relaxed prose-p:leading-relaxed prose-pre:p-0 prose-ul:my-2 prose-ol:my-2 prose-li:my-1 [&_ul_li_p]:inline [&_ol_li_p]:inline [&_ul_li_p]:m-0 [&_ol_li_p]:m-0"
@@ -131,7 +131,7 @@ export function TeamsDetailsCard({ employee }: EmployeeProfileCardProps) {
                     No bio available
                   </p>
                 )}
-              </div>
+              </div> */}
             </div>
           </section>
         </Card>

@@ -141,9 +141,9 @@ function ProfileHeader({ employee }: { employee: EmployeeProfileData }) {
       </div>
 
       {/* Right: Bio */}
-      <div className="flex-1 w-full">
+      {/* <div className="flex-1 w-full">
         <BioSection bio={employee.bio} />
-      </div>
+      </div> */}
     </div>
   );
 }
