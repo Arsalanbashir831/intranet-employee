@@ -19,19 +19,13 @@ export function usePolls(
   }
 ) {
   // Normalize params to ensure consistent query keys
-  const paramsKey = JSON.stringify(params);
-  const paginationKeyValue = JSON.stringify(pagination);
   const normalizedParams = React.useMemo(
     () => normalizeParams(params),
-    [params, paramsKey]
-  );
-  const paginationKey = React.useMemo(
-    () => paginationKeyValue,
-    [pagination, paginationKeyValue]
+    [params]
   );
 
   return useQuery({
-    queryKey: ["polls", normalizedParams, paginationKey],
+    queryKey: ["polls", normalizedParams, pagination],
     queryFn: () => {
       return listPolls(params, pagination);
     },

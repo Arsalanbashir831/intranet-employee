@@ -28,19 +28,13 @@ export function useRoles(
 	}, [debouncedSearch]);
 
 	// Normalize params to ensure consistent query keys
-	const paramsKey = JSON.stringify(params);
-	const paginationKeyValue = JSON.stringify(pagination);
 	const normalizedParams = React.useMemo(
 		() => normalizeParams(params),
-		[params, paramsKey]
-	);
-	const paginationKey = React.useMemo(
-		() => paginationKeyValue,
-		[pagination, paginationKeyValue]
+		[params]
 	);
 
 	return useQuery({
-		queryKey: ["roles", normalizedParams, paginationKey],
+		queryKey: ["roles", normalizedParams, pagination],
 		queryFn: () => listRoles(params, pagination),
 		staleTime: 60_000, // Cache for 1 minute
 		gcTime: 5 * 60 * 1000, // Keep in memory for 5 minutes

@@ -8,7 +8,6 @@ import {
   SelectableTags,
   createSelectableItems,
 } from "@/components/common/selectable-tags";
-import { RichTextEditor } from "@/components/common/rich-text-editor";
 import { toast } from "sonner";
 import { Card } from "../ui/card";
 import type { OrgChartInitialValues } from "@/types/employees";

@@ -4,7 +4,6 @@ import { Card } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { Badge } from "../ui/badge";
 import { Separator } from "../ui/separator";
-import { Textarea } from "../ui/textarea";
 import { Skeleton } from "../ui/skeleton";
 import { useMe } from "@/hooks/queries/use-auth";
 import { useMemo } from "react";
@@ -12,7 +11,6 @@ import {
   type EmployeeProfileData,
   transformApiEmployeeToProfileData,
   getInitials,
-  isHtmlContent,
   PROFILE_CONSTANTS,
 } from "@/lib/profile-utils";
 import { DETAIL_FIELDS, type DetailField } from "@/constants/profile";
@@ -83,34 +81,34 @@ function EmptyState() {
   );
 }
 
-function BioSection({ bio }: { bio: string }) {
-  if (isHtmlContent(bio)) {
-    return (
-      <div
-        className="min-h-[50px] border border-[#E2E8F0] text-[#535862] p-3 rounded-md overflow-y-auto w-full text-sm"
-        dangerouslySetInnerHTML={{ __html: bio }}
-      />
-    );
-  }
+// function BioSection({ bio }: { bio: string }) {
+//   if (isHtmlContent(bio)) {
+//     return (
+//       <div
+//         className="min-h-[50px] border border-[#E2E8F0] text-[#535862] p-3 rounded-md overflow-y-auto w-full text-sm"
+//         dangerouslySetInnerHTML={{ __html: bio }}
+//       />
+//     );
+//   }
 
-  if (bio) {
-    return (
-      <Textarea
-        value={bio}
-        readOnly
-        className="min-h-[50px] resize-none border-[#E2E8F0] w-full"
-      />
-    );
-  }
+//   if (bio) {
+//     return (
+//       <Textarea
+//         value={bio}
+//         readOnly
+//         className="min-h-[50px] resize-none border-[#E2E8F0] w-full"
+//       />
+//     );
+//   }
 
-  return (
-    <Textarea
-      value="No bio information available"
-      readOnly
-      className="min-h-[50px] resize-none border-[#E2E8F0] w-full"
-    />
-  );
-}
+//   return (
+//     <Textarea
+//       value="No bio information available"
+//       readOnly
+//       className="min-h-[50px] resize-none border-[#E2E8F0] w-full"
+//     />
+//   );
+// }
 
 function ProfileHeader({ employee }: { employee: EmployeeProfileData }) {
   return (
