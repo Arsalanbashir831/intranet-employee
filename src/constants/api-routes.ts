@@ -18,6 +18,12 @@ export const API_ROUTES = {
 		RESET_PASSWORD: "/reset_password/",
 		CHANGE_PASSWORD: "/change_password/",
 	},
+	MFA: {
+		ENROLL: "/mfa/enroll/",
+		CONFIRM: "/mfa/confirm/",
+		VERIFY: "/mfa/verify/",
+		DISABLE: "/mfa/disable/",
+	},
 	DEPARTMENTS: {
 		LIST: "/departments/",
 		GET_ALL_DEPT_EMPLOYEES: (id: number | string) =>

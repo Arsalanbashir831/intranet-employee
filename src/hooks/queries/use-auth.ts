@@ -1,6 +1,6 @@
 import { useMutation, useQueryClient, useQuery } from "@tanstack/react-query";
-import { login, logout, refreshToken, forgotPassword, resetPasswordWithOTP, changePassword, getMe } from "@/services/auth";
-import type { LoginRequest, ForgotPasswordRequest, ResetPasswordWithOTPRequest } from "@/types/api";
+import { login, logout, refreshToken, forgotPassword, resetPasswordWithOTP, changePassword, getMe, mfaEnroll, mfaConfirm, mfaVerify, mfaDisable } from "@/services/auth";
+import type { LoginRequest, ForgotPasswordRequest, ResetPasswordWithOTPRequest, MfaConfirmRequest, MfaVerifyRequest, MfaDisableRequest, LoginResponse } from "@/types/api";
 import type { MeResponse } from "@/types/auth";
 import { ROUTES } from "@/constants/routes";
 import { setAuthCookies, clearAuthCookies } from "@/lib/cookies";
@@ -9,21 +9,27 @@ import { useRouter } from "next/navigation";
 export function useLogin() {
   const qc = useQueryClient();
   const router = useRouter();
-  
+
   return useMutation({
     mutationFn: (credentials: LoginRequest) => login(credentials),
-    onSuccess: async (data) => {
+    onSuccess: async (data: LoginResponse) => {
+      // If MFA is required, do NOT set cookies or redirect yet.
+      // The component will handle the challenge view.
+      if (data.mfa_required) {
+        return;
+      }
+
       // Store tokens via cookies only
       if (typeof window !== "undefined") {
         setAuthCookies(data.access, data.refresh);
-        
+
         // Dispatch custom event to notify auth context
         window.dispatchEvent(new CustomEvent('auth:login'));
       }
-      
+
       // Invalidate all queries to refetch with new auth state
       qc.invalidateQueries();
-      
+
       // Navigate to dashboard
       if (typeof window !== "undefined") {
         // Use Next.js router
@@ -38,15 +44,15 @@ export function useLogin() {
         throw new Error("Unable to connect to the server. Please check your connection and try again.");
       } else {
         // API errors
-        const err = error as { 
-          response?: { 
+        const err = error as {
+          response?: {
             status?: number;
-            data?: { 
+            data?: {
               detail?: string;
-            } 
-          } 
+            }
+          }
         };
-        
+
         // Handle specific HTTP status codes
         switch (err.response?.status) {
           case 400:
@@ -69,7 +75,7 @@ export function useLogin() {
 
 export function useLogout() {
   const qc = useQueryClient();
-  
+
   return useMutation({
     mutationFn: logout,
     retry: false,
@@ -85,14 +91,14 @@ export function useLogout() {
       // Clear tokens (cookies-only)
       if (typeof window !== "undefined") {
         clearAuthCookies();
-        
+
         // Dispatch custom event to notify auth context
         window.dispatchEvent(new CustomEvent('auth:logout'));
       }
-      
+
       // Clear all cached data
       qc.clear();
-      
+
       // Redirect to login page
       if (typeof window !== "undefined") {
         window.location.href = ROUTES.AUTH.LOGIN;
@@ -103,10 +109,10 @@ export function useLogout() {
       // Even if logout fails on server, clear local state
       if (typeof window !== "undefined") {
         clearAuthCookies();
-        
+
         // Dispatch custom event to notify auth context
         window.dispatchEvent(new CustomEvent('auth:logout'));
-        
+
         qc.clear();
         window.location.href = ROUTES.AUTH.LOGIN;
       }
@@ -171,5 +177,68 @@ export function useMe() {
     queryFn: getMe,
     staleTime: 5 * 60 * 1000, // 5 minutes
     retry: false,
+  });
+}
+
+// MFA Hooks
+export function useMfaEnroll() {
+  return useMutation({
+    mutationFn: mfaEnroll,
+  });
+}
+
+export function useMfaConfirm() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (data: MfaConfirmRequest) => mfaConfirm(data),
+    onSuccess: () => {
+      // Invalidate 'me' query to update mfa_enabled status
+      qc.invalidateQueries({ queryKey: ["me"] });
+      // Force AuthContext to refresh
+      window.dispatchEvent(new Event('auth:refresh'));
+    }
+  });
+}
+
+export function useMfaVerify() {
+  const qc = useQueryClient();
+  const router = useRouter();
+
+  return useMutation({
+    mutationFn: (data: MfaVerifyRequest) => mfaVerify(data),
+    onSuccess: async (data: LoginResponse) => {
+      // Store tokens via cookies only (service handles this, but double check environment)
+      if (typeof window !== "undefined") {
+        setAuthCookies(data.access, data.refresh);
+
+        // Dispatch custom event to notify auth context
+        window.dispatchEvent(new CustomEvent('auth:login'));
+      }
+
+      // Invalidate all queries to refetch with new auth state
+      qc.invalidateQueries();
+
+      // Navigate to dashboard
+      if (typeof window !== "undefined") {
+        router.push(ROUTES.DASHBOARD.HOME);
+      }
+    },
+    onError: (error) => {
+      console.error("MFA Verify failed:", error);
+      throw error;
+    }
+  });
+}
+
+export function useMfaDisable() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (data: MfaDisableRequest) => mfaDisable(data),
+    onSuccess: () => {
+      // Invalidate 'me' query to update mfa_enabled status
+      qc.invalidateQueries({ queryKey: ["me"] });
+      // Force AuthContext to refresh
+      window.dispatchEvent(new Event('auth:refresh'));
+    }
   });
 }

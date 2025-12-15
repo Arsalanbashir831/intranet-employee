@@ -11,6 +11,7 @@ export type User = {
 	is_active: boolean;
 	is_staff: boolean;
 	is_superuser: boolean;
+	mfa_enabled?: boolean;
 };
 
 export type Executive = {
@@ -41,6 +42,7 @@ export type Employee = {
 	profile_picture: string | null;
 	isAdmin: boolean;
 	is_executive: boolean;
+	mfa_enabled?: boolean;
 	branch_departments: {
 		id: number;
 		branch: {

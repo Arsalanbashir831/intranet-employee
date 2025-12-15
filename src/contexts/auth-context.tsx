@@ -24,6 +24,7 @@ interface User {
   branchName?: string; // Add branch name
   departmentName?: string; // Add department name
   isExecutive?: boolean; // Add is_executive flag
+  mfa_enabled?: boolean;
 }
 
 interface AuthContextType {
@@ -39,7 +40,7 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
- 
+
   // Check for existing tokens on mount
   useEffect(() => {
     const checkAuth = async () => {
@@ -51,6 +52,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           // Use the me API to get user details
           try {
             const meData = await getMe();
+            console.log(meData);
             setUser({
               id: meData.user.id,
               username: meData.user.username,
@@ -69,6 +71,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
               branchName: meData.employee?.branch_departments?.[0]?.branch?.branch_name || undefined,
               departmentName: meData.employee?.branch_departments?.[0]?.department?.dept_name || undefined,
               isExecutive: meData.employee?.is_executive || false,
+              mfa_enabled: meData.employee?.mfa_enabled,
             });
           } catch {
             // If me API fails, try to refresh token and try again
@@ -77,9 +80,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
               const result = await refreshToken(refreshTokenValue);
               const { setAuthCookies } = await import("@/lib/cookies");
               setAuthCookies(result.access, result.refresh || refreshTokenValue);
-              
+
               // Try to get user details again with new token
               const meData = await getMe();
+              console.log(meData);
               setUser({
                 id: meData.user.id,
                 username: meData.user.username,
@@ -98,6 +102,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
                 branchName: meData.employee?.branch_departments?.[0]?.branch?.branch_name || undefined,
                 departmentName: meData.employee?.branch_departments?.[0]?.department?.dept_name || undefined,
                 isExecutive: meData.employee?.is_executive || false,
+                mfa_enabled: meData.employee?.mfa_enabled || false,
               });
             } catch (refreshError) {
               // Refresh failed, user is not authenticated
@@ -130,10 +135,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setIsLoading(true);
     try {
       const { accessToken, refreshToken: refreshTokenValue } = getAuthTokens();
-      
+
       if (accessToken && refreshTokenValue) {
         try {
           const meData = await getMe();
+          console.log(meData);
           setUser({
             id: meData.user.id,
             username: meData.user.username,
@@ -148,10 +154,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             name: meData.employee?.emp_name || meData.executive?.name || meData.user.username,
             profilePicture: meData.employee?.profile_picture || meData.executive?.profile_picture,
             role: meData.employee?.role || meData.executive?.role,
-              branchDepartmentId: meData.employee?.branch_department_ids?.[0] || null,
-              branchName: meData.employee?.branch_departments?.[0]?.branch?.branch_name || undefined,
-              departmentName: meData.employee?.branch_departments?.[0]?.department?.dept_name || undefined,
-              isExecutive: meData.employee?.is_executive || false,
+            branchDepartmentId: meData.employee?.branch_department_ids?.[0] || null,
+            branchName: meData.employee?.branch_departments?.[0]?.branch?.branch_name || undefined,
+            departmentName: meData.employee?.branch_departments?.[0]?.department?.dept_name || undefined,
+            isExecutive: meData.employee?.is_executive || false,
+            mfa_enabled: meData.employee?.mfa_enabled || false,
           });
         } catch {
           // Token verification failed, try to refresh
@@ -160,9 +167,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             const result = await refreshToken(refreshTokenValue);
             const { setAuthCookies } = await import("@/lib/cookies");
             setAuthCookies(result.access, result.refresh || refreshTokenValue);
-            
+
             // Get user details with new token
             const meData = await getMe();
+            console.log(meData);
             setUser({
               id: meData.user.id,
               username: meData.user.username,
@@ -181,6 +189,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
               branchName: meData.employee?.branch_departments?.[0]?.branch?.branch_name || undefined,
               departmentName: meData.employee?.branch_departments?.[0]?.department?.dept_name || undefined,
               isExecutive: meData.employee?.is_executive || false,
+              mfa_enabled: meData.employee?.mfa_enabled,
             });
           } catch (refreshError) {
             console.error("Token refresh failed:", refreshError);
@@ -211,7 +220,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     // Listen for storage events (when tokens are updated)
     window.addEventListener('storage', handleTokenUpdate);
-    
+
     // Also listen for custom events if needed
     window.addEventListener('auth:login', handleTokenUpdate);
     window.addEventListener('auth:logout', () => setUser(null));
@@ -228,7 +237,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const logout = () => {
     setUser(null);
     clearAuthCookies();
-    
+
     // Use window.location for navigation since we're in a context outside of React components
     if (typeof window !== "undefined") {
       window.location.href = ROUTES.AUTH.LOGIN;
