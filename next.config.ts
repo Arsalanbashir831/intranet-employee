@@ -4,6 +4,8 @@ import type { NextConfig } from "next";
 const isProd = process.env.NODE_ENV === "production";
 
 const nextConfig: NextConfig = {
+  standalone: true,
+
   images: {
     // In prod, only allow HTTPS image sources to avoid mixed-content blocks.
     // In dev, keep HTTP for localhost/VPS testing.
