@@ -71,7 +71,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
               branchName: meData.employee?.branch_departments?.[0]?.branch?.branch_name || undefined,
               departmentName: meData.employee?.branch_departments?.[0]?.department?.dept_name || undefined,
               isExecutive: meData.employee?.is_executive || false,
-              mfa_enabled: meData.employee?.mfa_enabled,
+              mfa_enabled: meData.user?.mfa_enabled,
             });
           } catch {
             // If me API fails, try to refresh token and try again
@@ -102,7 +102,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
                 branchName: meData.employee?.branch_departments?.[0]?.branch?.branch_name || undefined,
                 departmentName: meData.employee?.branch_departments?.[0]?.department?.dept_name || undefined,
                 isExecutive: meData.employee?.is_executive || false,
-                mfa_enabled: meData.employee?.mfa_enabled || false,
+                mfa_enabled: meData.user?.mfa_enabled || false,
               });
             } catch (refreshError) {
               // Refresh failed, user is not authenticated
@@ -158,7 +158,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             branchName: meData.employee?.branch_departments?.[0]?.branch?.branch_name || undefined,
             departmentName: meData.employee?.branch_departments?.[0]?.department?.dept_name || undefined,
             isExecutive: meData.employee?.is_executive || false,
-            mfa_enabled: meData.employee?.mfa_enabled || false,
+            mfa_enabled: meData.user?.mfa_enabled || false,
           });
         } catch {
           // Token verification failed, try to refresh
@@ -189,7 +189,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
               branchName: meData.employee?.branch_departments?.[0]?.branch?.branch_name || undefined,
               departmentName: meData.employee?.branch_departments?.[0]?.department?.dept_name || undefined,
               isExecutive: meData.employee?.is_executive || false,
-              mfa_enabled: meData.employee?.mfa_enabled,
+              mfa_enabled: meData.user?.mfa_enabled,
             });
           } catch (refreshError) {
             console.error("Token refresh failed:", refreshError);

@@ -5,6 +5,7 @@ import { Suspense, useState } from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { AuthProvider } from "@/contexts/auth-context";
+import { MfaBanner } from "@/components/common/mfa-banner";
 
 export default function DashboardLayout({
 	children,
@@ -17,6 +18,7 @@ export default function DashboardLayout({
 			<AuthProvider>
 				<div className="min-h-screen bg-[#F8F8F8]">
 					<Navbar />
+					<MfaBanner />
 					<main >
 						<Suspense>{children}</Suspense>
 					</main>
